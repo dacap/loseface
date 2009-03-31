@@ -1,0 +1,42 @@
+========================================
+COMPILATION
+========================================
+
+  To compile Lose Face you need CMake utility
+
+     http://www.cmake.org/
+
+  With CMake you can generates Makefiles/Projects for your
+  platform/compiler.
+
+  E.g. In GNU/Linux you can do:
+
+     $ mkdir build-gcc
+     $ cd build-gcc
+     $ cmake .. -G "Unix Makefiles"
+     $ make
+
+  And that is all. The 'build-gcc' directory is the destination
+  for all .obj and .exe files.
+
+  For other platforms like Windows, you can generate makefiles
+  for MinGW, NMake or Visual Studio Projects. E.g.
+
+     >mkdir build-mingw
+     >cd build-mingw
+     >cmake .. -G "MinGW Makefiles"
+     >mingw32-make
+
+     >mkdir build-msys
+     >cd build-msys
+     >cmake .. -G "MSYS Makefiles"
+     >make
+
+     >mkdir build-vc9
+     >cd build-vc9
+     >cmake .. -G "Visual Studio 9 2008"
+     >start loseface.sln
+
+  It is a good practice to create a directory (like 'build-gcc') to
+  leave all .obj and .exe files, so then is really easy to clean all
+  generated files (just removing that directory).
