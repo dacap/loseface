@@ -35,7 +35,8 @@
 //////////////////////////////////////////////////////////////////////
 //  For Windows
 
-#if defined PLAT_WIN32
+#ifdef _WIN32
+
   #include <windows.h>
 
   class Chrono
@@ -63,10 +64,8 @@
 
   };
 
-//////////////////////////////////////////////////////////////////////
-//  For Linux
+#else  // For UNIX like
 
-#elif defined PLAT_LINUX
   #include <time.h>
   #include <sys/time.h>
 
@@ -94,8 +93,6 @@
 
   };
 
-#else
-  #error Your platform is not supported
 #endif
 
 //////////////////////////////////////////////////////////////////////

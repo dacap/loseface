@@ -29,6 +29,9 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#include "lua.hpp"
+#include "lfs.h"
+
 #include "LuaState.h"
 #include "lua_annlib.h"
 
@@ -55,6 +58,7 @@ int main(int argc, const char *argv[])
   try {
     LuaState L;
     luaL_openlibs(L);		     // Register command libraries
+    luaopen_lfs(L);		     // Register Lua File System library
     annlib::register_lib(L);	     // Register ANN library
 
     // Process files specified in the command line
