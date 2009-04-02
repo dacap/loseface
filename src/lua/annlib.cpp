@@ -34,12 +34,10 @@
 #include <cstring>
 #include <vector>
 #include <map>
-
-#include <lua.hpp>
+#include <sstream>
 
 #include "Ann.h"
-#include "util.h"
-#include "lua/lua_annlib.h"
+#include "lua/annlib.h"
 
 using namespace std;
 
@@ -229,6 +227,10 @@ static int patternset_split(lua_State* L)
 	newset->push_back(pat);
     }
   }
+
+  if (verbose_mode && !percentages.empty())
+    cout << "Split by percentages: ";
+
   int beg = 0, end;
   for (vector<double>::iterator it = percentages.begin(); it != percentages.end(); ++it, ++i) {
     // a new pattern in the stack
@@ -246,8 +248,12 @@ static int patternset_split(lua_State* L)
       Pattern<double>& pat = (*set)[c];
       newset->push_back(pat);
     }
+    if (verbose_mode)
+      cout << percentage << "% [" << beg << ", " << end << "] ";
     beg = end;
   }
+  if (verbose_mode && !percentages.empty())
+    cout << endl;
 
   return 1;
 }

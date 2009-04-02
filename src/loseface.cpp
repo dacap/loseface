@@ -37,7 +37,7 @@
 #endif
 
 #include "lua/LuaState.h"
-#include "lua/lua_annlib.h"
+#include "lua/annlib.h"
 
 using namespace std;
 

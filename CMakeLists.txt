@@ -43,7 +43,7 @@ add_executable(loseface
   src/recog/Eigenfaces.cpp
   src/recog/FrEigenfacesMlp.cpp
   src/recog/recog_util.cpp
-  src/lua/lua_annlib.cpp
+  src/lua/annlib.cpp
   src/loseface.cpp
   ${platforms_sources})
 
@@ -52,6 +52,7 @@ target_link_libraries(loseface ${sys_libs} ${lapack_libs} ${lua_libs})
 ######################################################################
 # Subdirectories
 
+add_subdirectory(docs)		# Documentation
 add_subdirectory(third_party)	# Third party libraries
 # add_subdirectory(tools)	# Tools
 # add_subdirectory(tests)	# Tests
