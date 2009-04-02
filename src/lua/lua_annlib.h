@@ -29,45 +29,26 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOSEFACE_LUASTATE_H
-#define LOSEFACE_LUASTATE_H
+#ifndef LOSEFACE_LUA_ANNLIB_H
+#define LOSEFACE_LUA_ANNLIB_H
 
-#include "lua.hpp"
+#include <lua.hpp>
 
-#include <cstdio>
+#include <string>
 
-class LuaState
+namespace annlib
 {
-  lua_State* L;
-  bool m_done;
-public:
-  LuaState() {
-    L = lua_open();
-    m_done = false;
-  }
-  ~LuaState() {
-#if 0 				// this does not work yet
-    if (!m_done) {
-      lua_getglobal(L, "debug");
-      lua_getfield(L, -1, "traceback");
-      lua_remove(L, -2);	// remove 'debug'
-      lua_pcall(L, 0, 0, -1);	// call debug.traceback
 
-      // Get the result string
-      if (lua_isstring(L, -1))
-	std::fprintf(stderr, "%s\n", lua_tostring(L, -1));
+  enum { LAST, BESTMSE, BESTHIT }; // learning algorithm goal
+  enum { MINMAX, STDDEV };	   // type of normalizer
 
-      lua_pop(L, 1);		// pop the result and 'debug' global
-    }
-#endif
-    lua_close(L);
-  }
-  void done() {
-    m_done = true;
-  }
-  operator lua_State*() {
-    return L;
-  }
-};
+  void register_lib(lua_State* L);
 
-#endif // LOSEFACE_LUASTATE_H
+  int init_random(lua_State* L);
+  int create_mlp(lua_State* L);
+  int create_patternset(lua_State* L);
+  int create_normalizer(lua_State* L);
+
+}
+
+#endif // LOSEFACE_LUA_ANNLIB_H

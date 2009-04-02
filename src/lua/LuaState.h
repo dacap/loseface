@@ -29,32 +29,45 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOSEFACE_LUA_ANNLIB_H
-#define LOSEFACE_LUA_ANNLIB_H
+#ifndef LOSEFACE_LUA_LUASTATE_H
+#define LOSEFACE_LUA_LUASTATE_H
 
 #include "lua.hpp"
 
-#include <string>
+#include <cstdio>
 
-namespace annlib
+class LuaState
 {
+  lua_State* L;
+  bool m_done;
+public:
+  LuaState() {
+    L = lua_open();
+    m_done = false;
+  }
+  ~LuaState() {
+#if 0 				// this does not work yet
+    if (!m_done) {
+      lua_getglobal(L, "debug");
+      lua_getfield(L, -1, "traceback");
+      lua_remove(L, -2);	// remove 'debug'
+      lua_pcall(L, 0, 0, -1);	// call debug.traceback
 
-  enum { LAST, BESTMSE, BESTHIT };
+      // Get the result string
+      if (lua_isstring(L, -1))
+	std::fprintf(stderr, "%s\n", lua_tostring(L, -1));
 
-  void register_lib(lua_State* L);
+      lua_pop(L, 1);		// pop the result and 'debug' global
+    }
+#endif
+    lua_close(L);
+  }
+  void done() {
+    m_done = true;
+  }
+  operator lua_State*() {
+    return L;
+  }
+};
 
-  int init_random(lua_State* L);
-  int create_mlp(lua_State* L);
-  int init_mlp(lua_State* L);
-  int load_mlp(lua_State* L);
-  int save_mlp(lua_State* L);
-  int load_patterns(lua_State* L);
-  int init_bp(lua_State* L);
-  int train_mlp(lua_State* L);
-  int test_mlp(lua_State* L);
-  int mlp_mse(lua_State* L);
-  int normalize_patterns(lua_State* L);
-
-}
-
-#endif // LOSEFACE_LUA_ANNLIB_H
+#endif // LOSEFACE_LUA_LUASTATE_H

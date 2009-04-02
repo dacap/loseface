@@ -29,15 +29,15 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "lua.hpp"
-#include "lfs.h"
-
-#include "LuaState.h"
-#include "lua_annlib.h"
+#include <lua.hpp>
+#include <lfs.h>
 
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
+#include "lua/LuaState.h"
+#include "lua/lua_annlib.h"
 
 using namespace std;
 

@@ -41,7 +41,7 @@
 //////////////////////////////////////////////////////////////////////
 
 /// A pair of input/output vectors.
-/// 
+///
 template<typename T>
 class Pattern
 {
@@ -53,6 +53,9 @@ public:
   Vector<T> output;
 
   Pattern() { }
+  Pattern(int inputs, int outputs)
+    : input(inputs)
+    , output(outputs) { }
   Pattern(const Pattern& p)
     : input(p.input)
     , output(p.output) { }
@@ -125,7 +128,6 @@ class Mlp
 {
 public:
   typedef T value_type;
-  typedef unsigned size_type;
   typedef HAF HiddenFunc;
   typedef OAF OutputFunc;
   typedef ::Vector<value_type> Vector;
@@ -140,11 +142,11 @@ public:
   {
   }
 
-  Mlp(size_type input, size_type hidden, size_type output)
-    : w1(hidden, input)
-    , w2(output, hidden)
-    , b1(hidden)
-    , b2(output)
+  Mlp(size_t inputs, size_t hiddens, size_t outputs)
+    : w1(hiddens, inputs)
+    , w2(outputs, hiddens)
+    , b1(hiddens)
+    , b2(outputs)
   {
     b1.zero();
     b2.zero();
@@ -158,9 +160,9 @@ public:
   {
   }
 
-  size_type getInputs() const { return w1.cols(); }
-  size_type getHiddens() const { return w1.rows(); }
-  size_type getOutputs() const { return w2.rows(); }
+  size_t getInputs() const { return w1.cols(); }
+  size_t getHiddens() const { return w1.rows(); }
+  size_t getOutputs() const { return w2.rows(); }
 
   Vector createInput() const { return Vector(getInputs()); }
   Vector createHidden() const { return Vector(getHiddens()); }
@@ -198,7 +200,7 @@ public:
   }
 
   void initRandom(T min_value, T max_value) {
-    size_type i, j, k;
+    size_t i, j, k;
     T range = (max_value - min_value) / static_cast<T>(10000);
 
     for (j=0; j<w1.rows(); ++j)
@@ -220,21 +222,21 @@ public:
   {
 #if 1
     hidden = w1 * input + b1;
-    for (size_type j=0; j<hidden.size(); ++j)
+    for (size_t j=0; j<hidden.size(); ++j)
       hidden(j) = HiddenFunc::f(hidden(j));
 
     output = w2 * hidden + b2;
-    for (size_type k=0; k<output.size(); ++k)
+    for (size_t k=0; k<output.size(); ++k)
       output(k) = OutputFunc::f(output(k));
 #else  // optimized (to avoid temporary objects)
     w1.multiply(input, hidden);
     hidden += b1;
-    for (size_type j=0; j<hidden.size(); ++j)
+    for (size_t j=0; j<hidden.size(); ++j)
       hidden(j) = HiddenFunc::f(hidden(j));
 
     w2.multiply(hidden, output);
     output += b2;
-    for (size_type k=0; k<output.size(); ++k)
+    for (size_t k=0; k<output.size(); ++k)
       output(k) = OutputFunc::f(output(k));
 #endif
   }
@@ -246,24 +248,24 @@ public:
 #if 1
     hidden0 = w1 * input + b1;
     hidden.resize(hidden0.size());
-    for (size_type j=0; j<hidden0.size(); ++j)
+    for (size_t j=0; j<hidden0.size(); ++j)
       hidden(j) = HiddenFunc::f(hidden0(j));
 
     output0 = w2 * hidden + b2;
     output.resize(output0.size());
-    for (size_type k=0; k<output0.size(); ++k)
+    for (size_t k=0; k<output0.size(); ++k)
       output(k) = OutputFunc::f(output0(k));
 #else  // optimized
     w1.multiply(input, hidden0);
     hidden0 += b1;
     hidden.resize(hidden0.size());
-    for (size_type j=0; j<hidden0.size(); ++j)
+    for (size_t j=0; j<hidden0.size(); ++j)
       hidden(j) = HiddenFunc::f(hidden0(j));
 
     w2.multiply(hidden, output0);
     output0 += b2;
     output.resize(output0.size());
-    for (size_type k=0; k<output0.size(); ++k)
+    for (size_t k=0; k<output0.size(); ++k)
       output(k) = OutputFunc::f(output0(k));
 #endif
   }
@@ -500,12 +502,19 @@ public:
 ///     each pattern is used)
 ///   - UpdateWeightsImmediatelyWithMomentum: same as UpdateWeightsImmediately but
 ///     with momentum
+///
+/// @verbatim
+/// D. E. Rumelhart., G. E. Hinton, R. J. Williams. 1986. "Learning internal representations by
+/// error propagation,", In Parallel Distributed Processing: Explorations in the Microstructure
+/// of Cognition, Vol. 1: Foundations, D. E. Rumelhart, J. L. McClelland, Eds. Mit Press
+/// Computational Models Of Cognition And Perception Series. MIT Press, Cambridge, MA, 318-362.
+/// @endverbatim
 /// 
 template<class Net,
 	 template<class Net> class WeightsModificator = UpdateWeightsImmediatelyWithMomentum,
 	 template<class Net> class Tolerance = MaximumTolerance>
-class StdBp : public WeightsModificator<Net>
-	    , public Tolerance<Net>
+class BackPropagation : public WeightsModificator<Net>
+		      , public Tolerance<Net>
 {
 public:
   typedef typename Net::value_type value_type;
@@ -535,7 +544,7 @@ public:
   /// @param net The MLP to be trained (the initial weights of this net
   ///   will be used as start point).
   /// 
-  StdBp(Net& net)
+  BackPropagation(Net& net)
     : net(net)
   {
     epoch = 0;
@@ -552,7 +561,7 @@ public:
   /// 
   void train(const Set& training_set) {
     typename Set::const_iterator pattern;
-    typename Net::size_type i, j, k;
+    size_t i, j, k;
 
     // vectors
     Vector hidden0, hidden, delta_hidden;

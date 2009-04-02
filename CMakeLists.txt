@@ -43,8 +43,8 @@ add_executable(loseface
   src/recog/Eigenfaces.cpp
   src/recog/FrEigenfacesMlp.cpp
   src/recog/recog_util.cpp
+  src/lua/lua_annlib.cpp
   src/loseface.cpp
-  src/lua_annlib.cpp
   ${platforms_sources})
 
 target_link_libraries(loseface ${sys_libs} ${lapack_libs} ${lua_libs})

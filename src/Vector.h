@@ -48,7 +48,6 @@ template<typename T>
 class Vector
 {
 public:
-  typedef unsigned size_type;
   typedef typename std::vector<T>::iterator iterator;
   typedef typename std::vector<T>::const_iterator const_iterator;
 
@@ -65,7 +64,7 @@ public:
     m_data.resize(1);
   }
 
-  explicit Vector(size_type n) {
+  explicit Vector(size_t n) {
     assert(n >= 1);
     m_data.resize(n);
   }
@@ -77,12 +76,12 @@ public:
   T* getRaw() { return &m_data[0]; }
   const T* getRaw() const { return &m_data[0]; }
 
-  size_type size() const { return m_data.size(); }
+  size_t size() const { return m_data.size(); }
 
   T magnitude() const {
     T sq_sum = 0.0;
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       sq_sum += m_data[i]*m_data[i];
 
     return std::sqrt(sq_sum);
@@ -91,13 +90,13 @@ public:
   T mean() const {
     T result = 0.0;
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       result += m_data[i];
 
     return result / T(size());
   }
 
-  Vector& resize(size_type n) {
+  Vector& resize(size_t n) {
     assert(n >= 1);
     m_data.resize(n);
     return *this;
@@ -111,7 +110,7 @@ public:
   T getMin() const {
     T a = m_data[0];
 
-    for (size_type i=1; i<size(); ++i)
+    for (size_t i=1; i<size(); ++i)
       if (a > m_data[i])
 	a = m_data[i];
 
@@ -121,15 +120,15 @@ public:
   T getMax() const {
     T a = m_data[0];
 
-    for (size_type i=1; i<size(); ++i)
+    for (size_t i=1; i<size(); ++i)
       if (a < m_data[i])
 	a = m_data[i];
 
     return a;
   }
 
-  size_type getMinPos() const {
-    size_type k = 0;
+  size_t getMinPos() const {
+    size_t k = 0;
     T a = m_data[0];
 
     for (int i=1; i<size(); ++i)
@@ -139,8 +138,8 @@ public:
     return k;
   }
 
-  size_type getMaxPos() const {
-    size_type k = 0;
+  size_t getMaxPos() const {
+    size_t k = 0;
     T a = m_data[0];
 
     for (size_t i=1; i<size(); ++i)
@@ -154,7 +153,7 @@ public:
     Matrix<T> A(size(), size());
     A.zero();
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       A(i, i) = m_data[i];
 
     return A;
@@ -168,7 +167,7 @@ public:
   Vector& operator+=(const Vector& u) {
     assert(size() == u.size());
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       m_data[i] += u.m_data[i];
 
     return *this;
@@ -177,21 +176,21 @@ public:
   Vector& operator-=(const Vector& u) {
     assert(size() == u.size());
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       m_data[i] -= u.m_data[i];
 
     return *this;
   }
 
   Vector& operator*=(T s) {
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       m_data[i] *= s;
 
     return *this;
   }
 
   Vector& operator/=(T s) {
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       m_data[i] /= s;
 
     return *this;
@@ -200,7 +199,7 @@ public:
   Vector operator*(T s) const {
     Vector w(size());
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       w.m_data[i] = s * m_data[i];
 
     return w;
@@ -209,7 +208,7 @@ public:
   Vector operator/(T s) const {
     Vector w(size());
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       w.m_data[i] = m_data[i] / s;
 
     return w;
@@ -219,7 +218,7 @@ public:
     assert(size() == u.size());
     Vector w(size());
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       w.m_data[i] = m_data[i] + u.m_data[i];
 
     return w;
@@ -229,7 +228,7 @@ public:
     assert(size() == u.size());
     Vector w(size());
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       w.m_data[i] = m_data[i] - u.m_data[i];
 
     return w;
@@ -239,7 +238,7 @@ public:
     assert(size() == u.size());
     T dot_product = 0.0;
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       dot_product += m_data[i] * u.m_data[i];
 
     return dot_product;
@@ -249,7 +248,7 @@ public:
     if (size() != u.size())
       return false;
 
-    for (size_type i=0; i<size(); ++i)
+    for (size_t i=0; i<size(); ++i)
       if (m_data[i] != u.m_data[i])
 	return false;
 
@@ -260,12 +259,12 @@ public:
     return !operator==(u);
   }
 
-  inline T& operator()(size_type i) {
+  inline T& operator()(size_t i) {
     assert(i >= 0 && i < size());
     return m_data[i];
   }
 
-  inline const T& operator()(size_type i) const {
+  inline const T& operator()(size_t i) const {
     assert(i >= 0 && i < size());
     return m_data[i];
   }
@@ -288,15 +287,15 @@ public:
 
   void write(std::ostream& s) const
   {
-    size_type n = size();
-    s.write((char*)&n, sizeof(size_type));
+    size_t n = size();
+    s.write((char*)&n, sizeof(size_t));
     s.write((char*)getRaw(), sizeof(T)*n);
   }
 
   void read(std::istream& s)
   {
-    size_type n;
-    s.read((char*)&n, sizeof(size_type));
+    size_t n;
+    s.read((char*)&n, sizeof(size_t));
     resize(n);
     s.read((char*)getRaw(), sizeof(T)*n);
   }
@@ -315,8 +314,7 @@ bool approx_eq(const Vector<T>& u, const Vector<T>& v, unsigned precision)
   if (u.size() != v.size())
     return false;
 
-  for (typename Vector<T>::size_type
-	 i=0; i<u.size(); ++i) {
+  for (size_t i=0; i<u.size(); ++i) {
     if (!approx_eq(v(i), u(i), precision))
       return false;
   }
@@ -335,8 +333,7 @@ std::ostream& operator<<(std::ostream& o, const Vector<T>& v)
   o << "(" << v.size() << ")";
   o << "[ ";
 
-  for (typename Vector<T>::size_type
-	 i=0; i<v.size(); ++i)
+  for (size_t i=0; i<v.size(); ++i)
     o << v(i) << " ";
 
   o << "]";
