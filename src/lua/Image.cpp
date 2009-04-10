@@ -29,67 +29,85 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <iostream>
-#include <lua.hpp>
-#include <lfs.h>
-
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
-#include "lua/LuaState.h"
-#include "lua/annlib.h"
 #include "lua/imglib.h"
 
+#define LUAOBJ_IMAGE	"Image"
+
 using namespace std;
+using namespace imglib::details;
 
-/// Lose Face command line utility.
-///
-/// Usage: 
-/// @code
-/// losefase [SCRIPT_FILE [ARGUMENTS...]]
-/// @endcode
-///
-int main(int argc, const char *argv[])
+lua_Image** imglib::details::toImage(lua_State* L, int pos)
 {
-#ifdef _WIN32
-  // We can modify process priority to avoid killing the CPU
-  ::SetPriorityClass(::GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
-#endif
-  
-  try {
-    lua::LuaState L;
-    luaL_openlibs(L);		     // Register command libraries
-    luaopen_lfs(L);		     // Register Lua File System library
+  return ((lua_Image**)luaL_checkudata(L, pos, LUAOBJ_IMAGE));
+}
 
-    imglib::registerLibrary(L);	     // Register Image library
-    annlib::registerLibrary(L);	     // Register Artificial Neural Network library
+static lua_Image** newimage(lua_State* L)
+{
+  lua_Image** img = (lua_Image**)lua_newuserdata(L, sizeof(lua_Image**));
+  *img = new lua_Image;
+  luaL_getmetatable(L, LUAOBJ_IMAGE);
+  lua_setmetatable(L, -2);
+  return img;
+}
 
-    // Process file specified in the command line
-    if (argc > 1) {
-      lua_createtable(L, argc-2, 0);
-      for (int i=2; i<argc; ++i) {
-	lua_pushstring(L, argv[i]);
-	lua_rawseti(L, -2, 1+i-2);
-      }
-      lua_setglobal(L, "arg");
+static int image__load(lua_State* L)
+{
+  lua_Image** img = toImage(L, 1);
+  if (img) {
+    luaL_checktype(L, 2, LUA_TTABLE);
 
-      if (luaL_dofile(L, argv[1]) != 0)
-	std::fprintf(stderr, "%s\n", lua_tostring(L, -1));
-    }
-    else {
-      cerr << "You have to specify a script to execute" << endl;
-    }
+    string file;
+    lua_getfield(L, 2, "file");
+    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
+    lua_pop(L, 1);
 
-    L.done();
-  }
-  catch (exception& e) {
-    cerr << e.what() << endl;
-    return 1;
-  }
-  catch (...) {
-    cerr << "Unknown exception caught" << endl;
-    return 1;
+    (*img)->load(file.c_str());
+
+    // TODO error
   }
   return 0;
+}
+
+static int image__gc(lua_State* L)
+{
+  lua_Image** img = toImage(L, 1);
+  if (img) {
+    delete *img;
+    *img = NULL;
+  }
+  return 0;
+}
+
+static const luaL_Reg image_metatable[] = {
+  { "load",		image__load },
+  { "__gc",		image__gc },
+  { NULL, NULL }
+};
+
+void imglib::details::registerImage(lua_State* L)
+{
+  // Image user data
+  luaL_newmetatable(L, LUAOBJ_IMAGE);		// create metatable for Image
+  lua_pushvalue(L, -1);				// push metatable
+  lua_setfield(L, -2, "__index");		// metatable.__index = metatable
+  luaL_register(L, NULL, image_metatable);	// Image methods
+}
+
+int imglib::details::ImageCtor(lua_State* L)
+{
+  lua_Image* img = *newimage(L);
+  return 1;
+}
+
+void imglib::details::image2vector(const lua_Image* _img, Vector<double>& output)
+{
+  assert(_img != NULL);
+
+  const lua_Image& img(*_img);
+  output.resize(img.width*img.height);
+
+  size_t x, y, i = 0;
+  for (y=0; y<img.height; ++y)
+    for (x=0; x<img.width; ++x)
+      output(i++) = img(x, y, 0, 0);
 }

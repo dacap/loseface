@@ -29,48 +29,38 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOSEFACE_LUA_LUASTATE_H
-#define LOSEFACE_LUA_LUASTATE_H
+#include <cassert>
+#include <cmath>
 
-#include <cstdio>
-#include <lua.hpp>
+#include "Matrix.h"
+#include "Vector.h"
 
-namespace lua {
+using namespace std;
 
-class LuaState
+static void test_matrix_dist()
 {
-  lua_State* L;
-  bool m_done;
-public:
-  LuaState() {
-    L = lua_open();
-    m_done = false;
-  }
-  ~LuaState() {
-#if 0 				// this does not work yet
-    if (!m_done) {
-      lua_getglobal(L, "debug");
-      lua_getfield(L, -1, "traceback");
-      lua_remove(L, -2);	// remove 'debug'
-      lua_pcall(L, 0, 0, -1);	// call debug.traceback
+  Matrix<double> A(2, 2);
+  Matrix<double> B(2, 2);
 
-      // Get the result string
-      if (lua_isstring(L, -1))
-	std::fprintf(stderr, "%s\n", lua_tostring(L, -1));
+  B(0, 0) = 5.;    B(0, 1) = 6.;
+  B(1, 0) = 7.;    B(1, 1) = 8.;
 
-      lua_pop(L, 1);		// pop the result and 'debug' global
-    }
-#endif
-    lua_close(L);
-  }
-  void done() {
-    m_done = true;
-  }
-  operator lua_State*() {
-    return L;
-  }
-};
+  A(0, 0) = 1.;    A(0, 1) = 2.;
+  A(1, 0) = 3.;    A(1, 1) = 4.;
 
+  Matrix<double> C = A.dist(B);
+  Matrix<double> D(2, 2);
+
+  D(0, 0) = sqrt(pow(1.-5., 2.) + pow(2.-7., 2.));
+  D(0, 1) = sqrt(pow(1.-6., 2.) + pow(2.-8., 2.));
+  D(1, 0) = sqrt(pow(3.-5., 2.) + pow(4.-7., 2.));
+  D(1, 1) = sqrt(pow(3.-6., 2.) + pow(4.-8., 2.));
+
+  assert(C == D);
 }
 
-#endif // LOSEFACE_LUA_LUASTATE_H
+int main(int argc, char *argv[])
+{
+  test_matrix_dist();
+  return 0;
+}

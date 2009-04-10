@@ -15,14 +15,18 @@ if(UNIX)
 endif(UNIX)
 set(lapack_libs lapack-double blas-double blaswrap f2c)
 set(lua_libs lua luafilesystem)
+set(file_libs libpng zlib)
+set(libs mt19937 ${lapack_libs} ${lua_libs} ${file_libs})
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/src
   ${CMAKE_SOURCE_DIR}/src/image
   ${CMAKE_SOURCE_DIR}/third_party
   ${CMAKE_SOURCE_DIR}/third_party/clapack
+  ${CMAKE_SOURCE_DIR}/third_party/libpng
   ${CMAKE_SOURCE_DIR}/third_party/lua
-  ${CMAKE_SOURCE_DIR}/third_party/luafilesystem)
+  ${CMAKE_SOURCE_DIR}/third_party/luafilesystem
+  ${CMAKE_SOURCE_DIR}/third_party/zlib)
 
 if(WIN32)
   set(platforms_sources
@@ -40,14 +44,24 @@ endif(UNIX)
 # Lose Face
 
 add_executable(loseface
-  src/recog/Eigenfaces.cpp
-  src/recog/FrEigenfacesMlp.cpp
-  src/recog/recog_util.cpp
+#   src/recog/Eigenfaces.cpp
+#   src/recog/FrEigenfacesMlp.cpp
+#   src/recog/recog_util.cpp
+  src/lua/Eigenfaces.cpp
+  src/lua/Image.cpp
+  src/lua/Mlp.cpp
+  src/lua/MlpArray.cpp
+  src/lua/Normalizer.cpp
+  src/lua/PatternSet.cpp
   src/lua/annlib.cpp
+  src/lua/imglib.cpp
   src/loseface.cpp
   ${platforms_sources})
 
-target_link_libraries(loseface ${sys_libs} ${lapack_libs} ${lua_libs})
+target_link_libraries(loseface ${sys_libs} ${libs})
+
+set_target_properties(loseface PROPERTIES
+  COMPILE_FLAGS "-Dcimg_debug=0 -Dcimg_use_png=1 -Dcimg_display=0")
 
 ######################################################################
 # Subdirectories
@@ -55,4 +69,4 @@ target_link_libraries(loseface ${sys_libs} ${lapack_libs} ${lua_libs})
 add_subdirectory(docs)		# Documentation
 add_subdirectory(third_party)	# Third party libraries
 # add_subdirectory(tools)	# Tools
-# add_subdirectory(tests)	# Tests
+add_subdirectory(tests)		# Tests

@@ -55,4 +55,9 @@
   All the people that have worked in LAPACK/CLAPACK libraries:
     http://www.netlib.org/clapack/
 
+  Olivetti Research Laboratory, AT&T Laboratories Cambridge,
+  for the "The ORL Database of Faces"
+    http://www.cl.cam.ac.uk/research/dtg/attarchive/facedatabase.html
+    http://www.xorl.org/
+
   ----------------------------------------------------------------------

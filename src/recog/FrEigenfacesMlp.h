@@ -47,7 +47,7 @@ namespace recog {
   private:
     EigenfacesPtr eigenfaces;
     Net net;
-    BackPropagation<Net> bp;
+    Backpropagation<Net> bp;
     double threshold;
     bool normalize;
     Vector<double> normalMin;
@@ -59,7 +59,7 @@ namespace recog {
     virtual ~FrEigenfacesMlp();
 
     Net& getNet() { return net; }
-    BackPropagation<Net>& getBp() { return bp; }
+    Backpropagation<Net>& getBp() { return bp; }
     
     void configure(int hiddens, double threshold);
 

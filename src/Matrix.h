@@ -97,9 +97,21 @@ public:
     assert(cols >= 1);
 
     if (m_rows != rows || m_cols != cols) {
+      size_t old_rows = m_rows;
+      size_t old_cols = m_cols;
+      std::vector<T> old_data(m_data);
+
       m_rows = rows;
       m_cols = cols;
       m_data.resize(m_rows*m_cols);
+      zero();
+
+      size_t min_rows = old_rows < m_rows ? old_rows: m_rows;
+      size_t min_cols = old_cols < m_cols ? old_cols: m_cols;
+
+      for (size_t j=0; j<min_cols; ++j)
+	for (size_t i=0; i<min_rows; ++i)
+	  operator()(i, j) = old_data[i+j*old_rows];
     }
     return *this;
   }
@@ -148,8 +160,8 @@ public:
     T min = m_data[0];
     size_t i, j;
 
-    for (i=0; i<m_rows; ++i)
-      for (j=0; j<m_cols; ++j)
+    for (j=0; j<m_cols; ++j)
+      for (i=0; i<m_rows; ++i)
 	if (min > operator()(i, j)) {
 	  min = operator()(i, j);
 	  pos = std::make_pair(i, j);
@@ -163,8 +175,8 @@ public:
     T max = m_data[0];
     size_t i, j;
 
-    for (i=0; i<m_rows; ++i)
-      for (j=0; j<m_cols; ++j)
+    for (j=0; j<m_cols; ++j)
+      for (i=0; i<m_rows; ++i)
 	if (max < operator()(i, j)) {
 	  max = operator()(i, j);
 	  pos = std::make_pair(i, j);
@@ -212,6 +224,30 @@ public:
     for (size_t i=0; i<m_rows; ++i)
       operator()(i, j) = u(i);
 
+    return *this;
+  }
+
+  Matrix& addRow(size_t i, const Vector<T>& u) {
+    assert(i <= m_rows);
+    resize(m_rows+1, m_cols);
+
+    if (i < m_rows)
+      for (size_t k=m_rows-1; k>i; ++k)
+	setRow(k, getRow(k-1));
+
+    setRow(i, u);
+    return *this;
+  }
+
+  Matrix& addCol(size_t j, const Vector<T>& u) {
+    assert(j <= m_cols);
+    resize(m_rows, m_cols+1);
+
+    if (j < m_cols)
+      for (size_t k=m_cols-1; k>j; ++k)
+	setCol(k, getCol(k-1));
+
+    setCol(j, u);
     return *this;
   }
 
@@ -366,8 +402,8 @@ public:
     size_t i, j, k;
     T result;
 
-    for (i=0; i<C.rows(); ++i) {
-      for (j=0; j<C.cols(); ++j) {
+    for (j=0; j<C.cols(); ++j) {
+      for (i=0; i<C.rows(); ++i) {
 	result = 0.0;
 
 	for (k=0; k<cols(); ++k)
@@ -470,8 +506,8 @@ public:
     size_t i, j, k;
     T d, d2;
 
-    for (i=0; i<C.m_rows; ++i) {
-      for (j=0; j<C.m_cols; ++j) {
+    for (j=0; j<C.m_cols; ++j) {
+      for (i=0; i<C.m_rows; ++i) {
 	d = 0.0;
 
 	for (k=0; k<m_cols; ++k) {
@@ -650,8 +686,8 @@ bool approx_eq(const Matrix<T>& A, const Matrix<T>& B, unsigned precision)
     return false;
   
   size_t i, j;
-  for (i=0; i<A.rows(); i++) {
-    for (j=0; j<A.cols(); ++j) {
+  for (j=0; j<A.cols(); ++j) {
+    for (i=0; i<A.rows(); i++) {
       if (!approx_eq(A(i, j), B(i, j), precision))
 	return false;
     }

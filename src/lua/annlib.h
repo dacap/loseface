@@ -32,22 +32,47 @@
 #ifndef LOSEFACE_LUA_ANNLIB_H
 #define LOSEFACE_LUA_ANNLIB_H
 
+#include <string>
 #include <lua.hpp>
 
-#include <string>
+#include "Ann.h"
 
-namespace annlib
-{
+namespace annlib {
 
+  // Constants
   enum { LAST, BESTMSE, BESTHIT }; // learning algorithm goal
   enum { MINMAX, STDDEV };	   // type of normalizer
 
-  void register_lib(lua_State* L);
+  void registerLibrary(lua_State* L);
 
-  int init_random(lua_State* L);
-  int create_mlp(lua_State* L);
-  int create_patternset(lua_State* L);
-  int create_normalizer(lua_State* L);
+  namespace details {
+
+    typedef Mlp<double, Logsig<double>, Logsig<double> > lua_Mlp;
+
+    typedef NetArray<lua_Mlp> lua_MlpArray;
+
+    typedef lua_Mlp::Set lua_PatternSet;
+
+    struct lua_Normalizer {
+      Vector<double> min, max;
+    };
+
+    void registerMlp(lua_State* L);
+    void registerMlpArray(lua_State* L);
+    void registerNormalizer(lua_State* L);
+    void registerPatternSet(lua_State* L);
+
+    int MlpCtor(lua_State* L);
+    int MlpArrayCtor(lua_State* L);
+    int NormalizerCtor(lua_State* L);
+    int PatternSetCtor(lua_State* L);
+
+    lua_Mlp** toMlp(lua_State* L, int pos);
+    lua_MlpArray** toMlpArray(lua_State* L, int pos);
+    lua_Normalizer** toNormalizer(lua_State* L, int pos);
+    lua_PatternSet** toPatternSet(lua_State* L, int pos);
+
+  }
 
 }
 

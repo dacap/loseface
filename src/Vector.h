@@ -269,6 +269,16 @@ public:
     return m_data[i];
   }
 
+  // inline T& operator[](size_t i) {
+  //   assert(i >= 0 && i < size());
+  //   return m_data[i];
+  // }
+
+  // inline const T& operator[](size_t i) const {
+  //   assert(i >= 0 && i < size());
+  //   return m_data[i];
+  // }
+
   //////////////////////////////////////////////////////////////////////
   // Binary I/O
   //////////////////////////////////////////////////////////////////////

@@ -29,48 +29,46 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOSEFACE_LUA_LUASTATE_H
-#define LOSEFACE_LUA_LUASTATE_H
+#ifndef LOSEFACE_RANDOM_H
+#define LOSEFACE_RANDOM_H
 
-#include <cstdio>
-#include <lua.hpp>
+extern "C" {
 
-namespace lua {
-
-class LuaState
-{
-  lua_State* L;
-  bool m_done;
-public:
-  LuaState() {
-    L = lua_open();
-    m_done = false;
-  }
-  ~LuaState() {
-#if 0 				// this does not work yet
-    if (!m_done) {
-      lua_getglobal(L, "debug");
-      lua_getfield(L, -1, "traceback");
-      lua_remove(L, -2);	// remove 'debug'
-      lua_pcall(L, 0, 0, -1);	// call debug.traceback
-
-      // Get the result string
-      if (lua_isstring(L, -1))
-	std::fprintf(stderr, "%s\n", lua_tostring(L, -1));
-
-      lua_pop(L, 1);		// pop the result and 'debug' global
-    }
-#endif
-    lua_close(L);
-  }
-  void done() {
-    m_done = true;
-  }
-  operator lua_State*() {
-    return L;
-  }
-};
+extern void init_genrand(unsigned long s);
+extern unsigned long genrand_int32(void);
+extern long genrand_int31(void);
+extern double genrand_real1(void);
 
 }
 
-#endif // LOSEFACE_LUA_LUASTATE_H
+/// Mersenne Twister random number generator wrapper.
+///
+/// This is a wrapper class for MT19937 coded by Takuji Nishimura and
+/// Makoto Matsumoto.
+class Random
+{
+public:
+
+  /// Initializes the generator with a seed.
+  inline static void init(unsigned long seed) {
+    init_genrand(seed);
+  }
+
+  /// Generates a random number on [0,0xffffffff]-interval.
+  static unsigned long getUInt() {
+    return genrand_int32();
+  }
+
+  /// Generates a random number on [0,0x7fffffff]-interval.
+  static long getInt() {
+    return genrand_int31();
+  }
+
+  /// Generates a random number on [0,1]-real-interval.
+  static double getReal() {
+    return genrand_real1();
+  }
+
+};
+
+#endif // LOSEFACE_RANDOM_H

@@ -29,48 +29,43 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOSEFACE_LUA_LUASTATE_H
-#define LOSEFACE_LUA_LUASTATE_H
+#include <cassert>
 
-#include <cstdio>
-#include <lua.hpp>
+#include "Matrix.h"
+#include "Vector.h"
 
-namespace lua {
-
-class LuaState
+static void test_vector_mean()
 {
-  lua_State* L;
-  bool m_done;
-public:
-  LuaState() {
-    L = lua_open();
-    m_done = false;
-  }
-  ~LuaState() {
-#if 0 				// this does not work yet
-    if (!m_done) {
-      lua_getglobal(L, "debug");
-      lua_getfield(L, -1, "traceback");
-      lua_remove(L, -2);	// remove 'debug'
-      lua_pcall(L, 0, 0, -1);	// call debug.traceback
-
-      // Get the result string
-      if (lua_isstring(L, -1))
-	std::fprintf(stderr, "%s\n", lua_tostring(L, -1));
-
-      lua_pop(L, 1);		// pop the result and 'debug' global
-    }
-#endif
-    lua_close(L);
-  }
-  void done() {
-    m_done = true;
-  }
-  operator lua_State*() {
-    return L;
-  }
-};
-
+  Vector<double> v(4);
+  v(0) = 10.0;
+  v(1) = 3.0;
+  v(2) = -4.0;
+  v(3) = 30.0;
+  assert(v.mean() == (10.0 + 3.0 - 4.0 + 30.0) / 4.0);
 }
 
-#endif // LOSEFACE_LUA_LUASTATE_H
+static void test_matrix_mean()
+{
+  Matrix<double> A(2, 3);
+
+  A(0,0) = 1.0;  A(0,1) = 2.4;  A(0,2) = 0.2;
+  A(1,0) = 1.4;  A(1,1) = 4.4;  A(1,2) = 0.1;
+
+  Vector<double> u(3);
+  u(0) = (1.0 + 1.4) / 2.0;
+  u(1) = (2.4 + 4.4) / 2.0;
+  u(2) = (0.2 + 0.1) / 2.0;
+  assert(A.meanRow() == u);
+
+  Vector<double> v(2);
+  v(0) = (1.0 + 2.4 + 0.2) / 3.0;
+  v(1) = (1.4 + 4.4 + 0.1) / 3.0;
+  assert(A.meanCol() == v);
+}
+
+int main(int argc, char *argv[])
+{
+  test_vector_mean();
+  test_matrix_mean();
+  return 0;
+}

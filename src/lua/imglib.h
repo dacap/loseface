@@ -29,48 +29,37 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef LOSEFACE_LUA_LUASTATE_H
-#define LOSEFACE_LUA_LUASTATE_H
+#ifndef LOSEFACE_LUA_IMGLIB_H
+#define LOSEFACE_LUA_IMGLIB_H
 
-#include <cstdio>
+#include <string>
 #include <lua.hpp>
+#include <CImg.h>
 
-namespace lua {
+#include "Eigenfaces.h"
 
-class LuaState
-{
-  lua_State* L;
-  bool m_done;
-public:
-  LuaState() {
-    L = lua_open();
-    m_done = false;
-  }
-  ~LuaState() {
-#if 0 				// this does not work yet
-    if (!m_done) {
-      lua_getglobal(L, "debug");
-      lua_getfield(L, -1, "traceback");
-      lua_remove(L, -2);	// remove 'debug'
-      lua_pcall(L, 0, 0, -1);	// call debug.traceback
+namespace imglib {
 
-      // Get the result string
-      if (lua_isstring(L, -1))
-	std::fprintf(stderr, "%s\n", lua_tostring(L, -1));
+  void registerLibrary(lua_State* L);
 
-      lua_pop(L, 1);		// pop the result and 'debug' global
-    }
-#endif
-    lua_close(L);
+  namespace details {
+
+    typedef Eigenfaces<double> lua_Eigenfaces;
+    typedef cimg_library::CImg<unsigned char> lua_Image;
+
+    void registerEigenfaces(lua_State* L);
+    void registerImage(lua_State* L);
+
+    int EigenfacesCtor(lua_State* L);
+    int ImageCtor(lua_State* L);
+
+    lua_Eigenfaces** toEigenfaces(lua_State* L, int pos);
+    lua_Image** toImage(lua_State* L, int pos);
+
+    void image2vector(const lua_Image* img, Vector<double>& output);
+
   }
-  void done() {
-    m_done = true;
-  }
-  operator lua_State*() {
-    return L;
-  }
-};
 
 }
 
-#endif // LOSEFACE_LUA_LUASTATE_H
+#endif // LOSEFACE_LUA_IMGLIB_H
