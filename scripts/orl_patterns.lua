@@ -31,7 +31,7 @@ for i = 1,#folders do
   images = {}
   for j = 1,#folders[i][3] do
     file = "orl_faces/"..folders[i][2].."/"..folders[i][3][j][2]
-    
+
     print("Loading "..file.."...")
     io.flush()
     
@@ -54,7 +54,7 @@ function create_patterns(inputs, partitions, outputfile_prefix)
       if i > 1 then
 	str_partitions = str_partitions .. ", "
       end
-      str_partitions = str_partitions .. partitions[1]
+      str_partitions = str_partitions .. partitions[i]
     end
     print("Preparing partition { "..str_partitions.." }...")
   end
@@ -93,7 +93,7 @@ function create_patterns(inputs, partitions, outputfile_prefix)
   print("Calculating eigenfaces...")
   io.flush()
 
-  local percentage = string.match(inputs, "^([0-9]+)%$")
+  local percentage = string.match(inputs, "^([0-9]+)%%$")
   if percentage ~= nil then
     inputs = eig:calculate_eigenfaces({ variance=(tonumber(percentage) / 100) })
     print("Components = "..inputs.." for "..percentage.."% of variance")
@@ -120,28 +120,6 @@ function create_patterns(inputs, partitions, outputfile_prefix)
   for i = 1,#eigenpoints do
     testing_set:add_pattern({ input=eigenpoints[i], output={ subject_for_testing[i] } })
   end
-
-  -- local all_patterns = ann.PatternSet()
-  -- for i = 1,#folders do
-  --   local eigenpoints = eig:project_in_eigenspace(folders[i][4])
-  --   for j = 1,#eigenpoints do
-  --     all_patterns:add_pattern({ input=eigenpoints[j], output={ i } })
-  --   end
-  -- end
-
-  -- -- Split by output
-  -- local all_outputs = {}
-  -- for i=1,#folders do table.insert(all_outputs, i) end
-  -- local patterns_by_subject = all_patterns:split({ byoutput=all_outputs })
-
-  -- -- Create training and testing sets
-  -- local training_set = ann.PatternSet()
-  -- local testing_set = ann.PatternSet()
-  -- for i,patterns_for_subject_i in ipairs(patterns_by_subject) do
-  --   local split = patterns_for_subject_i:split({ bypercentage=partitions })
-  --   training_set:merge({ split[1], split[3] })
-  --   testing_set:merge({ split[2] })
-  -- end
 
   -- Save the pattern set
   print("Saving training patterns in '"..outputfile_prefix.."_training.txt'...")
