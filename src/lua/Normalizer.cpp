@@ -69,9 +69,11 @@ static int normalizer__normalize(lua_State* L)
 
       // Here we normalize the other pattern set through the calculate range
       for (lua_PatternSet::iterator it=set->begin(); it!=set->end(); ++it) {
-	for (size_t i=0; i<it->input.size(); ++i) {
+	Pattern<double>& pat = *it;
+
+	  for (size_t i=0; i<pat.input.size(); ++i) {
 	  // Normalize input to [-1;+1] range
-	  it->input(i) = 2.0 * ((it->input(i) - normalMin(i)) /
+	  pat.input(i) = 2.0 * ((pat.input(i) - normalMin(i)) /
 				(normalMax(i) - normalMin(i))) - 1.0;
 	}
       }

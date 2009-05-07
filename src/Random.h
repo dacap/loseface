@@ -66,7 +66,11 @@ public:
 
   /// Generates a random number on [0,1]-real-interval.
   static double getReal() {
+#if 0
     return genrand_real1();
+#else
+    return static_cast<double>(std::rand() % 10001) / 10000.0;
+#endif
   }
 
 };

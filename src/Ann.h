@@ -37,8 +37,10 @@
 
 #include "Vector.h"
 #include "Matrix.h"
+#include "Random.h"
 
 template<typename> class Pattern;
+template<typename> class PatternSet;
 
 template<typename> struct Purelin;
 template<typename> struct Logsig;
@@ -70,7 +72,6 @@ class Pattern
 {
 public:
   typedef T value_type;
-  typedef std::vector< Pattern<T> > Set;
 
   Vector<T> input;
   Vector<T> output;
@@ -92,6 +93,109 @@ public:
     return *this;
   }
 };
+
+#if 0
+template<typename T>
+class PatternSet
+{
+  std::vector< Pattern<T>* > m_set;
+
+public:
+
+  typedef typename std::vector< Pattern<T>* >::iterator iterator;
+  typedef typename std::vector< Pattern<T>* >::const_iterator const_iterator;
+
+  iterator begin() { return m_set.begin(); }
+  iterator end() { return m_set.end(); }
+  const_iterator begin() const { return m_set.begin(); }
+  const_iterator end() const { return m_set.end(); }
+
+  PatternSet() { }
+  PatternSet(const PatternSet& copy) {
+    operator=(copy);
+  }
+  ~PatternSet() {
+    for (iterator it = begin(); it != end(); ++it)
+      delete *it;
+    m_set.clear();
+  }
+
+  PatternSet& operator=(const PatternSet& set) {
+    for (const_iterator it = set.begin(); it != set.end(); ++it)
+      push_back(**it);
+    return *this;
+  }
+
+  void push_back(const Pattern<T>& p) {
+    m_set.push_back(new Pattern<T>(p));
+  }
+
+  bool empty() const {
+    return m_set.empty();
+  }
+
+  size_t size() const {
+    return m_set.size();
+  }
+
+  Pattern<T>& operator[](size_t index) {
+    return *m_set[index];
+  }
+
+  const Pattern<T>& operator[](size_t index) const {
+    return *m_set[index];
+  }
+
+  void shuffle() {
+    std::random_shuffle(begin(), end());
+  }
+
+};
+#else
+template<typename T>
+class PatternSet
+{
+  std::vector< Pattern<T> > m_set;
+
+public:
+
+  typedef typename std::vector< Pattern<T> >::iterator iterator;
+  typedef typename std::vector< Pattern<T> >::const_iterator const_iterator;
+
+  iterator begin() { return m_set.begin(); }
+  iterator end() { return m_set.end(); }
+  const_iterator begin() const { return m_set.begin(); }
+  const_iterator end() const { return m_set.end(); }
+
+  PatternSet() { }
+  ~PatternSet() { }
+
+  void push_back(const Pattern<T>& p) {
+    m_set.push_back(p);
+  }
+
+  bool empty() const {
+    return m_set.empty();
+  }
+
+  size_t size() const {
+    return m_set.size();
+  }
+
+  Pattern<T>& operator[](size_t index) {
+    return m_set[index];
+  }
+
+  const Pattern<T>& operator[](size_t index) const {
+    return m_set[index];
+  }
+
+  void shuffle() {
+    std::random_shuffle(begin(), end());
+  }
+
+};
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Activation functions
@@ -156,7 +260,7 @@ public:
   typedef ::Vector<value_type> Vector;
   typedef ::Matrix<value_type> Matrix;
   typedef ::Pattern<value_type> Pattern;
-  typedef typename Pattern::Set Set;
+  typedef ::PatternSet<value_type> PatternSet;
 
   Matrix w1, w2; // weights
   Vector b1, b2; // bias
@@ -224,21 +328,21 @@ public:
 
   void initRandom(T min_value, T max_value) {
     size_t i, j, k;
-    T range = (max_value - min_value) / static_cast<T>(10000);
+    T range = (max_value - min_value);
 
     for (j=0; j<w1.rows(); ++j)
       for (i=0; i<w1.cols(); ++i)
-	w1(j, i) = min_value + static_cast<T>(std::rand() % 10001) * range;
+	w1(j, i) = min_value + range*Random::getReal();
 
     for (k=0; k<w2.rows(); ++k)
       for (j=0; j<w2.cols(); ++j)
-	w2(k, j) = min_value + static_cast<T>(std::rand() % 10001) * range;
+	w2(k, j) = min_value + range*Random::getReal();
 
     for (j=0; j<b1.size(); ++j)
-      b1(j) = min_value + static_cast<T>(std::rand() % 10001) * range;
+      b1(j) = min_value + range*Random::getReal();
 
     for (k=0; k<b2.size(); ++k)
-      b2(k) = min_value + static_cast<T>(std::rand() % 10001) * range;
+      b2(k) = min_value + range*Random::getReal();
   }
 
   void recall(const Vector& input, Vector& hidden, Vector& output) const
@@ -295,10 +399,10 @@ public:
 
   /// Calculates the sum of squared errors.
   /// 
-  value_type calcSSE(const Set& set) const {
+  value_type calcSSE(const PatternSet& set) const {
     assert(!set.empty());
 
-    typename Set::const_iterator pattern, set_end = set.end();
+    typename PatternSet::const_iterator pattern, set_end = set.end();
     Vector input, hidden, output, target;
     value_type error = 0.0;
 
@@ -322,7 +426,7 @@ public:
 
   /// Calculates the mean squared error (MSE).
   /// 
-  value_type calcMSE(const Set& set) const {
+  value_type calcMSE(const PatternSet& set) const {
     return calcSSE(set) / (set.size() * getOutputs());
   }
 
@@ -381,7 +485,7 @@ public:
   typedef ::Vector<value_type> Vector;
   typedef ::Matrix<value_type> Matrix;
   typedef ::Pattern<value_type> Pattern;
-  typedef typename Pattern::Set Set;
+  typedef ::PatternSet<value_type> PatternSet;
 
   NetArray()
   {
@@ -441,33 +545,40 @@ public:
   // Binary I/O
   //////////////////////////////////////////////////////////////////////
   
-  // void save(const char* filename) const
-  // {
-  //   std::ofstream f(filename, std::ios::binary);
-  //   write(f);
-  // }
+  void save(const char* filename) const
+  {
+    std::ofstream f(filename, std::ios::binary);
+    write(f);
+  }
 
-  // void load(const char* filename)
-  // {
-  //   std::ifstream f(filename, std::ios::binary);
-  //   read(f);
-  // }
+  void load(const char* filename)
+  {
+    std::ifstream f(filename, std::ios::binary);
+    read(f);
+  }
 
-  // void write(std::ostream& s) const
-  // {
-  //   for (Nets::const_iterator
-  // 	   it = m_nets.begin(); it != m_nets.end(); ++it) {
-  //     it->write(s);
-  //   }
-  // }
+  void write(std::ostream& s) const
+  {
+    size_t n = m_nets.size();
+    s.write((char*)&n, sizeof(size_t));
 
-  // void read(std::istream& s)
-  // {
-  //   for (Nets::const_iterator
-  // 	   it = m_nets.begin(); it != m_nets.end(); ++it) {
-  //     it->read(s);
-  //   }
-  // }
+    for (typename Nets::const_iterator
+  	   it = m_nets.begin(); it != m_nets.end(); ++it) {
+      it->write(s);
+    }
+  }
+
+  void read(std::istream& s)
+  {
+    size_t n;
+    s.read((char*)&n, sizeof(size_t));
+
+    for (size_t c=0; c<n; ++c) {
+      Net n;
+      n.read(s);
+      add(n);
+    }
+  }
 
 };
 
@@ -616,12 +727,12 @@ class NoAdaptativeLearningRate
 {
 public:
   template<class Algorithm>
-  inline void beforeAllPatterns(Algorithm& self, const typename Net::Set& training_set) {
+  inline void beforeAllPatterns(Algorithm& self, const typename Net::PatternSet& training_set) {
     // do nothing
   }
 
   template<class Algorithm>
-  inline void afterAllPatterns(Algorithm& self, const typename Net::Set& training_set) {
+  inline void afterAllPatterns(Algorithm& self, const typename Net::PatternSet& training_set) {
     // do nothing
   }
 };
@@ -653,13 +764,13 @@ public:
   }
 
   template<class Algorithm>
-  inline void beforeAllPatterns(Algorithm& self, const typename Net::Set& training_set) {
+  inline void beforeAllPatterns(Algorithm& self, const typename Net::PatternSet& training_set) {
     m_netBackup = self.getNet();
     m_mse = self.getNet().calcMSE(training_set);
   }
 
   template<class Algorithm>
-  inline void afterAllPatterns(Algorithm& self, const typename Net::Set& training_set) {
+  inline void afterAllPatterns(Algorithm& self, const typename Net::PatternSet& training_set) {
     double newMse = self.getNet().calcMSE(training_set);
 
     // We are getting better (less error)
@@ -715,7 +826,7 @@ public:
   typedef ::Vector<value_type> Vector;
   typedef ::Matrix<value_type> Matrix;
   typedef ::Pattern<value_type> Pattern;
-  typedef typename Pattern::Set Set;
+  typedef ::PatternSet<value_type> PatternSet;
 
 private:
   /// Training epoch.
@@ -767,8 +878,8 @@ public:
 
   /// Trains just one epoch.
   /// 
-  void train(const Set& training_set) {
-    typename Set::const_iterator pattern;
+  void train(const PatternSet& training_set) {
+    typename PatternSet::const_iterator pattern;
     size_t i, j, k;
 
     // vectors

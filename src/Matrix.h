@@ -360,6 +360,13 @@ public:
     return *this;
   }
 
+  Matrix& operator/=(T s) {
+    size_t k = m_rows*m_cols;
+    for (size_t i=0; i<k; ++i)
+      m_data[i] /= s;
+    return *this;
+  }
+
   Matrix operator+(const Matrix& B) const {
     assert(m_rows == B.m_rows);
     assert(m_cols == B.m_cols);

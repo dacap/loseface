@@ -47,7 +47,7 @@
 #include "Chrono.h"
 
 template<class Net, class Bp>
-void train_until_mse_is_reached(Net& net, Bp& bp, typename Bp::Set& set,
+void train_until_mse_is_reached(Net& net, Bp& bp, typename Bp::PatternSet& set,
 				double target_mse, int show_epochs)
 {
   int i = 0;
@@ -61,9 +61,7 @@ void train_until_mse_is_reached(Net& net, Bp& bp, typename Bp::Set& set,
 }
 
 template<class Net, class Bp>
-void train_net_adapting_learning_rate(Net& net,
-				      Bp& bp,
-				      typename Pattern<typename Net::value_type>::Set& set)
+void train_net_adapting_learning_rate(Net& net, Bp& bp, typename Net::PatternSet& set)
 {
   int i = 1;
   double lastE, E = net.calcMSE(set);
@@ -93,9 +91,9 @@ void train_net_adapting_learning_rate(Net& net,
 }
 
 template<typename T>
-void normalize_inputs(typename Pattern<T>::Set& set,
-		      double min_value,
-		      double max_value,
+void normalize_inputs(PatternSet<T>& set,
+		      T min_value,
+		      T max_value,
 		      Vector<T>& min_vector,
 		      Vector<T>& max_vector)
 {
@@ -138,7 +136,7 @@ void test_logical_op(const std::string& name,
   bp.setLearningRate(0.25);
   bp.setMomentum(0.9);
 
-  Pattern<double>::Set set;
+  PatternSet<double> set;
   for (int c=0; c<4; c++) {
     Pattern<double> pat;
     pat.input = net.createInput();
@@ -202,7 +200,7 @@ void test_grid()
   bp.setLearningRate(0.1);
   bp.setMomentum(0.8);
 
-  Pattern<double>::Set set;
+  PatternSet<double> set;
   for (int y=0; y<=2; ++y) {
     for (int x=0; x<=2; ++x) {
       Pattern<double> pat;
@@ -256,7 +254,7 @@ void test_sin()
   bp.setLearningRate(0.05);
   bp.setMomentum(0.1);
 
-  Pattern<double>::Set set;
+  PatternSet<double> set;
   for (int c=0; c<=100; c++) {
     Pattern<double> pat;
     pat.input = net.createInput();
@@ -299,7 +297,7 @@ void test_iris()
   bp.setMomentum(0.1);
 
   std::ifstream f("iris.csv");
-  Pattern<double>::Set set;
+  PatternSet<double> set;
   char buf[256];
 
   while (f.getline(buf, sizeof(buf)).good()) {

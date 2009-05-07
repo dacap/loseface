@@ -133,16 +133,31 @@ static int mlp__save(lua_State* L)
 }
 
 /// Trains the network with a specified set of patterns and by some epochs.
-/// 
+///
 /// @code
 /// net:train({ set=PatternSet,
 ///		learning_rate=LEARNING_RATE,
-///		momentum=MOMENTUM
+///		momentum=MOMENTUM,
 ///		epochs=NUMBER,
 ///		shuffle=NUMBER,
-///		goal=ann.LAST|ann.BESTMSE|ann.BESTHIT,
+///		goal=ann.LAST|ann.BESTMSE,
+///		goal_mse=NUMBER,
 ///		early_stopping={ set=PatternSet, iterations=NUMBER } })
 /// @endcode
+///
+/// This routine can be used to train the network with some variants:
+/// @li goal=ann.LAST: Keeps the last network after the training.
+/// @li goal=ann.BESTMSE: Keeps the network with best MSE after the training.
+///     Anyway if goal_mse is > 0 then the last network has the best MSE.
+/// @li @a epochs > 0: Trains a fixed number of epochs.
+/// @li Without @a epochs parameter and @a goal_mse > 0: Trains the necessary
+///     number of epochs to reach the given MSE level.
+/// @li With @a early_stopping: The early stopping technique is used to
+///     stop the training if in the given @a iterations number of epochs
+///     the MSE of the given validation set is getting worse.
+/// @li shuffle > 0: Shuffles the patterns every @a shuffle number of epochs.
+///
+/// @return Returns how many epochs the net was trained
 ///
 static int mlp__train(lua_State* L)
 {
@@ -156,9 +171,12 @@ static int mlp__train(lua_State* L)
   lua_PatternSet* set = NULL;
   lua_PatternSet* early_stopping_set = NULL;
   int early_stopping_iterations = 5;
-  int epochs = 1, shuffle = 0;
+  int epochs = 1;
+  int shuffle = 0;
   int goal = annlib::LAST;
   double learning_rate = 0.6, momentum = 0.4;
+  double goal_mse = -1;
+  lua_getfield(L, 2, "goal_mse");
   lua_getfield(L, 2, "early_stopping");
   lua_getfield(L, 2, "learning_rate");
   lua_getfield(L, 2, "momentum");
@@ -181,7 +199,11 @@ static int mlp__train(lua_State* L)
     if (lua_isnumber(L, -1)) early_stopping_iterations = lua_tointeger(L, -1);
     lua_pop(L, 1);
   }
-  lua_pop(L, 7);
+  if (lua_isnumber(L, -8)) {
+    goal_mse = lua_tonumber(L, -8);
+    epochs = 0;
+  }
+  lua_pop(L, 8);
 
   if (!set)
     return luaL_error(L, "Invalid pattern set specified");
@@ -194,58 +216,66 @@ static int mlp__train(lua_State* L)
 
   lua_PatternSet& pattern_set(*set);
   lua_Mlp best;
-  double measure, bestMeasure = 0.0;	// Best MSE or hits
+  double mse = net.calcMSE(pattern_set);
+  double measure, bestMeasure = 0.0;	// Best MSE
   if (goal != annlib::LAST) {
     best = net;
     switch (goal) {
-      case annlib::BESTMSE: bestMeasure = net.calcMSE(pattern_set); break;
-      case annlib::BESTHIT: bestMeasure = calculate_hits(net, pattern_set); break;
+      case annlib::BESTMSE:
+	bestMeasure = mse;
+	break;
     }
   }
 
   // Early stopping
   double early_stopping_mse = 1.0;
   int early_stopping_bad_iterations = 0;
-  if (early_stopping_set) {
+  if (early_stopping_set)
     early_stopping_mse = net.calcMSE(*early_stopping_set);
-  }
-    
+
   // For each training epoch...
-  for (int i=0, j=0; i<epochs; ++i, ++j) {
+  int trained_epochs = 0;
+  for (int i=0, j=0; epochs == 0 || i < epochs; ++i, ++j) {
     // Time to shuffle patterns?
-    if (j == shuffle-1) {
+    if (shuffle > 0 && j == shuffle-1) {
       random_shuffle(pattern_set.begin(), pattern_set.end());
       j = 0;
     }
 
     // Train one epoch
     bp.train(pattern_set);
+    trained_epochs++;
 
-    // What we are looking for? (network with best MSE, with best hits, etc.)
+    // Recalculate MSE
+    mse = net.calcMSE(pattern_set);
+
+    // What we are looking for? (network with best MSE, etc.)
     if (goal != annlib::LAST) {
       switch (goal) {
 
 	case annlib::BESTMSE:
-	  measure = net.calcMSE(pattern_set);
+	  measure = mse;
 	  if (bestMeasure > measure) { // this is error: less is better
 	    best = net;
 	    bestMeasure = measure;
 	  }
 	  break;
 
-	case annlib::BESTHIT:
-	  measure = calculate_hits(net, pattern_set);
-	  if (bestMeasure < measure) { // this is hits: more is better
-	    best = net;
-	    bestMeasure = measure;
-	  }
-	  break;
       }
     }
 
+    // No fixed number of epochs?
+    if (epochs == 0) {
+      // MSE goal?
+      if (mse < goal_mse)
+	break;
+    }
+
+    // Early stopping rules
     if (early_stopping_set) {
-      double mse = net.calcMSE(*early_stopping_set);
-      if (mse > early_stopping_mse) {
+      double mse2 = net.calcMSE(*early_stopping_set);
+
+      if (mse2 > early_stopping_mse) {
 	early_stopping_bad_iterations++;
 	if (early_stopping_bad_iterations >= early_stopping_iterations)
 	  break;
@@ -253,14 +283,15 @@ static int mlp__train(lua_State* L)
       else
 	early_stopping_bad_iterations = 0;
 
-      early_stopping_mse = mse;
+      early_stopping_mse = mse2;
     }
   }
 
   if (goal != annlib::LAST)
     net = best;
 
-  return 0;
+  lua_pushnumber(L, trained_epochs);
+  return 1;
 }
 
 /// Tests the network model

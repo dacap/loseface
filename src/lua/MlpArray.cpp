@@ -50,6 +50,52 @@ static lua_MlpArray** newmlparray(lua_State* L)
   return n;
 }
 
+/// Loads a neural network from the specified file.
+/// @code
+/// net:load({ file=FILENAME })
+/// @endcode
+///
+static int mlparray__load(lua_State* L)
+{
+  lua_MlpArray** net = toMlpArray(L, 1);
+  if (net) {
+    luaL_checktype(L, 2, LUA_TTABLE);
+
+    string file;
+    lua_getfield(L, 2, "file");
+    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    (*net)->load(file.c_str());
+
+    // TODO
+    // throw ScriptError(string("Error loading neural network from ") + arg);
+  }
+  return 0;
+}
+
+/// Saves the network to the specified file.
+/// 
+/// @code
+/// net:save({ file=FILENAME })
+/// @endcode
+///
+static int mlparray__save(lua_State* L)
+{
+  lua_MlpArray** net = toMlpArray(L, 1);
+  if (net) {
+    luaL_checktype(L, 2, LUA_TTABLE);
+
+    string file;
+    lua_getfield(L, 2, "file");
+    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
+    lua_pop(L, 1);
+
+    (*net)->save(file.c_str());
+  }
+  return 0;
+}
+
 static int mlparray__recall(lua_State* L)
 {
   lua_MlpArray** _array = toMlpArray(L, 1);
@@ -106,6 +152,8 @@ static int mlparray__gc(lua_State* L)
 }
 
 static const luaL_Reg mlparray_metatable[] = {
+  { "load",	mlparray__load },
+  { "save",	mlparray__save },
   { "recall",	mlparray__recall },
   { "__gc",	mlparray__gc },
   { NULL, NULL }

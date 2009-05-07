@@ -40,8 +40,8 @@
 namespace annlib {
 
   // Constants
-  enum { LAST, BESTMSE, BESTHIT }; // learning algorithm goal
-  enum { MINMAX, STDDEV };	   // type of normalizer
+  enum { LAST, BESTMSE };	// learning algorithm goal
+  enum { MINMAX, STDDEV };	// type of normalizer
 
   void registerLibrary(lua_State* L);
 
@@ -51,7 +51,7 @@ namespace annlib {
 
     typedef NetArray<lua_Mlp> lua_MlpArray;
 
-    typedef lua_Mlp::Set lua_PatternSet;
+    typedef PatternSet<double> lua_PatternSet;
 
     struct lua_Normalizer {
       Vector<double> min, max;

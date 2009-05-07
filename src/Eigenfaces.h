@@ -142,20 +142,19 @@ public:
     for (int j=0; j<m_dataSet.cols(); ++j)
       m_dataSetZeroMean.setCol(j, m_dataSet.getCol(j) - m_meanFace);
 
-    // Obtener la matriz de covarianza de MxM para calcular sus
-    // eigenvectores (donde M es la cantidad de fotos de
-    // entrenamiento). Así evitamos calcular los N eigenvectores de la
-    // matriz de covarianza real (una matriz de NxN, A*At, donde N es la
-    // cantidad de pixeles)
+    // Here we get the MxM covariance matrix to calculate its eigenvectors
+    // (where M is the number of training images). In this way we avoid
+    // to calculate the N eigenvectors of the original covariance matrix NxN
+    // (where N is the number of pixels in images)
 
-    Matrix<T> covarianceMatrix;
+    Matrix<T> covarianceMatrix;	// (At*A)/M
     m_dataSetZeroMean.getTranspose(covarianceMatrix);
     covarianceMatrix *= m_dataSetZeroMean;
+    covarianceMatrix /= m_dataSetZeroMean.cols();
 
     //std::cout << "covarianceMatrix = " << covarianceMatrix.rows() << " x " << covarianceMatrix.cols() << "\n";
 
-    // calcular los eigenvectores que sirven para formar las eigenfaces
-    // por medio de una combinación lineal
+    // We calculate eigenvectors (this can take a while)...
     try {
       covarianceMatrix.eig_sym(m_eigenvalues,
 			       m_eigenvectors);
@@ -164,14 +163,15 @@ public:
       return false;
     }
 
-    // ordenar los eigenvectores según su correspondiente eigenvalor
-    // (un eigenvalor más grande es más significante)
-    for (int i=0; i<m_eigenvalues.size(); ++i) { // TODO reemplazar con un qsort?
+    // We sort the eigenvectors in descending order by its
+    // corresponding eigenvalue significance
+#if 1
+    for (int i=0; i<m_eigenvalues.size(); ++i) { // TODO replace bubble-sort with qsort
       for (int j=i+1; j<m_eigenvalues.size(); ++j) {
 	if (std::fabs(m_eigenvalues(j)) > std::fabs(m_eigenvalues(i))) {
-	  // intercambiar eigenvalores
+	  // Swap eigenvalues
 	  std::swap(m_eigenvalues(i), m_eigenvalues(j));
-	  // intercambiar eigenvectores
+	  // Swap eigenvectors
 	  {
 	    Vector<T> aux = m_eigenvectors.getCol(j);
 	    m_eigenvectors.setCol(j, m_eigenvectors.getCol(i));
@@ -180,10 +180,11 @@ public:
 	}
       }
     }
+#endif
 
-#if 0
+#if 1
     std::cout << "----------------------------------------------------------------------\n";
-    std::cout << "Eigenvalores (" << m_eigenvalues.size() << "):\n";
+    std::cout << "Eigenvalues (" << m_eigenvalues.size() << "):\n";
     T accum = 0.0, total = 0.0;
     for (int i=0; i<m_eigenvalues.size(); ++i)
       total += m_eigenvalues(i);

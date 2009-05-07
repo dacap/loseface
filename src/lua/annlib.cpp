@@ -30,6 +30,7 @@
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "lua/annlib.h"
+#include "Random.h"
 
 using namespace std;
 
@@ -49,6 +50,7 @@ static int annlib_init_random(lua_State* L)
   lua_pop(L, 1);
 
   srand(seed);
+  Random::init(seed);
 
   return 0;
 }
@@ -74,8 +76,6 @@ void annlib::registerLibrary(lua_State* L)
   lua_setfield(L, -2, "LAST");
   lua_pushnumber(L, BESTMSE);
   lua_setfield(L, -2, "BESTMSE");
-  lua_pushnumber(L, BESTHIT);
-  lua_setfield(L, -2, "BESTHIT");
 
   lua_pushnumber(L, MINMAX);
   lua_setfield(L, -2, "MINMAX");
