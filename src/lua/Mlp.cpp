@@ -171,7 +171,7 @@ static int mlp__train(lua_State* L)
   lua_PatternSet* set = NULL;
   lua_PatternSet* early_stopping_set = NULL;
   int early_stopping_iterations = 5;
-  int epochs = 1;
+  int epochs = 0;
   int shuffle = 0;
   int goal = annlib::LAST;
   double learning_rate = 0.6, momentum = 0.4;
@@ -201,8 +201,9 @@ static int mlp__train(lua_State* L)
   }
   if (lua_isnumber(L, -8)) {
     goal_mse = lua_tonumber(L, -8);
-    epochs = 0;
   }
+  else if (epochs == 0)
+    epochs = 1;
   lua_pop(L, 8);
 
   if (!set)
@@ -264,12 +265,9 @@ static int mlp__train(lua_State* L)
       }
     }
 
-    // No fixed number of epochs?
-    if (epochs == 0) {
-      // MSE goal?
-      if (mse < goal_mse)
-	break;
-    }
+    // MSE goal?
+    if (goal_mse > -.5 && mse < goal_mse)
+      break;
 
     // Early stopping rules
     if (early_stopping_set) {
