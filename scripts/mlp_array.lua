@@ -2,6 +2,18 @@
 -- Copyright (C) 2008-2009 David Capello
 -- All rights reserved.
 
+-- MSE_GOAL = 1.5e-5
+MSE_GOAL = 1e-4
+
+number_of_negatives = tonumber(arg[3])
+if number_of_negatives == nil then number_of_negatives = 0 end
+
+stop_goal = arg[4]
+if stop_goal == nil then stop_goal = "fixed" end
+
+print("number_of_negatives = "..number_of_negatives)
+print("stop_goal = "..stop_goal)
+
 function main(INPUTS, HIDDENS)
   print("----------------------------------------------------------------------")
   print("INPUTS="..INPUTS..", HIDDENS="..HIDDENS)
@@ -20,13 +32,6 @@ function main(INPUTS, HIDDENS)
 		       { 20, 20, 60 },
 		       {  0, 20, 80 } }
 
-  TRAINING_BASIC = 1
-  TRAINING_MIX_1POS_1NEG = 2
-  TRAINING_MIX_1POS_2NEG = 3
-  TRAINING_MIX_1POS_3NEG = 4
-  TRAINING_TYPE = TRAINING_BASIC
-  -- TRAINING_TYPE = TRAINING_MIX_1POS_1NEG
-
   ----------------------------------------------------------------------
 
   function create_mlp(seed)
@@ -40,13 +45,24 @@ function main(INPUTS, HIDDENS)
 
   ----------------------------------------------------------------------
 
-  function do_train(mlp, train_set, epochs)
+  function do_train_fixed(mlp, train_set, epochs)
+    return
     mlp:train({ learning_rate=LEARNING_RATE,
 		momentum=MOMENTUM,
 		set=train_set,
 		epochs=epochs,
 		shuffle=1,
 		goal=ann.BESTMSE })
+  end
+
+  function do_train_mse(mlp, train_set, mse, max_epochs)
+    return
+    mlp:train({ learning_rate=LEARNING_RATE,
+		momentum=MOMENTUM,
+		set=train_set,
+		epochs=max_epochs,
+		shuffle=1,
+		goal_mse=mse })
   end
 
   ----------------------------------------------------------------------
@@ -128,12 +144,16 @@ function main(INPUTS, HIDDENS)
     local n = ann.Normalizer({ type=ann.MINMAX, set=train_set })
     n:normalize({ train_set, test_set })
 
+    print(string.format("    TRAINING BEGIN "..os.date()))
+
     local hits_train = {}
     local hits_test = {}
     for seed=1,10 do
       -- We create 40 MLP networks (one MLP to identify one subject)
       local mlps = {}
       for subject_nth = 1,SUBJECTS do
+	t1 = os.date()
+
 	-- Create a new MLP for subject 'subject_nth'
 	local mlp = create_mlp(seed)
 	table.insert(mlps, mlp)
@@ -142,58 +162,65 @@ function main(INPUTS, HIDDENS)
 	local positive_set = prepare_positive_patterns(subject_nth, train_set)
 	local negative_sets = prepare_negative_patterns(subject_nth, train_set)
 
-	-- positive_set:save(string.format("orl_patterns_array/subject%02d_positive.txt", subject_nth))
-	-- for i=1,#negative_sets do
-	-- 	negative_sets[i]:save(string.format("orl_patterns_array/subject%02d_negative%02d.txt", subject_nth, i))
-	-- end
-
 	local fullmix = ann.PatternSet()
 	fullmix:merge({ positive_set })
 	fullmix:merge(negative_sets)
 
+	local epochs = 0
+	local adjustements = 0
+
 	----------------------------------------------------------------------
 	-- basic training
-	if TRAINING_TYPE == TRAINING_BASIC then
-	  do_train(mlp, fullmix, 400)
-	  ----------------------------------------------------------------------
-	  -- mixing patterns 1 positive + 1 negative
-	elseif TRAINING_TYPE == TRAINING_MIX_1POS_1NEG then
-	  for i=1,10 do
-	    for j=1,#negative_sets do                -- rotate negative patterns
-	      local mix = ann.PatternSet()
-	      mix:merge({ positive_set, negative_sets[j] })
-	      mix:shuffle()
-	      do_train(mlp, mix, 10)
-	    end
+	if number_of_negatives == 0 then
+	  if stop_goal == "fixed" then
+	    epochs = do_train_fixed(mlp, fullmix, 400)
+	  elseif stop_goal == "mse" then
+	    epochs = do_train_mse(mlp, fullmix, MSE_GOAL, 2000)
 	  end
-	  ----------------------------------------------------------------------
-	  -- mixing patterns 1 positive + 2 negative
-	elseif TRAINING_TYPE == TRAINING_MIX_1POS_2NEG then
-	  for i=1,10 do
-	    local j = 0
-	    for j=1,#negative_sets,2 do                -- rotate negative patterns
-	      local mix = ann.PatternSet()
-	      mix:merge({ positive_set, negative_sets[j], negative_sets[j+1] })
-	      mix:shuffle()
-	      do_train(mlp, mix, 10)
+	  adjustements = epochs * #fullmix
+	----------------------------------------------------------------------
+	-- mixing patterns 1 positive + 'number_of_negatives' negatives
+	else
+	  if stop_goal == "fixed" then
+	    for i=1,10 do
+	      for j=1,#negative_sets,number_of_negatives do -- rotate negative patterns
+		local mix = ann.PatternSet()
+		mix:merge({ positive_set })
+		for k=0,number_of_negatives-1 do
+		  mix:merge({ negative_sets[j+k] })
+		end
+		mix:shuffle()
+
+		local t = do_train_fixed(mlp, mix, 10)
+		epochs = epochs + t
+		adjustements = adjustements + t * #mix
+	      end
 	    end
-	  end
-	  ----------------------------------------------------------------------
-	  -- mixing patterns 1 positive + 3 negative
-	elseif TRAINING_TYPE == TRAINING_MIX_1POS_3NEG then
-	  for i=1,10 do
-	    for j=1,#negative_sets,3 do                -- rotate negative patterns
-	      local mix = ann.PatternSet()
-	      mix:merge({ positive_set, negative_sets[j], negative_sets[j+1], negative_sets[j+2] })
-	      mix:shuffle()
-	      do_train(mlp, mix, 10)
+	  elseif stop_goal == "mse" then
+	    while mlp:mse({ set=fullmix }) > MSE_GOAL and epochs < 100000 do
+	      for j=1,#negative_sets,number_of_negatives do -- rotate negative patterns
+		local mix = ann.PatternSet()
+		mix:merge({ positive_set })
+		for k=0,number_of_negatives-1 do
+		  if negative_sets[j+k] == nil then break end
+		  mix:merge({ negative_sets[j+k] })
+		end
+		mix:shuffle()
+
+		local t = do_train_fixed(mlp, mix, 1)
+		epochs = epochs + t
+		adjustements = adjustements + t * #mix
+	      end
 	    end
 	  end
 	end
 	----------------------------------------------------------------------
 
-	print(string.format("    MLP#%02d MSE=%.16g", subject_nth, mlp:mse({ set=fullmix })))
+	t2 = os.date()
+	print(string.format("    MLP#%02d MSE=%.16g\t(%s-%s) epochs=%d (adjustements=%d)",
+			    subject_nth, mlp:mse({ set=fullmix }), t1, t2, epochs, adjustements))
       end
+      print(string.format("    TRAINING END "..os.date()))
 
       -- create the array of networks
       local array = ann.MlpArray(mlps)
@@ -201,13 +228,18 @@ function main(INPUTS, HIDDENS)
       table.insert(hits_test, test_array(array, test_set))
 
       print("  RUN#"..seed.." Hits TRAIN="..hits_train[#hits_train].." TEST="..hits_test[#hits_test])
+
+      -- -- save the array of networks
+      -- for j = 1,SUBJECTS do
+      -- 	array:save({ file=string.format("_saved_models_%d/cross%d_run%02d_net%02d.txt", TRAINING_TYPE, i, seed, j) })
+      -- end
     end
 
     local accum_train = 0
     local accum_test = 0
     for j=1,#hits_train do accum_train = accum_train + hits_train[j] end
     for j=1,#hits_test do accum_test = accum_test + hits_test[j] end
-    print("Hits TRAIN="..(accum_train / #hits_train).." TEST="..(accum_test / #hits_test).." ("..#hits_test.." runs) "..os.date())
+    print("Hits TRAIN="..(accum_train / #hits_train).." TEST="..(accum_test / #hits_test).." ("..#hits_test.." runs)")
 
     total_train = total_train + (accum_train / #hits_train)
     total_test = total_test + (accum_test / #hits_test)
@@ -216,14 +248,4 @@ function main(INPUTS, HIDDENS)
   print("AVG TRAIN="..(total_train/#CROSS_VALIDATION).." TEST="..(total_test/#CROSS_VALIDATION))
 end
 
-main(25, 25)
-main(25, 50)
-main(25, 75)
-
-main(50, 25)
-main(50, 50)
-main(50, 75)
-
-main(75, 25)
-main(75, 50)
-main(75, 75)
+main(tonumber(arg[1]), tonumber(arg[2]))

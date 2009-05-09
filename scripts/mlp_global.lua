@@ -2,6 +2,13 @@
 -- Copyright (C) 2008-2009 David Capello
 -- All rights reserved.
 
+MSE_GOAL = 2.5e-4
+
+stop_goal = arg[3]
+if stop_goal == nil then stop_goal = "fixed" end
+
+print("stop_goal = "..stop_goal)
+
 function main(INPUTS, HIDDENS)
   print("----------------------------------------------------------------------")
   print("INPUTS="..INPUTS..", HIDDENS="..HIDDENS)
@@ -33,13 +40,24 @@ function main(INPUTS, HIDDENS)
 
   ----------------------------------------------------------------------
 
-  function do_train(mlp, train_set, epochs)
+  function do_train_fixed(mlp, train_set, epochs)
+    return
     mlp:train({ learning_rate=LEARNING_RATE,
 		momentum=MOMENTUM,
 		set=train_set,
 		epochs=epochs,
 		shuffle=1,
 		goal=ann.BESTMSE })
+  end
+
+  function do_train_mse(mlp, train_set, mse, max_epochs)
+    return
+    mlp:train({ learning_rate=LEARNING_RATE,
+		momentum=MOMENTUM,
+		set=train_set,
+		epochs=max_epochs,
+		shuffle=1,
+		goal_mse=mse })
   end
 
   ----------------------------------------------------------------------
@@ -65,14 +83,26 @@ function main(INPUTS, HIDDENS)
     local hits_train = {}
     local hits_test = {}
     for seed=1,10 do
+      t1 = os.date()
+
       mlp = create_mlp(seed)
-      -- do_train(mlp, train_set, 400)
-      do_train(mlp, train_set, 800)
+
+      local epochs = 0
+      if stop_goal == "fixed" then
+	epochs = do_train_fixed(mlp, train_set, 400)
+      elseif stop_goal == "mse" then
+	epochs = do_train_mse(mlp, train_set, MSE_GOAL, 4000)
+      end
+
+      t2 = os.date()
 
       table.insert(hits_train, mlp:test({ set=train_set }))
       table.insert(hits_test, mlp:test({ set=test_set }))
 
-      print("  RUN#"..seed.." Hits TRAIN="..hits_train[#hits_train].." TEST="..hits_test[#hits_test])
+      print(string.format("  RUN#%02d MSE=%.16g Hits TRAIN=%.16g TEST=%.16g\t(%s-%s) epochs=%d",
+			  seed, mlp:mse({ set=train_set }),
+			  hits_train[#hits_train],
+			  hits_test[#hits_test], t1, t2, epochs))
     end
 
     local accum_train = 0
@@ -88,14 +118,4 @@ function main(INPUTS, HIDDENS)
   print("AVG TRAIN="..(total_train/#CROSS_VALIDATION).." TEST="..(total_test/#CROSS_VALIDATION))
 end
 
-main(25, 25)
-main(25, 50)
-main(25, 75)
-
-main(50, 25)
-main(50, 50)
-main(50, 75)
-
-main(75, 25)
-main(75, 50)
-main(75, 75)
+main(tonumber(arg[1]), tonumber(arg[2]))
