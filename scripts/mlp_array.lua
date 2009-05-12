@@ -187,6 +187,7 @@ function main(INPUTS, HIDDENS)
 		local mix = ann.PatternSet()
 		mix:merge({ positive_set })
 		for k=0,number_of_negatives-1 do
+		  if negative_sets[j+k] == nil then break end
 		  mix:merge({ negative_sets[j+k] })
 		end
 		mix:shuffle()
