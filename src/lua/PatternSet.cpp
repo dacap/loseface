@@ -74,15 +74,15 @@ static int patternset__save(lua_State* L)
 
     for (lua_PatternSet::const_iterator
 	   it=(*p)->begin(); it!=(*p)->end(); ++it) {
-      const Pattern<double>& pat(*it);
+      const Pattern<double>* pat = *it;
 
-      for (size_t i=0; i<pat.input.size(); ++i)
-	f << '\t' << pat.input(i);
+      for (size_t i=0; i<pat->input.size(); ++i)
+	f << '\t' << pat->input(i);
 
-      if (pat.output.size() > 1)
-	f << '\t' << ((int)pat.output.getMaxPos()+1);
+      if (pat->output.size() > 1)
+	f << '\t' << ((int)pat->output.getMaxPos()+1);
       else
-	f << '\t' << pat.output(0);
+	f << '\t' << pat->output(0);
 
       f << std::endl;
     }
@@ -173,7 +173,7 @@ static int patternset__set_output(lua_State* L)
     // Setup all outputs
     for (lua_PatternSet::iterator
 	   it=(*p)->begin(); it!=(*p)->end(); ++it) {
-      Pattern<double>& pat(*it);
+      Pattern<double>& pat(**it);
       pat.output = newoutput;
     }
     
@@ -186,7 +186,7 @@ static int patternset__shuffle(lua_State* L)
 {
   lua_PatternSet** p = toPatternSet(L, 1);
   if (p) {
-    random_shuffle((*p)->begin(), (*p)->end());
+    (*p)->shuffle();
     return 0;
   }
   return 0;
@@ -308,7 +308,7 @@ static int patternset__merge(lua_State* L)
 
     // Add all patterns of 'set' in 'p'
     for (lua_PatternSet::iterator it=set->begin(); it!=set->end(); ++it)
-      (*p)->push_back(*it);
+      (*p)->push_back(**it);
 
     lua_pop(L, 1);		// remove value, the key is in stack for next iteration
   }

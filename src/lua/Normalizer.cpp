@@ -69,12 +69,12 @@ static int normalizer__normalize(lua_State* L)
 
       // Here we normalize the other pattern set through the calculate range
       for (lua_PatternSet::iterator it=set->begin(); it!=set->end(); ++it) {
-	Pattern<double>& pat = *it;
+	Pattern<double>* pat = *it;
 
-	  for (size_t i=0; i<pat.input.size(); ++i) {
+	for (size_t i=0; i<pat->input.size(); ++i) {
 	  // Normalize input to [-1;+1] range
-	  pat.input(i) = 2.0 * ((pat.input(i) - normalMin(i)) /
-				(normalMax(i) - normalMin(i))) - 1.0;
+	  pat->input(i) = 2.0 * ((pat->input(i) - normalMin(i)) /
+				 (normalMax(i) - normalMin(i))) - 1.0;
 	}
       }
 
@@ -159,13 +159,13 @@ int annlib::details::NormalizerCtor(lua_State* L)
     case MINMAX: {
       // First we have to calculate min-max ranges
       lua_PatternSet::iterator it = pattern_set.begin();
-      Vector<double> normalMin = it->input;
-      Vector<double> normalMax = it->input;
+      Vector<double> normalMin = (*it)->input;
+      Vector<double> normalMax = (*it)->input;
 
       for (++it; it!=pattern_set.end(); ++it) {
-	for (size_t i=0; i<it->input.size(); ++i) {
-	  if (it->input(i) < normalMin(i)) normalMin(i) = it->input(i);
-	  if (it->input(i) > normalMax(i)) normalMax(i) = it->input(i);
+	for (size_t i=0; i<(*it)->input.size(); ++i) {
+	  if ((*it)->input(i) < normalMin(i)) normalMin(i) = (*it)->input(i);
+	  if ((*it)->input(i) > normalMax(i)) normalMax(i) = (*it)->input(i);
 	}
       }
 

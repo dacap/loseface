@@ -94,7 +94,6 @@ public:
   }
 };
 
-#if 0
 template<typename T>
 class PatternSet
 {
@@ -121,6 +120,7 @@ public:
   }
 
   PatternSet& operator=(const PatternSet& set) {
+    m_set.reserve(set.size());
     for (const_iterator it = set.begin(); it != set.end(); ++it)
       push_back(**it);
     return *this;
@@ -151,51 +151,6 @@ public:
   }
 
 };
-#else
-template<typename T>
-class PatternSet
-{
-  std::vector< Pattern<T> > m_set;
-
-public:
-
-  typedef typename std::vector< Pattern<T> >::iterator iterator;
-  typedef typename std::vector< Pattern<T> >::const_iterator const_iterator;
-
-  iterator begin() { return m_set.begin(); }
-  iterator end() { return m_set.end(); }
-  const_iterator begin() const { return m_set.begin(); }
-  const_iterator end() const { return m_set.end(); }
-
-  PatternSet() { }
-  ~PatternSet() { }
-
-  void push_back(const Pattern<T>& p) {
-    m_set.push_back(p);
-  }
-
-  bool empty() const {
-    return m_set.empty();
-  }
-
-  size_t size() const {
-    return m_set.size();
-  }
-
-  Pattern<T>& operator[](size_t index) {
-    return m_set[index];
-  }
-
-  const Pattern<T>& operator[](size_t index) const {
-    return m_set[index];
-  }
-
-  void shuffle() {
-    std::random_shuffle(begin(), end());
-  }
-
-};
-#endif
 
 //////////////////////////////////////////////////////////////////////
 // Activation functions
@@ -408,8 +363,8 @@ public:
 
     // for each pattern of the set
     for (pattern=set.begin(); pattern!=set_end; ++pattern) {
-      input = pattern->input;
-      target = pattern->output;
+      input = (*pattern)->input;
+      target = (*pattern)->output;
       recall(input, hidden, output);
 
       // calculate the difference between each "target" and "output"
@@ -897,8 +852,8 @@ public:
     // for each pattern in the training set
     for (pattern=training_set.begin();
 	 pattern!=training_set.end(); ++pattern) {
-      const Vector& input(pattern->input);
-      const Vector& target(pattern->output);
+      const Vector& input((*pattern)->input);
+      const Vector& target((*pattern)->output);
 
       // forward propagation phase
       m_net.recall(input, hidden0, hidden, output0, output);

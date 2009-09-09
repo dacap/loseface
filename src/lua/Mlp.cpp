@@ -239,7 +239,7 @@ static int mlp__train(lua_State* L)
   for (int i=0, j=0; epochs == 0 || i < epochs; ++i, ++j) {
     // Time to shuffle patterns?
     if (shuffle > 0 && j == shuffle-1) {
-      random_shuffle(pattern_set.begin(), pattern_set.end());
+      pattern_set.shuffle();
       j = 0;
     }
 
@@ -384,7 +384,7 @@ static int mlp__recall(lua_State* L)
   size_t i = 1;
   for (; it != end; ++it, ++i) {
     // Execute the neural network
-    net.recall(it->input, hidden, output);
+    net.recall((*it)->input, hidden, output);
 
     // A new table in the stack: output vector
     lua_pushinteger(L, i);

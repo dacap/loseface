@@ -123,7 +123,7 @@ static int mlparray__recall(lua_State* L)
   size_t i = 1;
   for (; it != end; ++it, ++i) {
     // Execute the array of neural networks
-    array.recall(it->input, output);
+    array.recall((*it)->input, output);
 
     // A new table in the stack: output vector
     lua_pushinteger(L, i);
