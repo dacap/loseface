@@ -2,45 +2,7 @@
 -- Copyright (C) 2008-2009 David Capello
 -- All rights reserved.
 
--- Get an ordered list of folders s1, s2, s3, ..., s40
-folders = {}
-for file in lfs.dir("orl_faces") do
-  num = string.match(file, "^s([0-9]+)")
-  if num then
-    table.insert(folders, { tonumber(num), file })
-  end
-end
-table.sort(folders, function (a, b) return a[1] < b[1] end )
-
--- Add the list of images of each folder
-for i = 1,#folders do
-  images_file = {}
-  for file in lfs.dir("orl_faces/"..folders[i][2]) do
-    num = string.match(file, "^([0-9]+)\.pgm")
-    if num then
-      table.insert(images_file, { tonumber(num), file })
-    end
-  end
-  table.sort(images_file, function (a, b) return a[1] < b[1] end )
-    
-  table.insert(folders[i], images_file)
-end
-
--- Load all images
-for i = 1,#folders do
-  images = {}
-  for j = 1,#folders[i][3] do
-    file = "orl_faces/"..folders[i][2].."/"..folders[i][3][j][2]
-
-    print("Loading "..file.."...")
-    io.flush()
-    
-    image = img.Image()
-    image:load({ file=file })
-    table.insert(images, image)
-  end
-  table.insert(folders[i], images)
-end
+dofile("orl_images_matrix.lua")
 
 function create_patterns(inputs, partitions, outputfile_prefix)
   -- Add images to calculate eigenfaces
@@ -64,24 +26,37 @@ function create_patterns(inputs, partitions, outputfile_prefix)
   local subject_for_training = {}
   local subject_for_testing = {}
 
+  -- Create the eigenfaces class
   local eig = img.Eigenfaces()
-  for i = 1,#folders do
+
+  -- Reserve space for all images
+  local num_of_images = 0
+  for i = 1,#images_matrix do 
+    for j = 1,#images_matrix[i] do
+      num_of_images = num_of_images + 1
+    end
+  end
+  if num_of_images > 0 then
+    eig:reserve({ size=num_of_images })
+  end
+
+  for i = 1,#images_matrix do
     local ibeg = 0
     local iend
     for j = 1,#partitions do
-      iend = ibeg + #folders[i][4] * partitions[j]/100
-      if iend > #folders[i][4] then iend = #folders[i][4] end
+      iend = ibeg + #images_matrix[i] * partitions[j]/100
+      if iend > #images_matrix[i] then iend = #images_matrix[i] end
       if (j % 2) == 1 then
 	for k = ibeg+1,iend do
 	  print(string.format("  Subject#%02d Image#%02d for Training", i, k))
-	  eig:add_image({ folders[i][4][k] })
-	  table.insert(images_for_training, folders[i][4][k])
+	  eig:add_image({ images_matrix[i][k] })
+	  table.insert(images_for_training, images_matrix[i][k])
 	  table.insert(subject_for_training, i)
 	end
       else
 	for k = ibeg+1,iend do
 	  print(string.format("  Subject#%02d Image#%02d for Testing", i, k))
-	  table.insert(images_for_testing, folders[i][4][k])
+	  table.insert(images_for_testing, images_matrix[i][k])
 	  table.insert(subject_for_testing, i)
 	end
       end
@@ -143,6 +118,7 @@ function create_patterns2(inputs)
   create_patterns(inputs, { 0,20,80}, "orl_patterns/"..inputs.."_cross5")
 end
 
+images_matrix = load_orl_images_matrix()
 create_patterns2(25)
 create_patterns2(50)
 create_patterns2(75)
