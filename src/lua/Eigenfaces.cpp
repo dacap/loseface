@@ -50,6 +50,26 @@ static lua_Eigenfaces** neweigenfaces(lua_State* L)
   return eig;
 }
 
+static int eigenfaces__reserve(lua_State* L)
+{
+  lua_Eigenfaces** eig = toEigenfaces(L, 1);
+  if (!eig)
+    return luaL_error(L, "No Eigenfaces user-data specified");
+
+  luaL_checktype(L, 2, LUA_TTABLE);
+
+  int size = 0;
+  lua_getfield(L, 2, "size");
+  if (lua_isnumber(L, -1)) size = lua_tonumber(L, -1);
+  lua_pop(L, 1);
+
+  if (size <= 0)
+      return luaL_error(L, "'size' argument expected with a value greater than zero");
+
+  (*eig)->reserve(size);
+  return 0;
+}
+
 static int eigenfaces__add_image(lua_State* L)
 {
   lua_Eigenfaces** eig = toEigenfaces(L, 1);
@@ -184,6 +204,7 @@ static int eigenfaces__gc(lua_State* L)
 }
 
 static const luaL_Reg eigenfaces_metatable[] = {
+  { "reserve",			eigenfaces__reserve },
   { "add_image",		eigenfaces__add_image },
   { "calculate_eigenfaces",	eigenfaces__calculate_eigenfaces },
   { "project_in_eigenspace",	eigenfaces__project_in_eigenspace },
