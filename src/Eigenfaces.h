@@ -45,12 +45,12 @@
 template<typename T>
 class Eigenfaces
 {
-  /// Cantidad de pixeles por foto. La cantidad de dimensiones del
-  /// espacio original.
+  /// Number of pixels per picture. It is the number of dimensions in the
+  /// orignal space (face width x height pixels).
   /// 
   size_t m_pixelsPerImage;		// N
 
-  /// Cantidad de componentes de eigenfaces.
+  /// Number of eigenfaces components.
   /// 
   size_t m_eigenfaceComponents;	 	// M'
 
@@ -79,11 +79,31 @@ class Eigenfaces
   /// 
   Matrix<T> m_eigenfaces;
 
+  /// Number of pre-allocated images (columns).
+  ///
+  size_t m_preallocatedImages;
+
 public:
 
   Eigenfaces()
   {
     m_pixelsPerImage = 0;
+    m_preallocatedImages = 0;
+  }
+
+  ~Eigenfaces()
+  {
+  }
+
+  void reserve(int numImages)
+  {
+    if (numImages <= 0)
+      throw std::invalid_argument("Invalid argument 'numImages' in Eigenfaces::reserve method");
+
+    if (m_pixelsPerImage > 0)
+      m_dataSet.resize(m_pixelsPerImage, m_dataSet.cols() + numImages);
+
+    m_preallocatedImages += numImages;
   }
 
   void addImage(const Vector<T>& faceImage)
@@ -94,14 +114,21 @@ public:
       m_pixelsPerImage = faceImage.size();
 
       // Rows(pixels) x columns(images)
-      m_dataSet.resize(m_pixelsPerImage, 1);
+      if (m_preallocatedImages > 0)
+	m_dataSet.resize(m_pixelsPerImage, m_preallocatedImages--);
+      else
+	m_dataSet.resize(m_pixelsPerImage, 1);
 
       // It is the first image in the data set
       m_dataSet.setCol(0, faceImage);
     }
+    else if (m_preallocatedImages > 0) {
+      m_dataSet.setCol(m_dataSet.cols() - m_preallocatedImages, faceImage);
+      m_preallocatedImages--;
+    }
     else {
-      // You cannot add differentes images in the same Eigenfaces structure
-      assert(m_pixelsPerImage == faceImage.size());
+      if (m_pixelsPerImage != faceImage.size())
+	throw std::invalid_argument("Invalid face: you cannot use different face sizes in the same Eigenfaces instance");
 
       // Add a column in the data set (each column is an image)
       m_dataSet.addCol(m_dataSet.cols(), faceImage);
@@ -112,7 +139,7 @@ public:
   /// eigenfaces.
   ///
   inline size_t getImageCount() const {
-    return (m_pixelsPerImage == 0) ? 0: m_dataSet.cols();
+    return (m_pixelsPerImage == 0) ? 0: m_dataSet.cols() - m_preallocatedImages;
   }
 
   /// Returns the number of pixels per image.
@@ -133,6 +160,11 @@ public:
   /// 
   bool calculateEigenvalues()
   {
+    // If there are reserved columns we just removed them so they do
+    // not mess all the calculations
+    if (m_preallocatedImages > 0)
+      m_dataSet.resize(m_pixelsPerImage, m_dataSet.cols() - m_preallocatedImages);
+
     // Calculate the mean of all faces
     m_dataSet.meanCol(m_meanFace);
 
