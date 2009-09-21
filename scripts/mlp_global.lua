@@ -3,16 +3,21 @@
 -- All rights reserved.
 
 MSE_GOAL = 2.5e-4
+MSE_GOAL = 0.1
 
-stop_goal = arg[4]
-if stop_goal == nil then stop_goal = "fixed" end
+PATTERNS_DIR = arg[1]
+INPUTS = tonumber(arg[2])
+HIDDENS = tonumber(arg[3])
+SUBJECTS = tonumber(arg[4])
+STOP_GOAL = arg[5]
+if STOP_GOAL == nil then STOP_GOAL = "fixed" end
 
-print("stop_goal = "..stop_goal)
+print("----------------------------------------------------------------------")
+print("INPUTS="..INPUTS)
+print("HIDDENS="..HIDDENS)
+print("STOP_GOAL = "..STOP_GOAL)
 
-function mlp_global(patterns_dir, INPUTS, HIDDENS)
-  print("----------------------------------------------------------------------")
-  print("INPUTS="..INPUTS..", HIDDENS="..HIDDENS)
-
+function mlp_global()
   LEARNING_RATE = 0.6
   MOMENTUM = 0.1
   SUBJECTS = 40
@@ -61,8 +66,8 @@ function mlp_global(patterns_dir, INPUTS, HIDDENS)
   ----------------------------------------------------------------------
 
   function get_partition(partition_number)
-    local training_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_training.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
-    local testing_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_testing.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
+    local training_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_training.txt", PATTERNS_DIR, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
+    local testing_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_testing.txt", PATTERNS_DIR, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
     return training_set, testing_set
   end
 
@@ -86,9 +91,9 @@ function mlp_global(patterns_dir, INPUTS, HIDDENS)
       mlp = create_mlp(seed)
 
       local epochs = 0
-      if stop_goal == "fixed" then
+      if STOP_GOAL == "fixed" then
 	epochs = do_train_fixed(mlp, train_set, 400)
-      elseif stop_goal == "mse" then
+      elseif STOP_GOAL == "mse" then
 	epochs = do_train_mse(mlp, train_set, MSE_GOAL, 4000)
       end
 
@@ -116,4 +121,4 @@ function mlp_global(patterns_dir, INPUTS, HIDDENS)
   print("AVG TRAIN="..(total_train/#CROSS_VALIDATION).." TEST="..(total_test/#CROSS_VALIDATION))
 end
 
-mlp_global(arg[1], tonumber(arg[2]), tonumber(arg[3]))
+mlp_global()

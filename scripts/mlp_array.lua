@@ -5,22 +5,24 @@
 -- MSE_GOAL = 1.5e-5
 MSE_GOAL = 1e-4
 
-number_of_negatives = tonumber(arg[4])
-if number_of_negatives == nil then number_of_negatives = 0 end
+PATTERNS_DIR = arg[1]
+INPUTS = tonumber(arg[2])
+HIDDENS = tonumber(arg[3])
+SUBJECTS = tonumber(arg[4])
+NUMBER_OF_NEGATIVES = tonumber(arg[5])
+STOP_GOAL = arg[6]
+if NUMBER_OF_NEGATIVES == nil then NUMBER_OF_NEGATIVES = 0 end
+if STOP_GOAL == nil then STOP_GOAL = "fixed" end
 
-stop_goal = arg[5]
-if stop_goal == nil then stop_goal = "fixed" end
+print("----------------------------------------------------------------------")
+print("INPUTS="..INPUTS)
+print("HIDDENS="..HIDDENS)
+print("NUMBER_OF_NEGATIVES = "..NUMBER_OF_NEGATIVES)
+print("STOP_GOAL = "..STOP_GOAL)
 
-print("number_of_negatives = "..number_of_negatives)
-print("stop_goal = "..stop_goal)
-
-function mlp_array(patterns_dir, INPUTS, HIDDENS)
-  print("----------------------------------------------------------------------")
-  print("INPUTS="..INPUTS..", HIDDENS="..HIDDENS)
-
+function mlp_array()
   LEARNING_RATE = 0.6
   MOMENTUM = 0.1
-  SUBJECTS = 40
   INIT_WEIGHTS_MIN = -1.0
   INIT_WEIGHTS_MAX =  1.0
 
@@ -66,8 +68,8 @@ function mlp_array(patterns_dir, INPUTS, HIDDENS)
   ----------------------------------------------------------------------
 
   function get_partition(partition_number)
-    local training_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_training.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
-    local testing_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_testing.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
+    local training_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_training.txt", PATTERNS_DIR, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
+    local testing_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_testing.txt", PATTERNS_DIR, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
     return training_set, testing_set
   end
 
@@ -169,22 +171,22 @@ function mlp_array(patterns_dir, INPUTS, HIDDENS)
 
 	----------------------------------------------------------------------
 	-- basic training
-	if number_of_negatives == 0 then
-	  if stop_goal == "fixed" then
+	if NUMBER_OF_NEGATIVES == 0 then
+	  if STOP_GOAL == "fixed" then
 	    epochs = do_train_fixed(mlp, fullmix, 400)
-	  elseif stop_goal == "mse" then
+	  elseif STOP_GOAL == "mse" then
 	    epochs = do_train_mse(mlp, fullmix, MSE_GOAL, 2000)
 	  end
 	  adjustements = epochs * #fullmix
 	----------------------------------------------------------------------
-	-- mixing patterns 1 positive + 'number_of_negatives' negatives
+	-- mixing patterns 1 positive + 'NUMBER_OF_NEGATIVES' negatives
 	else
-	  if stop_goal == "fixed" then
+	  if STOP_GOAL == "fixed" then
 	    for i=1,10 do
-	      for j=1,#negative_sets,number_of_negatives do -- rotate negative patterns
+	      for j=1,#negative_sets,NUMBER_OF_NEGATIVES do -- rotate negative patterns
 		local mix = ann.PatternSet()
 		mix:merge({ positive_set })
-		for k=0,number_of_negatives-1 do
+		for k=0,NUMBER_OF_NEGATIVES-1 do
 		  if negative_sets[j+k] == nil then break end
 		  mix:merge({ negative_sets[j+k] })
 		end
@@ -195,12 +197,12 @@ function mlp_array(patterns_dir, INPUTS, HIDDENS)
 		adjustements = adjustements + t * #mix
 	      end
 	    end
-	  elseif stop_goal == "mse" then
+	  elseif STOP_GOAL == "mse" then
 	    while mlp:mse({ set=fullmix }) > MSE_GOAL and epochs < 100000 do
-	      for j=1,#negative_sets,number_of_negatives do -- rotate negative patterns
+	      for j=1,#negative_sets,NUMBER_OF_NEGATIVES do -- rotate negative patterns
 		local mix = ann.PatternSet()
 		mix:merge({ positive_set })
-		for k=0,number_of_negatives-1 do
+		for k=0,NUMBER_OF_NEGATIVES-1 do
 		  if negative_sets[j+k] == nil then break end
 		  mix:merge({ negative_sets[j+k] })
 		end
@@ -247,4 +249,4 @@ function mlp_array(patterns_dir, INPUTS, HIDDENS)
   print("AVG TRAIN="..(total_train/#CROSS_VALIDATION).." TEST="..(total_test/#CROSS_VALIDATION))
 end
 
-mlp_array(arg[1], tonumber(arg[2]), tonumber(arg[3]))
+mlp_array()
