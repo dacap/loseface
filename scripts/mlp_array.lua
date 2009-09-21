@@ -5,23 +5,21 @@
 -- MSE_GOAL = 1.5e-5
 MSE_GOAL = 1e-4
 
-number_of_negatives = tonumber(arg[3])
+number_of_negatives = tonumber(arg[4])
 if number_of_negatives == nil then number_of_negatives = 0 end
 
-stop_goal = arg[4]
+stop_goal = arg[5]
 if stop_goal == nil then stop_goal = "fixed" end
 
 print("number_of_negatives = "..number_of_negatives)
 print("stop_goal = "..stop_goal)
 
-function main(INPUTS, HIDDENS)
+function mlp_array(patterns_dir, INPUTS, HIDDENS)
   print("----------------------------------------------------------------------")
   print("INPUTS="..INPUTS..", HIDDENS="..HIDDENS)
 
   LEARNING_RATE = 0.6
   MOMENTUM = 0.1
-  -- INPUTS = 50
-  -- HIDDENS = 50
   SUBJECTS = 40
   INIT_WEIGHTS_MIN = -1.0
   INIT_WEIGHTS_MAX =  1.0
@@ -68,8 +66,8 @@ function main(INPUTS, HIDDENS)
   ----------------------------------------------------------------------
 
   function get_partition(partition_number)
-    local training_set = ann.PatternSet({ file="orl_patterns/"..INPUTS.."_cross"..partition_number.."_training.txt", inputs=INPUTS, outputs=40 })
-    local testing_set = ann.PatternSet({ file="orl_patterns/"..INPUTS.."_cross"..partition_number.."_testing.txt", inputs=INPUTS, outputs=40 })
+    local training_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_training.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
+    local testing_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_testing.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
     return training_set, testing_set
   end
 
@@ -149,7 +147,7 @@ function main(INPUTS, HIDDENS)
     local hits_train = {}
     local hits_test = {}
     for seed=1,10 do
-      -- We create 40 MLP networks (one MLP to identify one subject)
+      -- We create "SUBJECTS" MLP networks (one MLP to identify one subject)
       local mlps = {}
       for subject_nth = 1,SUBJECTS do
 	t1 = os.date()
@@ -249,4 +247,4 @@ function main(INPUTS, HIDDENS)
   print("AVG TRAIN="..(total_train/#CROSS_VALIDATION).." TEST="..(total_test/#CROSS_VALIDATION))
 end
 
-main(tonumber(arg[1]), tonumber(arg[2]))
+mlp_array(arg[1], tonumber(arg[2]), tonumber(arg[3]))

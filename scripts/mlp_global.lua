@@ -4,19 +4,17 @@
 
 MSE_GOAL = 2.5e-4
 
-stop_goal = arg[3]
+stop_goal = arg[4]
 if stop_goal == nil then stop_goal = "fixed" end
 
 print("stop_goal = "..stop_goal)
 
-function main(INPUTS, HIDDENS)
+function mlp_global(patterns_dir, INPUTS, HIDDENS)
   print("----------------------------------------------------------------------")
   print("INPUTS="..INPUTS..", HIDDENS="..HIDDENS)
 
   LEARNING_RATE = 0.6
   MOMENTUM = 0.1
-  -- INPUTS = 50
-  -- HIDDENS = 50
   SUBJECTS = 40
   INIT_WEIGHTS_MIN = -1.0
   INIT_WEIGHTS_MAX =  1.0
@@ -32,7 +30,7 @@ function main(INPUTS, HIDDENS)
   function create_mlp(seed)
     ann.init_random({ seed=seed })
 
-    local mlp = ann.Mlp({ inputs=INPUTS, hiddens=HIDDENS, outputs=40 })
+    local mlp = ann.Mlp({ inputs=INPUTS, hiddens=HIDDENS, outputs=SUBJECTS })
     mlp:init({ min=INIT_WEIGHTS_MIN, max=INIT_WEIGHTS_MAX })
 
     return mlp
@@ -63,8 +61,8 @@ function main(INPUTS, HIDDENS)
   ----------------------------------------------------------------------
 
   function get_partition(partition_number)
-    local training_set = ann.PatternSet({ file="orl_patterns/"..INPUTS.."_cross"..partition_number.."_training.txt", inputs=INPUTS, outputs=40 })
-    local testing_set = ann.PatternSet({ file="orl_patterns/"..INPUTS.."_cross"..partition_number.."_testing.txt", inputs=INPUTS, outputs=40 })
+    local training_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_training.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
+    local testing_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_testing.txt", patterns_dir, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
     return training_set, testing_set
   end
 
@@ -118,4 +116,4 @@ function main(INPUTS, HIDDENS)
   print("AVG TRAIN="..(total_train/#CROSS_VALIDATION).." TEST="..(total_test/#CROSS_VALIDATION))
 end
 
-main(tonumber(arg[1]), tonumber(arg[2]))
+mlp_global(arg[1], tonumber(arg[2]), tonumber(arg[3]))
