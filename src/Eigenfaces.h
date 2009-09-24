@@ -34,8 +34,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstdio>
 #include <cmath>
-#include <cassert>
 
 #include "Vector.h"
 #include "Matrix.h"
@@ -98,7 +98,7 @@ public:
   void reserve(int numImages)
   {
     if (numImages <= 0)
-      throw std::invalid_argument("Invalid argument 'numImages' in Eigenfaces::reserve method");
+      throw std::invalid_argument("Invalid argument 'numImages' in Eigenfaces::reserve method.");
 
     if (m_pixelsPerImage > 0)
       m_dataSet.resize(m_pixelsPerImage, m_dataSet.cols() + numImages);
@@ -128,7 +128,7 @@ public:
     }
     else {
       if (m_pixelsPerImage != faceImage.size())
-	throw std::invalid_argument("Invalid face: you cannot use different face sizes in the same Eigenfaces instance");
+	throw std::invalid_argument("Invalid face: you cannot use different face sizes in the same Eigenfaces instance.");
 
       // Add a column in the data set (each column is an image)
       m_dataSet.addCol(m_dataSet.cols(), faceImage);
@@ -239,7 +239,14 @@ public:
   /// 
   void calculateEigenfaces(size_t components)
   {
-    assert(components > 0 && components <= m_eigenvalues.size());
+    if (components < 1 && components > m_eigenvalues.size()) {
+      char buf[1024];
+      std::sprintf(buf, "Invalid argument components=%d in Eigenfaces::calculateEigenfaces method.\n"
+			"It is not between 1 and %d.",
+		   components, m_eigenvalues.size());
+      throw std::invalid_argument(std::string(buf));
+    }
+
     m_eigenfaceComponents = components;
 
     // Calculate eigenfaces...
