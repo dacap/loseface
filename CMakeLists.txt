@@ -4,20 +4,30 @@
 
 cmake_minimum_required(VERSION 2.6)
 
+# Global project name
 project(loseface)
 
+# cmake/ directory has additional CMake modules
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
+# System libraries on Windows
 if(WIN32)
   set(sys_libs User32 Shell32 ComCtl32 ComDlg32 Gdi32 Msimg32
     WinMM AdvAPI32 Ole32 ShLwApi Vfw32 WinInet)
 endif(WIN32)
+
+# System libraries on Unix
 if(UNIX)
   set(sys_libs X11 pthread)
 endif(UNIX)
+
+# Third-party libraries
 set(lapack_libs lapack-double blas-double blaswrap f2c)
 set(lua_libs lua luafilesystem)
 set(file_libs libpng zlib)
 set(libs mt19937 ${lapack_libs} ${lua_libs} ${file_libs})
 
+# Directories where .h files can be found
 include_directories(
   ${CMAKE_SOURCE_DIR}/src
   ${CMAKE_SOURCE_DIR}/src/image
@@ -70,3 +80,4 @@ add_subdirectory(docs)		# Documentation
 add_subdirectory(third_party)	# Third party libraries
 # add_subdirectory(tools)	# Tools
 add_subdirectory(tests)		# Tests
+add_subdirectory(src-gui)	# GUI
