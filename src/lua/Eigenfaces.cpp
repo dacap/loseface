@@ -117,6 +117,12 @@ static int eigenfaces__calculate_eigenfaces(lua_State* L)
 
   if (components < 1)
     return luaL_error(L, "You have to specified the number of eigenfaces to create (at least 1)");
+  else if (components > (*eig)->getEigenvaluesCount()) {
+    char buf[1024];
+    std::sprintf(buf, "You have to specified a number of eigenfaces greater than %d",
+		 (*eig)->getEigenvaluesCount());
+    return luaL_error(L, buf);
+  }
 
   (*eig)->calculateEigenfaces(components);
   lua_pushnumber(L, components);
@@ -141,9 +147,19 @@ static int eigenfaces__save(lua_State* L)
   return 0;
 }
 
+static int eigenfaces__eigenvalues_count(lua_State* L)
+{
+  lua_Eigenfaces** eig = toEigenfaces(L, 1);
+  if (!eig)
+    return luaL_error(L, "No Eigenfaces user-data specified");
+
+  lua_pushnumber(L, (*eig)->getEigenvaluesCount());
+  return 1;
+}
+
 ///
 /// @code
-/// { output1, output2, output3 } =
+/// { output1, output2, output3,... } =
 ///   Eigenfaces:project_in_eigenspace({ image1, image2, image3... })
 /// @endcode
 ///
@@ -209,6 +225,7 @@ static const luaL_Reg eigenfaces_metatable[] = {
   { "calculate_eigenfaces",	eigenfaces__calculate_eigenfaces },
   { "project_in_eigenspace",	eigenfaces__project_in_eigenspace },
   { "save",			eigenfaces__save },
+  { "eigenvalues_count",	eigenfaces__eigenvalues_count },
   { "__gc",			eigenfaces__gc },
   { NULL, NULL }
 };
