@@ -587,11 +587,11 @@ public:
 
     if (info < 0) {
       char buf[1024];
-      std::sprintf(buf, "DSYEV: El argumento %d es inválido.", -info);
+      std::sprintf(buf, "DSYEV: argument info=%d is invalid.", info);
       throw std::invalid_argument(std::string(buf));
     }
     else if (info > 0)
-      throw std::runtime_error("El cálculo de los eigenvalores no converge.");
+      throw std::runtime_error("Eigenvalues calculation does not converge.");
   }
 
 #if 0
@@ -627,12 +627,12 @@ public:
 
     if (info < 0) {
       char buf[1024];
-      std::sprintf(buf, "DGEEV: El argumento %d es inválido.", -info);
+      std::sprintf(buf, "DSYEV: argument info=%d is invalid.", info);
       throw std::invalid_argument(std::string(buf));
     }
 
     if (info > 0)
-      throw std::runtime_error("El cálculo de los eigenvalores no converge.");
+      throw std::runtime_error("Eigenvalues calculation does not converge.");
 
     // TODO complex eigenvalues
 
