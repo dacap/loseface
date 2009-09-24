@@ -2,15 +2,22 @@
 General Scripts
 ========================================
 
+divide_images_matrix.lua
+  Divides a images-matrix in partitions for training and test.
+  An images-matrix is a Lua array of array where:
+    images_matrix = { subject1, subject2, ..., subjectN }
+    subject1 = { image1, image2, ..., imageM }
+    ...
+
 calculate_from_variance.lua
   Auxiliary function to calculate the number of eigenfaces
   needed to maintain a certain level of variance with a
   given images-matrix.
 
-  An images-matrix is a Lua array of array where:
-    images_matrix = { subject1, subject2, ..., subjectN }
-    subject1 = { image1, image2, ..., imageM }
-    ...
+create_patterns.lua
+  Convert a image-matrix in MLP patterns ready to use (to train and to
+  test the neural network)
+
 
 ========================================
 ORL Faces DB Scripts
