@@ -29,15 +29,85 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <Vaca/Application.h>
-#include <Vaca/Frame.h>
+#include "MainFrame.h"
+#include "CmdIds.h"
+#include <Vaca/Vaca.h>
 
 using namespace Vaca;
 
-int main()
+MainFrame::MainFrame()
+  : Frame(L"Lose Face", NULL, Frame::Styles::Default |
+			      Widget::Styles::AcceptFiles)
+  , m_navigator(this)
 {
-  Application app;
-  Frame frm(L"Lose Face");
-  frm.setVisible(true);
-  app.run();
+  setLayout(new ClientLayout);
+  setMenuBar(createMenuBar());
+}
+
+MenuBar* MainFrame::createMenuBar()
+{
+  MenuBar* menuBar	 = new MenuBar();
+  Menu* fileMenu	 = new Menu(L"&Archivo");
+  Menu* editMenu	 = new Menu(L"&Edición");
+  Menu* usersMenu	 = new Menu(L"&Usuarios");
+  Menu* toolsMenu	 = new Menu(L"&Herramientas");
+  Menu* helpMenu	 = new Menu(L"Ay&uda");
+  Menu* dbMenu		 = new Menu(L"&Base de Datos");
+  Menu* researchMenu	 = new Menu(L"&Investigación");
+
+  menuBar->add(fileMenu);
+  menuBar->add(editMenu);
+  menuBar->add(usersMenu);
+  menuBar->add(toolsMenu);
+  menuBar->add(helpMenu);
+
+  // File menu
+  fileMenu->add(dbMenu);
+  fileMenu->addSeparator();
+  fileMenu->add(L"&Salir",		CMD_FILE_EXIT);
+
+  // DB menu
+  dbMenu->add(L"&Conexión",		CMD_DB_CONNECTIONS);
+  dbMenu->addSeparator();
+  dbMenu->add(L"&Importar",		CMD_DB_IMPORT);
+  dbMenu->add(L"&Exportar",		CMD_DB_EXPORT);
+
+  // Edit menu
+  editMenu->add(L"&Deshacer",		CMD_EDIT_UNDO);
+  editMenu->add(L"&Repetir",		CMD_EDIT_REDO);
+  editMenu->addSeparator();
+  editMenu->add(L"C&ortar",		CMD_EDIT_CUT);
+  editMenu->add(L"&Copiar",		CMD_EDIT_COPY);
+  editMenu->add(L"&Pegar",		CMD_EDIT_PASTE);
+
+  // Users menu
+  usersMenu->add(L"&Navegar",		CMD_USERS_NAVIGATE);
+  usersMenu->add(L"&Agregar",		CMD_USERS_ADD);
+  usersMenu->addSeparator();
+  usersMenu->add(L"&Perfil",		CMD_USERS_PROFILE);
+
+  // Tools menu
+  toolsMenu->add(researchMenu);
+  toolsMenu->addSeparator();
+  toolsMenu->add(L"&Opciones",		CMD_TOOLS_OPTIONS);
+
+  // Research menu
+  researchMenu->add(L"Abrir &Script",	CMD_RESEARCH_OPEN_SCRIPT);
+
+  // Help menu
+  helpMenu->add(L"Acerca de...",	CMD_HELP_ABOUT);
+
+  return menuBar;
+}
+
+void MainFrame::onDropFiles(DropFilesEvent& ev)
+{
+  Frame::onDropFiles(ev);
+
+  std::vector<String> files = ev.getFiles();
+  std::vector<String>::iterator it;
+
+  for (it=files.begin(); it!=files.end(); ++it) {
+    m_navigator.addImagesToProcess(*it);
+  }
 }

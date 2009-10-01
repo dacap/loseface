@@ -6,7 +6,7 @@ find_package(VACA)
 
 if(VACA_FOUND)
   add_executable(loseface-ui WIN32
-    MainFrame.cpp)
+    LoseFaceApp.cpp MainFrame.cpp Navigator.cpp main.cpp)
 
   set_target_properties(loseface-ui PROPERTIES
     COMPILE_FLAGS "-I${VACA_INCLUDE_DIR} -D_UNICODE -DUNICODE")
