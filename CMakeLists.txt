@@ -36,6 +36,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/third_party/libpng
   ${CMAKE_SOURCE_DIR}/third_party/lua
   ${CMAKE_SOURCE_DIR}/third_party/luafilesystem
+  ${CMAKE_SOURCE_DIR}/third_party/sqlite
   ${CMAKE_SOURCE_DIR}/third_party/zlib)
 
 if(WIN32)
