@@ -34,13 +34,15 @@ function mlp_array()
 
   ----------------------------------------------------------------------
 
-  function create_mlp(seed)
+  function reset_mlp(mlp, seed)
     ann.init_random({ seed=seed })
-
-    local mlp = ann.Mlp({ inputs=INPUTS, hiddens=HIDDENS, outputs=1 })
     mlp:init({ min=INIT_WEIGHTS_MIN, max=INIT_WEIGHTS_MAX })
-
     return mlp
+  end
+
+  function create_mlp(seed)
+    local mlp = ann.Mlp({ inputs=INPUTS, hiddens=HIDDENS, outputs=1 })
+    return reset_mlp(mlp, seed)
   end
 
   ----------------------------------------------------------------------
@@ -156,7 +158,6 @@ function mlp_array()
 
 	-- Create a new MLP for subject 'subject_nth'
 	local mlp = create_mlp(seed)
-	table.insert(mlps, mlp)
 
 	-- Get the positive/negative patterns for this particular network
 	local positive_set = prepare_positive_patterns(subject_nth, train_set)
@@ -198,7 +199,16 @@ function mlp_array()
 	      end
 	    end
 	  elseif STOP_GOAL == "mse" then
-	    while mlp:mse({ set=fullmix }) > MSE_GOAL and epochs < 100000 do
+	    local seed2 = seed
+	    while mlp:mse({ set=fullmix }) > MSE_GOAL do
+
+	      -- if the model has not convergence, lets initialize the weights again
+	      if epochs >= 100000 then
+		epochs = 0
+		seed2 = seed2 + 1
+		reset_mlp(mlp, seed2)
+	      end
+
 	      for j=1,#negative_sets,NUMBER_OF_NEGATIVES do -- rotate negative patterns
 		local mix = ann.PatternSet()
 		mix:merge({ positive_set })
@@ -220,6 +230,8 @@ function mlp_array()
 	t2 = os.date()
 	print(string.format("    MLP#%02d MSE=%.16g\t(%s-%s) epochs=%d (adjustements=%d)",
 			    subject_nth, mlp:mse({ set=fullmix }), t1, t2, epochs, adjustements))
+
+	table.insert(mlps, mlp)
       end
       print(string.format("    TRAINING END "..os.date()))
 
