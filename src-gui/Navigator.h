@@ -33,7 +33,7 @@
 #define NAVIGATOR_H
 
 #include <vector>
-#include <Vaca/Widget.h>
+#include <Vaca/ScrollableWidget.h>
 #include <Vaca/ImageList.h>
 #include <Vaca/Timer.h>
 
@@ -43,7 +43,7 @@ using namespace Vaca;
 
 class MainFrame;
 
-class Navigator : public Widget
+class Navigator : public ScrollableWidget
 {
   /**
      List of files that the user dropped and are not processed yet.
@@ -57,14 +57,20 @@ class Navigator : public Widget
 
   Timer m_timer;
 
+  int m_userCount;
+
 public:
   Navigator(Widget* parent);
+  ~Navigator();
 
+  void refresh();
   void addImagesToProcess(const String& file);
 
   // Events
 protected:
   virtual void onPaint(PaintEvent& ev);
+  virtual void onLayout(LayoutEvent& ev);
+  virtual void onScroll(ScrollEvent& ev);
 
   // virtual void onMouseEnter(MouseEvent& ev);
   // virtual void onMouseLeave(MouseEvent& ev);
@@ -75,6 +81,7 @@ protected:
 
 private:
   void onTimerTick();
+  void clearNavWidgets();
 
 };
 

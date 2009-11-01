@@ -29,18 +29,29 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "LoseFaceApp.h"
+#ifndef DTO_PICTURE_H
+#define DTO_PICTURE_H
 
-using namespace Vaca;
+#include <string>
+#include "Vaca/SharedPtr.h"
 
-int VACA_MAIN()
+namespace dto {
+
+class Picture
 {
-  try {
-    SharedPtr<LoseFaceApp> app(new LoseFaceApp);
-    app->run();
-  }
-  catch (Exception& e) {
-    e.show();
-  }
-  return 0;
+  int m_id;
+  std::string m_file_name;
+
+public:
+  int getId() const { return m_id; }
+  std::string getFileName() const { return m_file_name; }
+
+  void setId(int id) { m_id = id; }
+  void setFileName(const std::string& file_name) { m_file_name = file_name; }
+};
+
+typedef Vaca::SharedPtr<dto::Picture> PicturePtr;
+
 }
+
+#endif

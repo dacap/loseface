@@ -44,12 +44,18 @@ MainFrame::MainFrame()
   setMenuBar(createMenuBar());
 }
 
+void MainFrame::refresh()
+{
+  m_navigator.refresh();
+}
+
 MenuBar* MainFrame::createMenuBar()
 {
   MenuBar* menuBar	 = new MenuBar();
   Menu* fileMenu	 = new Menu(L"&Archivo");
   Menu* editMenu	 = new Menu(L"&Edición");
-  Menu* usersMenu	 = new Menu(L"&Usuarios");
+  // Menu* viewMenu	 = new Menu(L"&Ver");
+  // Menu* usersMenu	 = new Menu(L"&Usuarios");
   Menu* toolsMenu	 = new Menu(L"&Herramientas");
   Menu* helpMenu	 = new Menu(L"Ay&uda");
   Menu* dbMenu		 = new Menu(L"&Base de Datos");
@@ -57,7 +63,8 @@ MenuBar* MainFrame::createMenuBar()
 
   menuBar->add(fileMenu);
   menuBar->add(editMenu);
-  menuBar->add(usersMenu);
+  // menuBar->add(viewMenu);
+  // menuBar->add(usersMenu);
   menuBar->add(toolsMenu);
   menuBar->add(helpMenu);
 
@@ -80,11 +87,14 @@ MenuBar* MainFrame::createMenuBar()
   editMenu->add(L"&Copiar",		CMD_EDIT_COPY);
   editMenu->add(L"&Pegar",		CMD_EDIT_PASTE);
 
-  // Users menu
-  usersMenu->add(L"&Navegar",		CMD_USERS_NAVIGATE);
-  usersMenu->add(L"&Agregar",		CMD_USERS_ADD);
-  usersMenu->addSeparator();
-  usersMenu->add(L"&Perfil",		CMD_USERS_PROFILE);
+  // View menu
+  // viewMenu->add(L"&Actualizar",		CMD_VIEW_REFRESH);
+
+  // // Users menu
+  // usersMenu->add(L"&Navegar",		CMD_USERS_NAVIGATE);
+  // usersMenu->add(L"&Agregar",		CMD_USERS_ADD);
+  // usersMenu->addSeparator();
+  // usersMenu->add(L"&Perfil",		CMD_USERS_PROFILE);
 
   // Tools menu
   toolsMenu->add(researchMenu);

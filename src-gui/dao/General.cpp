@@ -29,18 +29,55 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "LoseFaceApp.h"
+#include "dao/General.h"
+#include "sqlite3.h"
+#include <Vaca/String.h>
 
-using namespace Vaca;
-
-int VACA_MAIN()
+dao::General::General(const String& fileName)
 {
-  try {
-    SharedPtr<LoseFaceApp> app(new LoseFaceApp);
-    app->run();
-  }
-  catch (Exception& e) {
-    e.show();
-  }
-  return 0;
+  std::string fileName_utf8 = Vaca::to_utf8(fileName);
+
+  m_dbFileName = fileName;
+
+  // Open the sqlite database
+  m_db = NULL;
+  sqlite3_open(fileName_utf8.c_str(), &m_db);
+
+  // Create data-model if it does not exist
+
+  // sqlite3_exec(m_db, "CREATE TABLE IF NOT EXISTS users ( "
+  // 		     " id INTEGER PRIMARY KEY, "
+  // 		     " name TEXT ) ", NULL, NULL, NULL);
+
+  // sqlite3_exec(m_db, "CREATE TABLE IF NOT EXISTS pictures ( "
+  // 		     " id INTEGER PRIMARY KEY, "
+  // 		     " user_id INTEGER, "
+  // 		     " file_name TEXT, "
+  // 		     " CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ) ", NULL, NULL, NULL);
+
+  // // Create the admin user if it does not exist
+  // dto::UserPtr adminUser = getById(1);
+  // if (!adminUser) {
+  //   sqlite3_exec(m_db, "INSERT INTO users (id, name) VALUES (1, 'Admin')", NULL, NULL, NULL);
+
+  //   adminUser = getById(1);
+  //   if (!adminUser)
+  //     throw CreateAdminError();
+  // }
 }
+
+dao::General::~General()
+{
+}
+
+String dao::General::getDBFilesPath() const
+{
+  using namespace Vaca;
+  return (file_path(m_dbFileName) / file_title(m_dbFileName)) + L"_files";
+}
+
+sqlite3* dao::General::getSqliteDB() const
+{
+  return m_db;
+}
+

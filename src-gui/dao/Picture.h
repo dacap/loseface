@@ -29,17 +29,40 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DBUSER_H
-#define DBUSER_H
+#ifndef DAO_PICTURE_H
+#define DAO_PICTURE_H
 
-#include <Vaca/Signal.h>
+#include <Vaca/SharedPtr.h>
+#include <Vaca/Image.h>
+#include "dao/Iterator.h"
+#include "dto/Picture.h"
 
-class DBUser
+using namespace Vaca;
+
+struct sqlite3;
+
+namespace dao {
+
+class General;
+
+typedef Vaca::SharedPtr<Iterator<dto::Picture> > PictureIteratorPtr;
+
+class Picture
 {
+  General* m_general;
+
 public:
-  DBUser();
-  virtual ~DBUser();
+  Picture(General* general);
+  ~Picture();
+
+  int getCountForUser(int userId);
+  PictureIteratorPtr getIterator(int userId);
+
+  dto::PicturePtr getById(int id);
+  Vaca::Image loadImage(int id);
 
 };
+
+}
 
 #endif

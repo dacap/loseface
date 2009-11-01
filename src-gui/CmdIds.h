@@ -34,7 +34,7 @@
 
 #include <Vaca/Command.h>
 
-using namespace Vaca;
+using Vaca::CommandId;
 
 const CommandId CMD_FILE_EXIT		 = 100;
 const CommandId CMD_DB_CONNECTIONS	 = 200;
@@ -45,11 +45,12 @@ const CommandId CMD_EDIT_REDO		 = 301;
 const CommandId CMD_EDIT_CUT		 = 302;
 const CommandId CMD_EDIT_COPY		 = 303;
 const CommandId CMD_EDIT_PASTE		 = 304;
-const CommandId CMD_USERS_ADD		 = 400;
-const CommandId CMD_USERS_NAVIGATE	 = 401;
-const CommandId CMD_USERS_PROFILE	 = 402;
-const CommandId CMD_RESEARCH_OPEN_SCRIPT = 402;
-const CommandId CMD_TOOLS_OPTIONS	 = 403;
-const CommandId CMD_HELP_ABOUT		 = 500;
+// const CommandId CMD_VIEW_REFRESH	 = 400;
+const CommandId CMD_USERS_ADD		 = 500;
+const CommandId CMD_USERS_NAVIGATE	 = 501;
+const CommandId CMD_USERS_PROFILE	 = 502;
+const CommandId CMD_RESEARCH_OPEN_SCRIPT = 600;
+const CommandId CMD_TOOLS_OPTIONS	 = 700;
+const CommandId CMD_HELP_ABOUT		 = 800;
 
 #endif

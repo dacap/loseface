@@ -29,18 +29,29 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "LoseFaceApp.h"
+#ifndef DTO_USER_H
+#define DTO_USER_H
 
-using namespace Vaca;
+#include <string>
+#include "Vaca/SharedPtr.h"
 
-int VACA_MAIN()
+namespace dto {
+
+class User
 {
-  try {
-    SharedPtr<LoseFaceApp> app(new LoseFaceApp);
-    app->run();
-  }
-  catch (Exception& e) {
-    e.show();
-  }
-  return 0;
+  int m_id;
+  std::string m_name;
+
+public:
+  int getId() const { return m_id; }
+  std::string getName() const { return m_name; }
+
+  void setId(int id) { m_id = id; }
+  void setName(const std::string& name) { m_name = name; }
+};
+
+typedef Vaca::SharedPtr<dto::User> UserPtr;
+
 }
+
+#endif

@@ -36,34 +36,33 @@
 #include <Vaca/Command.h>
 
 #include "MainFrame.h"
-#include "DB.h"
+#include "dao/General.h"
 
 using namespace Vaca;
-
-class DB;
 
 class LoseFaceApp : public Application
 		  , public CommandsClient
 {
   MainFrame m_mainFrame;
-  DB m_db;
+  dao::General* m_generalDao;
 
 public:
   LoseFaceApp();
   ~LoseFaceApp();
 
-  inline DB* GetDB() { return &m_db; }
+  dao::General* getGeneralDao();
 
 protected:
   void onCmdExit();
 
 private:
   void createCommands();
+  void initDao();
 };
 
-inline DB* GetDB() 
+inline static dao::General* get_general_dao() 
 {
-  return static_cast<LoseFaceApp*>(Application::getInstance())->GetDB();
+  return static_cast<LoseFaceApp*>(Application::getInstance())->getGeneralDao();
 }
 
 #endif

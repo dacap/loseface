@@ -29,22 +29,30 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DB_H
-#define DB_H
+#ifndef DAO_GENERAL_H
+#define DAO_GENERAL_H
 
-#include <Vaca/Signal.h>
+#include <Vaca/String.h>
 
-class DBUser;
+struct sqlite3;
+using Vaca::String;
 
-class DB
+namespace dao {
+
+class General
 {
-public:
-  DB() { }
-  virtual ~DB() { }
+  String m_dbFileName;
+  sqlite3* m_db;
 
-  Signal1<void, DBUser*> InsertUser;
-  Signal1<void, DBUser*> UpdateUser;
-  Signal1<void, DBUser*> DeleteUser;
+public:
+  General(const String& fileName);
+  ~General();
+
+  String getDBFilesPath() const;
+  sqlite3* getSqliteDB() const;
+
 };
+
+}
 
 #endif

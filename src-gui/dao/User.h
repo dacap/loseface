@@ -29,18 +29,50 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "LoseFaceApp.h"
+#ifndef DAO_USER_H
+#define DAO_USER_H
+
+#include <Vaca/SharedPtr.h>
+#include "dao/Iterator.h"
+#include "dto/User.h"
 
 using namespace Vaca;
 
-int VACA_MAIN()
+struct sqlite3;
+// struct sqlite3_stmt;
+
+namespace dao {
+
+class General;
+
+typedef Vaca::SharedPtr<Iterator<dto::User> > UserIteratorPtr;
+
+class User
 {
-  try {
-    SharedPtr<LoseFaceApp> app(new LoseFaceApp);
-    app->run();
-  }
-  catch (Exception& e) {
-    e.show();
-  }
-  return 0;
+  // typedef std::vector<User*> UserList;
+
+  // String m_dbFileName;
+  // sqlite3* m_db;
+  // UserList m_users;
+  General* m_general;
+
+public:
+  User(General* general);
+  ~User();
+
+  int getCount();
+  dto::UserPtr getById(int id);
+  UserIteratorPtr getIterator();
+
+  // String getDBFilesPath() const;
+
+  // int getUsersCount() const;
+  // User* getUser(int id);
+  // UserIterator* getUserIterator();
+  // UserPictureIterator* getUserPictureIterator(int userId);
+
+};
+
 }
+
+#endif

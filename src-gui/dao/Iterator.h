@@ -29,18 +29,21 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "LoseFaceApp.h"
+#ifndef DAO_ITERATOR_H
+#define DAO_ITERATOR_H
 
-using namespace Vaca;
+#include <Vaca/Referenceable.h>
 
-int VACA_MAIN()
+namespace dao {
+
+template<class DtoObject>
+class Iterator : public Vaca::Referenceable
 {
-  try {
-    SharedPtr<LoseFaceApp> app(new LoseFaceApp);
-    app->run();
-  }
-  catch (Exception& e) {
-    e.show();
-  }
-  return 0;
+public:
+  virtual ~Iterator() { }
+  virtual bool next(DtoObject& object) = 0;
+};
+
 }
+
+#endif

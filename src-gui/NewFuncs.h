@@ -34,14 +34,25 @@
 
 // These functions and classes are candidates to be in Vaca
 
-class System2 
+#include <Vaca/String.h>
+#include <Vaca/Exception.h>
+#include <Vaca/FindFiles.h>
+
+using namespace Vaca;
+
+class FileSystemError : public Exception
 {
 public:
+  FileSystemError() : Exception() { }
+  FileSystemError(const String& message) : Exception(message) { }
+  virtual ~FileSystemError() throw() { }
+};
 
-  static bool fileExists(const String& fileName)
-  {
-    return GetFileAttributes(fileName.c_str()) ? true: false;
-  }
+/**
+   Functions to consult information to the file-system. 
+ */
+namespace FileSystem
+{
 
   static bool isFile(const String& fileName)
   {
@@ -63,52 +74,10 @@ public:
     return (ret & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY;
   }
 
-};
-
-class FindFiles
-{
-  String m_pattern;
-  HANDLE m_handle;
-  WIN32_FIND_DATA m_data;
-
-public:
-
-  FindFiles(const String& pattern)
+  static void makeDirectory(const String& pathName)
   {
-    m_pattern = pattern;
-    m_handle = NULL;
-  }
-
-  ~FindFiles()
-  {
-    if (m_handle)
-      FindClose(m_handle);
-  }
-
-  bool next()
-  {
-    if (!m_handle) {
-      m_handle = FindFirstFile(m_pattern.c_str(), &m_data);
-      return m_handle ? true: false;
-    }
-    else {
-      return FindNextFile(m_handle, &m_data) ? true: false; 
-    }
-  }
-
-  String getFileName() const
-  {
-    return m_data.cFileName;
-  }
-
-  bool isFile() const
-  {
-    return m_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? false: true;
-  }
-
-  bool isDirectory() const
-  {
-    return m_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ? true: false;
+    if (!CreateDirectory(pathName.c_str(), NULL))
+      throw FileSystemError(L"Error creating directory: " + pathName);
   }
 
 };

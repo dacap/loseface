@@ -31,18 +31,31 @@
 
 #include "LoseFaceApp.h"
 #include "CmdIds.h"
+#include "dao/General.h"
+
+#include "NewFuncs.h"
+#include <Vaca/System.h>
 
 using namespace Vaca;
 
 LoseFaceApp::LoseFaceApp()
 {
   createCommands();
+  initDao();
 
+  m_mainFrame.refresh();
   m_mainFrame.setVisible(true);
 }
 
 LoseFaceApp::~LoseFaceApp()
 {
+  if (m_generalDao)
+    delete m_generalDao;
+}
+
+dao::General* LoseFaceApp::getGeneralDao()
+{
+  return m_generalDao;
 }
 
 void LoseFaceApp::createCommands()
@@ -50,7 +63,22 @@ void LoseFaceApp::createCommands()
   addCommand(new SignalCommand(CMD_FILE_EXIT, &LoseFaceApp::onCmdExit, this));
 }
 
+void LoseFaceApp::initDao()
+{
+  m_generalDao = NULL;
+
+  String app_path = file_path(System::getArgs()[0]);
+  String dbs_path = app_path / L"dbs";
+  String default_db_path = dbs_path / L"default.db";
+
+  if (!FileSystem::isDirectory(dbs_path))
+    FileSystem::makeDirectory(dbs_path);
+
+  m_generalDao = new dao::General(default_db_path);
+}
+
 void LoseFaceApp::onCmdExit()
 {
   m_mainFrame.setVisible(false);
 }
+

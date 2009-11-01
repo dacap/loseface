@@ -44,6 +44,8 @@ class MainFrame : public Frame
 public:
   MainFrame();
 
+  void refresh();
+
   //////////////////////////////////////////////////////////////////////
   // Signals
 
