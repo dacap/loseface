@@ -32,26 +32,23 @@
 #ifndef DAO_GENERAL_H
 #define DAO_GENERAL_H
 
-#include <Vaca/String.h>
-
-struct sqlite3;
-using Vaca::String;
+#include <QString>
+#include <QtSql/QSqlDatabase>
 
 namespace dao {
 
-class General
-{
-  String m_dbFileName;
-  sqlite3* m_db;
+  class General
+  {
+    QString m_dbFileName;
+    QSqlDatabase m_db;
 
-public:
-  General(const String& fileName);
-  ~General();
+  public:
+    General(const QString& fileName);
+    ~General();
 
-  String getDBFilesPath() const;
-  sqlite3* getSqliteDB() const;
-
-};
+    QString getDBFilesPath() const;
+    QSqlDatabase getDatabase() const;
+  };
 
 }
 

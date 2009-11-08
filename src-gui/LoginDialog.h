@@ -29,35 +29,30 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DAO_USER_H
-#define DAO_USER_H
+#ifndef LOGINDIALOG_H
+#define LOGINDIALOG_H
 
-#include <QSharedPointer.h>
-#include "dao/Iterator.h"
-#include "dto/User.h"
+#include <QDialog>
 
-struct sqlite3;
+class WebCamWidget;
 
-namespace dao {
+class LoginDialog : public QDialog
+{
+  Q_OBJECT
 
-  class General;
+  WebCamWidget* m_webCam;
 
-  typedef QSharedPointer<Iterator<dto::User> > UserIteratorPtr;
-
-  class User
-  {
-    General* m_general;
-
-  public:
-    User(General* general);
-    ~User();
-
-    int getCount();
-    dto::UserPtr getById(int id);
-    UserIteratorPtr getIterator();
-
+public:
+  enum {
+    LOGIN_RESULT = 1,
+    ENTER_ADMIN_RESULT = 2,
   };
+  LoginDialog();
 
-}
+private slots:
+  void login();
+  void enterAdmin();
+
+};
 
 #endif

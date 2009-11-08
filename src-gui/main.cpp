@@ -31,16 +31,8 @@
 
 #include "LoseFaceApp.h"
 
-using namespace Vaca;
-
-int VACA_MAIN()
+int main(int argc, char *argv[])
 {
-  try {
-    SharedPtr<LoseFaceApp> app(new LoseFaceApp);
-    app->run();
-  }
-  catch (Exception& e) {
-    e.show();
-  }
-  return 0;
+  LoseFaceApp app(argc, argv);
+  return app.exec();
 }

@@ -29,28 +29,33 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CMDIDS_H
-#define CMDIDS_H
+#include "IdentifyDialog.h"
+#include "WebCamWidget.h"
+#include <QtGui>
 
-#include <Vaca/Command.h>
+IdentifyDialog::IdentifyDialog()
+{
+  m_webCam = new WebCamWidget();
 
-using Vaca::CommandId;
+  QPushButton* identifyButton = new QPushButton(tr("Identify"));
+  QPushButton* adminButton = new QPushButton(tr("Admin"));
 
-const CommandId CMD_FILE_EXIT		 = 100;
-const CommandId CMD_DB_CONNECTIONS	 = 200;
-const CommandId CMD_DB_IMPORT		 = 201;
-const CommandId CMD_DB_EXPORT		 = 202;
-const CommandId CMD_EDIT_UNDO		 = 300;
-const CommandId CMD_EDIT_REDO		 = 301;
-const CommandId CMD_EDIT_CUT		 = 302;
-const CommandId CMD_EDIT_COPY		 = 303;
-const CommandId CMD_EDIT_PASTE		 = 304;
-// const CommandId CMD_VIEW_REFRESH	 = 400;
-const CommandId CMD_USERS_ADD		 = 500;
-const CommandId CMD_USERS_NAVIGATE	 = 501;
-const CommandId CMD_USERS_PROFILE	 = 502;
-const CommandId CMD_RESEARCH_OPEN_SCRIPT = 600;
-const CommandId CMD_TOOLS_OPTIONS	 = 700;
-const CommandId CMD_HELP_ABOUT		 = 800;
+  QHBoxLayout* bottomLayout2 = new QHBoxLayout;
+  bottomLayout2->addStretch();
+  bottomLayout2->addWidget(adminButton);
 
-#endif
+  QHBoxLayout* bottomLayout = new QHBoxLayout;
+  bottomLayout->addStretch();
+  bottomLayout->addWidget(identifyButton);
+  bottomLayout->addLayout(bottomLayout2);
+
+  QVBoxLayout* mainLayout = new QVBoxLayout;
+  mainLayout->addWidget(m_webCam, 2);
+  mainLayout->addLayout(bottomLayout);
+
+  // mainLayout->setSizeConstraint(QLayout::SetFixedSize);
+  setLayout(mainLayout);
+
+  // connect(loginButton, SIGNAL(clicked()), this, SLOT(login()));
+  // connect(adminButton, SIGNAL(clicked()), this, SLOT(enterAdmin()));
+}

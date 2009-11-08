@@ -29,24 +29,26 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "dao/User.h"
+#include "dao/Photo.h"
 #include "dao/General.h"
 #include "dao/Iterator.h"
 #include <QtSql/QtSql>
 
-dao::User::User(General* general)
+dao::Photo::Photo(General* general)
   : m_general(general)
 {
 }
 
-dao::User::~User()
+dao::Photo::~Photo()
 {
 }
 
-int dao::User::getCount()
+int dao::Photo::getCountForUser(int userId)
 {
   QSqlQuery query(m_general->getDatabase());
-  query.exec("SELECT COUNT(*) FROM users");
+  query.prepare("SELECT COUNT(*) FROM photos WHERE user_id=?");
+  query.addBindValue(userId);
+  query.exec();
 
   int count = 0;
   if (query.next())
@@ -55,47 +57,60 @@ int dao::User::getCount()
   return count;
 }
 
-dto::UserPtr dao::User::getById(int id)
+dto::PhotoPtr dao::Photo::getById(int id)
 {
   QSqlQuery query(m_general->getDatabase());
-  query.prepare("SELECT name FROM users WHERE id=?");
+  query.prepare("SELECT file_name FROM photos WHERE id=?");
   query.addBindValue(id);
   query.exec();
 
-  dto::UserPtr user;
+  dto::PhotoPtr photo;
 
   // If the user was found in the database
   if (query.next()) {
-    user = dto::UserPtr(new dto::User);
-    user->setId(id);
-    user->setName(query.value(0).toString());
+    photo = dto::PhotoPtr(new dto::Photo);
+    photo->setId(id);
+    photo->setFileName(query.value(0).toString());
   }
 
-  return user;
+  return photo;
+}
+
+QImage dao::Photo::loadImage(int id)
+{
+  QImage image;
+
+  dto::PhotoPtr photo = getById(id);
+  if (photo != NULL)
+    image.load(m_general->getDBFilesPath() + "/" + photo->getFileName());
+
+  return image;
 }
 
 //////////////////////////////////////////////////////////////////////
-// Iterator of users
+// Iterator of photos
 
-class UserIteratorImpl : public dao::Iterator<dto::User>
+class PhotoIteratorImpl : public dao::Iterator<dto::Photo>
 {
   QSqlQuery m_query;
-  
+
 public:
 
-  UserIteratorImpl(const QSqlDatabase& db)
+  PhotoIteratorImpl(const QSqlDatabase& db, int userId)
     : m_query(db)
   {
-    m_query.exec("SELECT id,name FROM users");
+    m_query.prepare("SELECT id,file_name FROM photos WHERE user_id=?");
+    m_query.addBindValue(userId);
+    m_query.exec();
   }
 
-  // Iterator<dto::User> implementation
+  // Iterator<dto::Photo> implementation
 
-  bool next(dto::User& user)
+  bool next(dto::Photo& photo)
   {
     if (m_query.next()) {
-      user.setId(m_query.value(0).toInt());
-      user.setName(m_query.value(0).toString());
+      photo.setId(m_query.value(0).toInt());
+      photo.setFileName(m_query.value(1).toString());
       return true;
     }
     else
@@ -104,7 +119,7 @@ public:
 
 };
 
-dao::UserIteratorPtr dao::User::getIterator()
+dao::PhotoIteratorPtr dao::Photo::getIterator(int userId)
 {
-  return UserIteratorPtr(new UserIteratorImpl(m_general->getDatabase()));
+  return PhotoIteratorPtr(new PhotoIteratorImpl(m_general->getDatabase(), userId));
 }

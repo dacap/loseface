@@ -30,54 +30,35 @@
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "dao/General.h"
-#include "sqlite3.h"
-#include <Vaca/String.h>
+#include <QFileInfo>
 
-dao::General::General(const String& fileName)
+dao::General::General(const QString& fileName)
 {
-  std::string fileName_utf8 = Vaca::to_utf8(fileName);
-
   m_dbFileName = fileName;
 
   // Open the sqlite database
-  m_db = NULL;
-  sqlite3_open(fileName_utf8.c_str(), &m_db);
-
-  // Create data-model if it does not exist
-
-  // sqlite3_exec(m_db, "CREATE TABLE IF NOT EXISTS users ( "
-  // 		     " id INTEGER PRIMARY KEY, "
-  // 		     " name TEXT ) ", NULL, NULL, NULL);
-
-  // sqlite3_exec(m_db, "CREATE TABLE IF NOT EXISTS pictures ( "
-  // 		     " id INTEGER PRIMARY KEY, "
-  // 		     " user_id INTEGER, "
-  // 		     " file_name TEXT, "
-  // 		     " CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ) ", NULL, NULL, NULL);
-
-  // // Create the admin user if it does not exist
-  // dto::UserPtr adminUser = getById(1);
-  // if (!adminUser) {
-  //   sqlite3_exec(m_db, "INSERT INTO users (id, name) VALUES (1, 'Admin')", NULL, NULL, NULL);
-
-  //   adminUser = getById(1);
-  //   if (!adminUser)
-  //     throw CreateAdminError();
-  // }
+  m_db = QSqlDatabase::addDatabase("QSQLITE");
+  m_db.setDatabaseName(fileName);
+  m_db.open();
 }
 
 dao::General::~General()
 {
+  m_db.close();
 }
 
-String dao::General::getDBFilesPath() const
+QString dao::General::getDBFilesPath() const
 {
-  using namespace Vaca;
-  return (file_path(m_dbFileName) / file_title(m_dbFileName)) + L"_files";
+  QFileInfo fi(m_dbFileName);
+  QString path;
+  path.append(fi.path());
+  path.append("/");
+  path.append(fi.baseName());
+  path.append("_files");
+  return path;
 }
 
-sqlite3* dao::General::getSqliteDB() const
+QSqlDatabase dao::General::getDatabase() const
 {
   return m_db;
 }
-

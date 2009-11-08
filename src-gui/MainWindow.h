@@ -29,35 +29,37 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef MAINFRAME_H
-#define MAINFRAME_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-#include <Vaca/Frame.h>
-#include "Navigator.h"
+#include <QMainWindow>
 
-using namespace Vaca;
+class QMenu;
+class QAction;
 
-class MainFrame : public Frame
+class MainWindow : public QMainWindow
 {
-  Navigator m_navigator;
-  
+  Q_OBJECT
+
 public:
-  MainFrame();
+  MainWindow();
 
-  void refresh();
+private slots:
+  void goLoginMode();
+  void goIdentifyMode();
 
-  //////////////////////////////////////////////////////////////////////
-  // Signals
-
-  //////////////////////////////////////////////////////////////////////
-  // Events
-protected:
-  virtual void onDropFiles(DropFilesEvent& ev);
-
-  //////////////////////////////////////////////////////////////////////
-  // Implementation
 private:
-  MenuBar* createMenuBar();
+  void createActions();
+  void createMenus();
+
+  QAction* m_fileLoginMode;
+  QAction* m_fileIdentifyMode;
+  QAction* m_fileExit;
+  QMenu* m_fileMenu;
+  QMenu* m_editMenu;
+  QMenu* m_toolsMenu;
+  QMenu* m_helpMenu;
+
 };
 
 #endif

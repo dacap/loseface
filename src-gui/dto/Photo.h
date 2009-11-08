@@ -29,34 +29,28 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DAO_USER_H
-#define DAO_USER_H
+#ifndef DTO_PHOTO_H
+#define DTO_PHOTO_H
 
-#include <QSharedPointer.h>
-#include "dao/Iterator.h"
-#include "dto/User.h"
+#include <string>
+#include <QSharedPointer>
 
-struct sqlite3;
+namespace dto {
 
-namespace dao {
-
-  class General;
-
-  typedef QSharedPointer<Iterator<dto::User> > UserIteratorPtr;
-
-  class User
+  class Photo
   {
-    General* m_general;
+    int m_id;
+    QString m_file_name;
 
   public:
-    User(General* general);
-    ~User();
+    int getId() const { return m_id; }
+    QString getFileName() const { return m_file_name; }
 
-    int getCount();
-    dto::UserPtr getById(int id);
-    UserIteratorPtr getIterator();
-
+    void setId(int id) { m_id = id; }
+    void setFileName(const QString& file_name) { m_file_name = file_name; }
   };
+
+  typedef QSharedPointer<dto::Photo> PhotoPtr;
 
 }
 

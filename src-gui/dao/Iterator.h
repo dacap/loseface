@@ -32,17 +32,15 @@
 #ifndef DAO_ITERATOR_H
 #define DAO_ITERATOR_H
 
-#include <Vaca/Referenceable.h>
-
 namespace dao {
 
-template<class DtoObject>
-class Iterator : public Vaca::Referenceable
-{
-public:
-  virtual ~Iterator() { }
-  virtual bool next(DtoObject& object) = 0;
-};
+  template<class DtoObject>
+  class Iterator
+  {
+  public:
+    virtual ~Iterator() { }
+    virtual bool next(DtoObject& object) = 0;
+  };
 
 }
 

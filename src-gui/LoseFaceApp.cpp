@@ -30,27 +30,24 @@
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "LoseFaceApp.h"
-#include "CmdIds.h"
+#include "MainWindow.h"
 #include "dao/General.h"
+#include <QFileInfo>
+#include <QDir>
 
-#include "NewFuncs.h"
-#include <Vaca/System.h>
-
-using namespace Vaca;
-
-LoseFaceApp::LoseFaceApp()
+LoseFaceApp::LoseFaceApp(int& argc, char** argv)
+ : QApplication(argc, argv)
 {
-  createCommands();
   initDao();
 
-  m_mainFrame.refresh();
-  m_mainFrame.setVisible(true);
+  m_mainWindow = new MainWindow();
+  m_mainWindow->showMaximized();
 }
 
 LoseFaceApp::~LoseFaceApp()
 {
-  if (m_generalDao)
-    delete m_generalDao;
+  delete m_mainWindow;
+  delete m_generalDao;
 }
 
 dao::General* LoseFaceApp::getGeneralDao()
@@ -58,27 +55,16 @@ dao::General* LoseFaceApp::getGeneralDao()
   return m_generalDao;
 }
 
-void LoseFaceApp::createCommands()
-{
-  addCommand(new SignalCommand(CMD_FILE_EXIT, &LoseFaceApp::onCmdExit, this));
-}
-
 void LoseFaceApp::initDao()
 {
   m_generalDao = NULL;
 
-  String app_path = file_path(System::getArgs()[0]);
-  String dbs_path = app_path / L"dbs";
-  String default_db_path = dbs_path / L"default.db";
+  QString app_path = applicationDirPath();
+  QString dbs_path = app_path + "/dbs";
+  QString default_db_path = dbs_path + "/default.db";
 
-  if (!FileSystem::isDirectory(dbs_path))
-    FileSystem::makeDirectory(dbs_path);
+  if (!QFileInfo(dbs_path).isDir())
+    QDir().mkpath(dbs_path);
 
   m_generalDao = new dao::General(default_db_path);
 }
-
-void LoseFaceApp::onCmdExit()
-{
-  m_mainFrame.setVisible(false);
-}
-

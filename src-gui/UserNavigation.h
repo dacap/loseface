@@ -29,40 +29,32 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DAO_PICTURE_H
-#define DAO_PICTURE_H
+#ifndef USERNAVIGATION_H
+#define USERNAVIGATION_H
 
-#include <Vaca/SharedPtr.h>
-#include <Vaca/Image.h>
-#include "dao/Iterator.h"
-#include "dto/Picture.h"
+#include <QWidget>
 
-using namespace Vaca;
+class QPushButton;
+class QImage;
 
-struct sqlite3;
+namespace dto { class User; }
 
-namespace dao {
-
-class General;
-
-typedef Vaca::SharedPtr<Iterator<dto::Picture> > PictureIteratorPtr;
-
-class Picture
+class UserNavigation : public QWidget
 {
-  General* m_general;
+  Q_OBJECT
+
+  QPushButton* m_addUser;
 
 public:
-  Picture(General* general);
-  ~Picture();
+  UserNavigation(QWidget* parent = 0);
 
-  int getCountForUser(int userId);
-  PictureIteratorPtr getIterator(int userId);
+private slots:
+  void addNewUser();
 
-  dto::PicturePtr getById(int id);
-  Vaca::Image loadImage(int id);
+private:
+  void addUser(const dto::User& user, QImage image);
+  void loadUsers();
 
 };
-
-}
 
 #endif

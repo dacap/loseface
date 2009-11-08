@@ -32,25 +32,25 @@
 #ifndef DTO_USER_H
 #define DTO_USER_H
 
-#include <string>
-#include "Vaca/SharedPtr.h"
+#include <QSharedPointer>
+#include <QString>
 
 namespace dto {
 
-class User
-{
-  int m_id;
-  std::string m_name;
+  class User
+  {
+    int m_id;
+    QString m_name;
 
-public:
-  int getId() const { return m_id; }
-  std::string getName() const { return m_name; }
+  public:
+    int getId() const { return m_id; }
+    QString getName() const { return m_name; }
 
-  void setId(int id) { m_id = id; }
-  void setName(const std::string& name) { m_name = name; }
-};
+    void setId(int id) { m_id = id; }
+    void setName(const QString& name) { m_name = name; }
+  };
 
-typedef Vaca::SharedPtr<dto::User> UserPtr;
+  typedef QSharedPointer<dto::User> UserPtr;
 
 }
 

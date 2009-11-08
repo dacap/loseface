@@ -32,37 +32,30 @@
 #ifndef LOSEFACEAPP_H
 #define LOSEFACEAPP_H
 
-#include <Vaca/Application.h>
-#include <Vaca/Command.h>
+#include <QApplication>
 
-#include "MainFrame.h"
-#include "dao/General.h"
+namespace dao { class General; }
 
-using namespace Vaca;
+class MainWindow;
 
-class LoseFaceApp : public Application
-		  , public CommandsClient
+class LoseFaceApp : public QApplication
 {
-  MainFrame m_mainFrame;
   dao::General* m_generalDao;
+  MainWindow* m_mainWindow;
 
 public:
-  LoseFaceApp();
+  LoseFaceApp(int& argc, char** argv);
   ~LoseFaceApp();
 
   dao::General* getGeneralDao();
 
-protected:
-  void onCmdExit();
-
 private:
-  void createCommands();
   void initDao();
 };
 
-inline static dao::General* get_general_dao() 
+inline static dao::General* get_general_dao()
 {
-  return static_cast<LoseFaceApp*>(Application::getInstance())->getGeneralDao();
+  return static_cast<LoseFaceApp*>(qApp)->getGeneralDao();
 }
 
 #endif

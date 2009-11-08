@@ -29,35 +29,20 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef DAO_USER_H
-#define DAO_USER_H
+#ifndef WEBCAMWIDGET_H
+#define WEBCAMWIDGET_H
 
-#include <QSharedPointer.h>
-#include "dao/Iterator.h"
-#include "dto/User.h"
+#include <QWidget>
 
-struct sqlite3;
+class WebCamWidget : public QWidget
+{
+  Q_OBJECT
 
-namespace dao {
+public:
+  WebCamWidget(QWidget* parent = 0);
 
-  class General;
-
-  typedef QSharedPointer<Iterator<dto::User> > UserIteratorPtr;
-
-  class User
-  {
-    General* m_general;
-
-  public:
-    User(General* general);
-    ~User();
-
-    int getCount();
-    dto::UserPtr getById(int id);
-    UserIteratorPtr getIterator();
-
-  };
-
-}
+  QSize sizeHint() const;
+  
+};
 
 #endif

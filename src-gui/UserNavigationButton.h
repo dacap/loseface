@@ -29,58 +29,33 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef NEWFUNCS_H
-#define NEWFUNCS_H
+#ifndef USERNAVIGATIONBUTTON_H
+#define USERNAVIGATIONBUTTON_H
 
-// These functions and classes are candidates to be in Vaca
+#include <QWidget>
+#include "dto/User.h"
 
-#include <Vaca/String.h>
-#include <Vaca/Exception.h>
-#include <Vaca/FindFiles.h>
-
-using namespace Vaca;
-
-class FileSystemError : public Exception
+class UserNavigationButton : public QWidget
 {
+  Q_OBJECT
+
+  dto::User m_user;
+  QImage m_photo;
+  bool m_forceHot;
+
 public:
-  FileSystemError() : Exception() { }
-  FileSystemError(const String& message) : Exception(message) { }
-  virtual ~FileSystemError() throw() { }
-};
+  UserNavigationButton(QWidget* parent = 0,
+		       const dto::User& user = dto::User(),
+		       QImage photo = QImage());
 
-/**
-   Functions to consult information to the file-system. 
- */
-namespace FileSystem
-{
+  QSize sizeHint() const;
 
-  static bool isFile(const String& fileName)
-  {
-    DWORD ret = GetFileAttributes(fileName.c_str());
-
-    if (ret == INVALID_FILE_ATTRIBUTES)
-      return false;
-
-    return (ret & FILE_ATTRIBUTE_DIRECTORY) == 0;
-  }
-
-  static bool isDirectory(const String& fileName)
-  {
-    DWORD ret = GetFileAttributes(fileName.c_str());
-
-    if (ret == INVALID_FILE_ATTRIBUTES)
-      return false;
-
-    return (ret & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY;
-  }
-
-  static void makeDirectory(const String& pathName)
-  {
-    if (!CreateDirectory(pathName.c_str(), NULL))
-      throw FileSystemError(L"Error creating directory: " + pathName);
-  }
+protected:
+  void paintEvent(QPaintEvent* event);
+  void enterEvent(QEvent* event);
+  void leaveEvent(QEvent* event);
+  void mousePressEvent(QMouseEvent* event);
 
 };
 
 #endif
-

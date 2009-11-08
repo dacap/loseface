@@ -29,60 +29,67 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 // OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef NAVIGATOR_H
-#define NAVIGATOR_H
+#include "UserNavigation.h"
+#include "UserNavigationButton.h"
+#include "FlowLayout.h"
+#include "dao/General.h"
+#include "dao/User.h"
+#include "dao/Photo.h"
+#include "dto/User.h"
+#include "dto/Photo.h"
+#include "LoseFaceApp.h"
+#include <QtGui>
 
-#include <vector>
-#include <Vaca/ScrollableWidget.h>
-#include <Vaca/ImageList.h>
-#include <Vaca/Timer.h>
-
-#include "Navigator.h"
-
-using namespace Vaca;
-
-class MainFrame;
-
-class Navigator : public ScrollableWidget
+UserNavigation::UserNavigation(QWidget* parent)
+  : QWidget(parent)
 {
-  /**
-     List of files that the user dropped and are not processed yet.
-   */
-  std::vector<String> m_filesToProcess;
+  m_addUser = new QPushButton(tr("Add User"));
+  connect(m_addUser, SIGNAL(clicked()), this, SLOT(addNewUser()));
 
-  /**
-     Image list used to show file icons.
-   */
-  ImageList m_imageList;
+  setBackgroundRole(QPalette::Base);
+  setAutoFillBackground(true);
 
-  Timer m_timer;
+  FlowLayout* layout = new FlowLayout();
+  setLayout(layout);
 
-  int m_userCount;
+  layout->addWidget(m_addUser);
 
-public:
-  Navigator(Widget* parent);
-  ~Navigator();
+  // Load all users from DB
+  loadUsers();
+}
 
-  void refresh();
-  void addImagesToProcess(const String& file);
+void UserNavigation::addNewUser()
+{
+  addUser(dto::User(), QImage());
+}
 
-  // Events
-protected:
-  virtual void onPaint(PaintEvent& ev);
-  virtual void onLayout(LayoutEvent& ev);
-  virtual void onScroll(ScrollEvent& ev);
+void UserNavigation::addUser(const dto::User& user, QImage image)
+{
+  int addUserIndex = layout()->indexOf(m_addUser);
+  QLayoutItem* addUserItem = layout()->takeAt(addUserIndex);
 
-  // virtual void onMouseEnter(MouseEvent& ev);
-  // virtual void onMouseLeave(MouseEvent& ev);
-  // virtual void onMouseDown(MouseEvent& ev);
-  // virtual void onMouseUp(MouseEvent& ev);
-  // virtual void onMouseMove(MouseEvent& ev);
-  // virtual void onMouseWheel(MouseEvent& ev);
+  layout()->addWidget(new UserNavigationButton(this, user, image));
+  layout()->addItem(addUserItem);
+}
 
-private:
-  void onTimerTick();
-  void clearNavWidgets();
+void UserNavigation::loadUsers()
+{
+  dao::General* generalDao = get_general_dao();
+  if (generalDao) {
+    dao::User userDao(generalDao);
+    dao::Photo pictureDao(generalDao);
+    dao::UserIteratorPtr userIter = userDao.getIterator();
+    dto::User user;
 
-};
+    while (userIter->next(user)) {
+      QImage image;
+      dao::PhotoIteratorPtr pictureIter = pictureDao.getIterator(user.getId());
+      dto::Photo picture;
+      if (pictureIter->next(picture)) {
+      	image = pictureDao.loadImage(picture.getId());
+      }
 
-#endif
+      addUser(user, image);
+    }
+  }
+}
