@@ -55,9 +55,6 @@ endif(UNIX)
 # Lose Face
 
 add_executable(loseface
-#   src/recog/Eigenfaces.cpp
-#   src/recog/FrEigenfacesMlp.cpp
-#   src/recog/recog_util.cpp
   src/lua/Eigenfaces.cpp
   src/lua/Image.cpp
   src/lua/Mlp.cpp
@@ -66,12 +63,17 @@ add_executable(loseface
   src/lua/PatternSet.cpp
   src/lua/annlib.cpp
   src/lua/imglib.cpp
-  src/loseface.cpp
+  src/loseface.cpp)
+
+add_library(loseface-lib
   ${platforms_sources})
 
 target_link_libraries(loseface ${sys_libs} ${libs})
 
 set_target_properties(loseface PROPERTIES
+  COMPILE_FLAGS "-Dcimg_debug=0 -Dcimg_use_png=1 -Dcimg_display=0")
+
+set_target_properties(loseface-lib PROPERTIES
   COMPILE_FLAGS "-Dcimg_debug=0 -Dcimg_use_png=1 -Dcimg_display=0")
 
 ######################################################################
