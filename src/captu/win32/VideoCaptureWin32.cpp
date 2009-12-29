@@ -83,10 +83,10 @@ using namespace cimg_library;
 
 class VideoCaptureWin32 : public captu::VideoCapture
 {
-  int driverIndex;
-  HWND hwndPreview;
-  std::vector<TCHAR*> driversList;
-  CImg<unsigned char> img;
+  int m_driverIndex;
+  HWND m_hwndPreview;
+  std::vector<TCHAR*> m_driversList;
+  CImg<unsigned char> m_img;
 
 public:
   VideoCaptureWin32();
@@ -118,8 +118,8 @@ public:
 
 VideoCaptureWin32::VideoCaptureWin32()
 {
-  driverIndex = 0;
-  hwndPreview = NULL;
+  m_driverIndex = 0;
+  m_hwndPreview = NULL;
 }
 
 VideoCaptureWin32::~VideoCaptureWin32()
@@ -128,32 +128,32 @@ VideoCaptureWin32::~VideoCaptureWin32()
 
 bool VideoCaptureWin32::initDriver()
 {
-  if (::SendMessage(hwndPreview, WM_CAP_DRIVER_CONNECT,
-		    driverIndex, 0L)) {
+  if (::SendMessage(m_hwndPreview, WM_CAP_DRIVER_CONNECT,
+		    m_driverIndex, 0L)) {
     // setup the format to 320x240 size
     LPBITMAPINFO lpbi;
-    DWORD dwSize = ::SendMessage(hwndPreview,
+    DWORD dwSize = ::SendMessage(m_hwndPreview,
 				 WM_CAP_GET_VIDEOFORMAT,
 				 0, 0);
 
     lpbi = reinterpret_cast<LPBITMAPINFO>(::GlobalAlloc(GHND, dwSize));
-    ::SendMessage(hwndPreview,
+    ::SendMessage(m_hwndPreview,
 		  WM_CAP_GET_VIDEOFORMAT,
 		  dwSize, reinterpret_cast<LPARAM>(lpbi));
 
     lpbi->bmiHeader.biWidth = 320;
     lpbi->bmiHeader.biHeight = 240;
-    ::SendMessage(hwndPreview,
+    ::SendMessage(m_hwndPreview,
 		  WM_CAP_SET_VIDEOFORMAT,
 		  dwSize, reinterpret_cast<LPARAM>(lpbi));
     ::GlobalFree(lpbi);
 
     // get the status (to get the real size of the preview HWND)
     CAPSTATUS cs;
-    if (::SendMessage(hwndPreview, WM_CAP_GET_STATUS,
+    if (::SendMessage(m_hwndPreview, WM_CAP_GET_STATUS,
 		      sizeof(CAPSTATUS), reinterpret_cast<LPARAM>(&cs))) {
       // set the size of the preview window to the image size
-      ::MoveWindow(hwndPreview, 0, 0, cs.uiImageWidth, cs.uiImageHeight, TRUE);
+      ::MoveWindow(m_hwndPreview, 0, 0, cs.uiImageWidth, cs.uiImageHeight, TRUE);
       return true;
     }
   }
@@ -165,7 +165,7 @@ bool VideoCaptureWin32::initDriver()
 
 void VideoCaptureWin32::exitDriver()
 {
-  ::SendMessage(hwndPreview, WM_CAP_DRIVER_DISCONNECT, 0, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_DRIVER_DISCONNECT, 0, 0L);
 }
 
 bool VideoCaptureWin32::isPreviewWindowAvailable()
@@ -175,62 +175,63 @@ bool VideoCaptureWin32::isPreviewWindowAvailable()
 
 bool VideoCaptureWin32::createPreviewWindow(void* parentWindowHandle)
 {
-  // creamos el HWND (window handler del API de Win32) para mostrar la
-  // previsualización de la webcam
-  hwndPreview =
+  // Here we create the HWND to show the camera preview
+  m_hwndPreview =
     capCreateCaptureWindow(_T("WebCam"),
 			   WS_VISIBLE | WS_CHILD,
 			   0, 0, 0, 0,
 			   reinterpret_cast<HWND>(parentWindowHandle), 0);
 
 #if 0
-  // obtener la lista de drivers disponibles
-  for (int i=0; i<10; i++) { // índice de driver va de 0 a 9 (según MSDN)
+  // Get the list of available camera drivers
+  for (int i=0; i<10; i++) { // driver index (from 0 to 9 according to MSDN)
     TCHAR name[256];
     TCHAR ver[256];
     if (capGetDriverDescription(i, name, sizeof(name), ver, sizeof(ver))) {
-      TCHAR buf[512];
-      _stprintf(buf, "%s %s", name, ver);
-      driversList.push_back(_tcsdup(buf));
+      // TCHAR buf[512];
+      // _stprintf(buf, "%s %s", name, ver);
+      // driversList.push_back(_tcsdup(buf));
+      printf("%s %s\n", name, ver);
     }
     else
       break;
   }
 #endif
   
-  return hwndPreview ? true: false;
+  return m_hwndPreview ? true: false;
 }
 
 void VideoCaptureWin32::destroyPreviewWindow()
 {
-  ::DestroyWindow(hwndPreview);
+  ::DestroyWindow(m_hwndPreview);
 }
 
 void VideoCaptureWin32::startPreviewInWindow()
 {
-  ::SendMessage(hwndPreview, WM_CAP_SET_PREVIEWRATE, 10, 0L);
-  ::SendMessage(hwndPreview, WM_CAP_SET_PREVIEW, TRUE, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_SET_PREVIEWRATE, 10, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_SET_PREVIEW, TRUE, 0L);
 }
 
 void VideoCaptureWin32::stopPreviewInWindow()
 {
-  ::SendMessage(hwndPreview, WM_CAP_SET_PREVIEW, FALSE, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_SET_PREVIEW, FALSE, 0L);
 }
 
 void VideoCaptureWin32::grabFrame()
 {
+  // Do nothing
 }
 
 bool VideoCaptureWin32::getImage(CImg<unsigned char>& img)
 {
   bool ret = false;
 
-  ::SendMessage(hwndPreview, WM_CAP_GRAB_FRAME_NOSTOP, 0, 0L);
-  ::SendMessage(hwndPreview, WM_CAP_EDIT_COPY, 0, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_GRAB_FRAME_NOSTOP, 0, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_EDIT_COPY, 0, 0L);
 
-  ::OpenClipboard(hwndPreview); 
+  ::OpenClipboard(m_hwndPreview); 
   if (HBITMAP hbmp = reinterpret_cast<HBITMAP>(::GetClipboardData(CF_BITMAP))) {
-    HDC hdc = ::GetDC(hwndPreview);
+    HDC hdc = ::GetDC(m_hwndPreview);
 
     BITMAPINFO bi;
     memset(&bi, 0, sizeof(BITMAPINFO));
@@ -267,7 +268,7 @@ bool VideoCaptureWin32::getImage(CImg<unsigned char>& img)
       ret = true;
     }
 
-    ::ReleaseDC(hwndPreview, hdc);
+    ::ReleaseDC(m_hwndPreview, hdc);
   }
   ::CloseClipboard(); 
 
@@ -276,23 +277,23 @@ bool VideoCaptureWin32::getImage(CImg<unsigned char>& img)
 
 void VideoCaptureWin32::showFormatDialog()
 {
-  ::SendMessage(hwndPreview, WM_CAP_DLG_VIDEOFORMAT, 0, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_DLG_VIDEOFORMAT, 0, 0L);
   
   CAPSTATUS cs;
-  if (::SendMessage(hwndPreview, WM_CAP_GET_STATUS,
+  if (::SendMessage(m_hwndPreview, WM_CAP_GET_STATUS,
 		    sizeof(CAPSTATUS), reinterpret_cast<LPARAM>(&cs))) {
-    ::MoveWindow(hwndPreview, 0, 0, cs.uiImageWidth, cs.uiImageHeight, TRUE);
+    ::MoveWindow(m_hwndPreview, 0, 0, cs.uiImageWidth, cs.uiImageHeight, TRUE);
   }
 }
 
 void VideoCaptureWin32::showParamsDialog()
 {
-  ::SendMessage(hwndPreview, WM_CAP_DLG_VIDEOSOURCE, 0, 0L);
+  ::SendMessage(m_hwndPreview, WM_CAP_DLG_VIDEOSOURCE, 0, 0L);
   
   CAPSTATUS cs;
-  if (::SendMessage(hwndPreview, WM_CAP_GET_STATUS,
+  if (::SendMessage(m_hwndPreview, WM_CAP_GET_STATUS,
 		    sizeof(CAPSTATUS), reinterpret_cast<LPARAM>(&cs))) {
-    ::MoveWindow(hwndPreview, 0, 0, cs.uiImageWidth, cs.uiImageHeight, TRUE);
+    ::MoveWindow(m_hwndPreview, 0, 0, cs.uiImageWidth, cs.uiImageHeight, TRUE);
   }
 }
 
