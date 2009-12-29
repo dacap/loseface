@@ -59,6 +59,8 @@ namespace dao {
     dto::PhotoPtr getById(int id);
     QImage loadImage(int id);
 
+    void deletePhoto(int id);
+
   };
 
 }

@@ -87,6 +87,14 @@ QImage dao::Photo::loadImage(int id)
   return image;
 }
 
+void dao::Photo::deletePhoto(int id)
+{
+  QSqlQuery query(m_general->getDatabase());
+  query.prepare("DELETE FROM photos WHERE id=?");
+  query.addBindValue(id);
+  query.exec();
+}
+
 //////////////////////////////////////////////////////////////////////
 // Iterator of photos
 
