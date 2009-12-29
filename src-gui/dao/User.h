@@ -56,6 +56,9 @@ namespace dao {
     dto::UserPtr getById(int id);
     UserIteratorPtr getIterator();
 
+    int insertUser(dto::User* user);
+    void deleteUser(int id);
+
   };
 
 }

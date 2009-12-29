@@ -74,6 +74,28 @@ dto::UserPtr dao::User::getById(int id)
   return user;
 }
 
+int dao::User::insertUser(dto::User* user)
+{
+  QSqlQuery query(m_general->getDatabase());
+  query.prepare("INSERT INTO users (name) VALUES (?)");
+  query.addBindValue(user->getName());
+  query.exec();
+  
+  QVariant id = query.lastInsertId();
+  if (id.isValid())
+    return id.toInt();
+  else
+    return -1;
+}
+
+void dao::User::deleteUser(int id)
+{
+  QSqlQuery query(m_general->getDatabase());
+  query.prepare("DELETE FROM users WHERE id=?");
+  query.addBindValue(id);
+  query.exec();
+}
+
 //////////////////////////////////////////////////////////////////////
 // Iterator of users
 
