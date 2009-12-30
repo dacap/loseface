@@ -79,7 +79,6 @@ set_target_properties(loseface-lib PROPERTIES
 ######################################################################
 # Subdirectories
 
-add_subdirectory(docs)		# Documentation
 add_subdirectory(third_party)	# Third party libraries
 # add_subdirectory(tools)	# Tools
 add_subdirectory(tests)		# Tests
