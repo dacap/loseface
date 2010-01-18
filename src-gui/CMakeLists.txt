@@ -1,6 +1,4 @@
-# Lose Face - An open source face recognition project
-# Copyright (C) 2008-2009 David Capello
-# All rights reserved.
+# Copyright (C) 2008-2010 David Capello. All rights reserved.
 
 find_package(Qt4)
 
