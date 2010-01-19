@@ -8,6 +8,19 @@
 
 .. contents::
 
+--------------
+ Introducción
+--------------
+
+¿Qué es loseface.exe? Un programa de línea de comando para realizar
+experimentos de reconocimiento facial utilizando eigenfaces y redes
+neuronales artificiales (perceptrón multicapa específicamente).
+
+LoseFace funciona con scripts, que son pequeños archivos de texto
+indican qué operaciones realizar. Así usted tiene la posibilidad de
+programar en un lenguaje específico (Lua) cualquier experimento que
+desee llevar a cabo.
+
 ------------------
  Ejecutar Scripts
 ------------------
@@ -17,6 +30,18 @@ el ejecutable ``loseface.exe``. También puede ejecutarlo por medio de la
 línea de comando::
 
   C:\Archivos de Programa\LoseFace>loseface.exe mi_script.lua
+
+A veces es útil ejecutar el script desde la línea de comando en caso
+que éste imprima algo en la pantalla. Otra opción es crear un archivo
+``.bat`` para redireccionar la salida a un archivo de texto, así ejecutando
+el archivo ``.bat`` puede dejar el experimento ejecutándose en segundo
+plano y al terminar ver la salida en un archivo que usted desee.
+Ejemplo de un archivo ``ejemplo.bat``::
+
+  rem ejemplo.lua recibe un argumento de entrada
+  loseface.exe ejemplo.lua 1 > ejemplo-1.txt
+  loseface.exe ejemplo.lua 2 > ejemplo-2.txt
+  loseface.exe ejemplo.lua 3 > ejemplo-3.txt
 
 -------------------------------
  Referencia del Lenguaje (Lua)
@@ -94,18 +119,83 @@ Objetos
 Espacio de Nombres (namespaces)
 ===============================
 
----------------------------------
- Objectos de LoseFace (userdata)
----------------------------------
+----------------------
+ Objectos de LoseFace
+----------------------
+
+Para realizar experimentos debe conocer una serie de objetos (*userdata*)
+que puede utilizar en sus scripts Lua. A continuación se da una referencia
+de todos los objetos disponibles ().
 
 Eigenfaces
 ==========
 
-eigenface:add_image
--------------------
+El objeto ``Eigenfaces`` se encuentra en el namespace ``img``.
+Para crear un nuevo objeto ``Eigenfaces``::
+
+  local eig = img.Eigenfaces()
+
+Luego puede utilizar la variable ``eig`` como un objeto para acceder
+a los distintos métodos.
+
+eigenfaces:add_image
+--------------------
+
+::
+
+  eigenfaces:add_image(images)
+
+Parámetros:
+
+- *images*: Un arreglo de imágenes a ser agregados para el posterior
+  cálculo de eigenfaces.
+
+Ejemplo::
+
+  -- Cargamos desde el disco una serie de imágenes
+  local img1 = img.Image()
+  local img2 = img.Image()
+
+  img1:load({ file="photo1.png" })
+  img2:load({ file="photo2.png" })
+
+  -- Creamos un arreglo de imágenes
+  local images = { img1, img2 }
+
+  -- Creamos el objeto Eigenfaces y le agregamos las imágenes
+  local eig = img.Eigenfaces()
+  eig:add_image(images)
 
 eigenface:calculate_eigenfaces
 ------------------------------
+
+::
+
+  eigenfaces:calculate_eigenfaces({ components=number })
+  eigenfaces:calculate_eigenfaces({ variance=number })
+
+Calcula las eigenfaces para luego proder proyectar cualquier imagen al
+eigenspace.
+
+Parámetros:
+
+- *components*: Cantidad de componentes por eigenface. De todos los
+  eigenvalores/eigenvectores posibles a utilizar, sólo utilizaremos
+  esta cantidad especificada.
+
+- *variance*: En cambio de especificar la cantidad de componentes
+  específica, con este parámetros podemos indicar qué nivel de varianza
+  de información queremos abarcar. Así, se utilizarán tantos
+  eigenvalores/eigenvectores como varianza se necesite.
+
+Valor de retorno:
+
+- La cantidad de componentes de eigenfaces utilizados. Este valor
+  tiene sentido cuando la función se utiliza con el parámetro *variance*.
+
+Ejemplo: Calcular las eigenfaces para un nivel de varianza de 80%::
+
+  local num_eigenfaces = eig:calculate_eigenfaces({ variance=0.8 })
 
 eigenface:eigenvalues_count
 ---------------------------
