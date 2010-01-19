@@ -16,7 +16,20 @@ MainWindow::MainWindow()
   setWindowTitle(tr("Lose Face"));
   resize(500, 400);
 
-  setCentralWidget(new UserNavigation());
+  UserNavigation* userNav = new UserNavigation();
+  m_scrollArea = new QScrollArea();
+  m_scrollArea->setWidgetResizable(true);
+  m_scrollArea->setWidget(userNav);
+  m_scrollArea->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum);
+
+  setCentralWidget(m_scrollArea);
+}
+
+void MainWindow::resizeEvent(QResizeEvent* event)
+{
+  QMainWindow::resizeEvent(event);
+
+  m_scrollArea->adjustSize();
 }
 
 void MainWindow::createActions()
@@ -48,14 +61,24 @@ void MainWindow::createMenus()
 
 void MainWindow::goLoginMode()
 {
+  // Create login dialog
+  LoginDialog dlg(this);
+  dlg.show();
+
+  // Check if the camera is working
+  if (!dlg.initCamera()) {
+    QMessageBox::critical(this, tr("Error"),
+			  tr("Camera not found or it cannot be initialized."));
+    return;
+  }
+
+  // Hide main window
   hide();
 
-  LoginDialog dlg;
   bool tryAgain = false;
-
   do {
     tryAgain = false;
-    dlg.exec();
+    dlg.exec();			// Show the login dialog
 
     switch (dlg.result()) {
 

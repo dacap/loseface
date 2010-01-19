@@ -9,13 +9,19 @@
 
 class QMenu;
 class QAction;
+class QScrollArea;
 
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
+  QScrollArea* m_scrollArea;
+
 public:
   MainWindow();
+
+protected:
+  void resizeEvent(QResizeEvent* event);
 
 private slots:
   void goLoginMode();

@@ -9,6 +9,7 @@
 
 class QPushButton;
 class QImage;
+class UserNavigationButton;
 
 namespace dto { class User; }
 
@@ -20,12 +21,14 @@ class UserNavigation : public QWidget
 
 public:
   UserNavigation(QWidget* parent = 0);
+  QSize sizeHint() const;
 
 private slots:
   void addNewUser();
+  void deleteUser(UserNavigationButton* button);
 
 private:
-  void addUser(const dto::User& user, QImage image);
+  void addUser(dto::User* user, QImage image);
   void loadUsers();
 
 };

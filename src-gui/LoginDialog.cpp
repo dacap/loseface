@@ -6,8 +6,11 @@
 #include "WebCamWidget.h"
 #include <QtGui>
 
-LoginDialog::LoginDialog()
+LoginDialog::LoginDialog(QWidget* parent)
+  : QDialog(parent)
 {
+  setWindowTitle(tr("Login"));
+
   // Create widgets
 
   m_webCam = new WebCamWidget();
@@ -41,6 +44,16 @@ LoginDialog::LoginDialog()
 
   connect(loginButton, SIGNAL(clicked()), this, SLOT(login()));
   connect(adminButton, SIGNAL(clicked()), this, SLOT(enterAdmin()));
+}
+
+LoginDialog::~LoginDialog()
+{
+  m_webCam->stopPreview();
+}
+
+bool LoginDialog::initCamera()
+{
+  return m_webCam->startPreview();
 }
 
 void LoginDialog::login()

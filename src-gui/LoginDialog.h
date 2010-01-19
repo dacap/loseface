@@ -20,7 +20,10 @@ public:
     LOGIN_RESULT = 1,
     ENTER_ADMIN_RESULT = 2,
   };
-  LoginDialog();
+  LoginDialog(QWidget* parent = 0);
+  ~LoginDialog();
+
+  bool initCamera();
 
 private slots:
   void login();

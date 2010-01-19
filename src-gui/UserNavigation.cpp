@@ -31,17 +31,65 @@ UserNavigation::UserNavigation(QWidget* parent)
   loadUsers();
 }
 
-void UserNavigation::addNewUser()
+QSize UserNavigation::sizeHint() const
 {
-  addUser(dto::User(), QImage());
+  return QSize(0, 0);
+  // return QSize(parentWidget()->width(),
+  // 	       layout()->heightForWidth(parentWidget()->width()));
+  // return QSize(0, layout()->heightForWidth(parentWidget()->width()));
 }
 
-void UserNavigation::addUser(const dto::User& user, QImage image)
+void UserNavigation::addNewUser()
+{
+  dto::User user;
+  user.setName(tr("No Name"));
+
+  dao::General* generalDao = get_general_dao();
+  if (generalDao) {
+    dao::User userDao(generalDao);
+    userDao.insertUser(&user);
+  }
+
+  addUser(&user, QImage());
+  updateGeometry();
+}
+
+void UserNavigation::deleteUser(UserNavigationButton* userButton)
+{
+  const dto::User user(userButton->getUser());
+  QString msg;
+  msg = QString(tr("Are you sure you want to remove user \"%1\"?")).arg(user.getName());
+
+  int ret = QMessageBox::warning(this, tr("Confirmation"),
+				 msg,
+				 QMessageBox::Yes | QMessageBox::No,
+				 QMessageBox::No);
+  if (ret != QMessageBox::Yes)
+    return;
+
+  // Remove the user from the database
+  dao::General* generalDao = get_general_dao();
+  if (generalDao) {
+    dao::User userDao(generalDao);
+    userDao.deleteUser(user.getId());
+  }
+
+  // Remove the button to view this user
+  userButton->setParent(NULL);
+  userButton->deleteLater();
+  updateGeometry();
+}
+
+void UserNavigation::addUser(dto::User* user, QImage image)
 {
   int addUserIndex = layout()->indexOf(m_addUser);
   QLayoutItem* addUserItem = layout()->takeAt(addUserIndex);
 
-  layout()->addWidget(new UserNavigationButton(this, user, image));
+  UserNavigationButton* userButton = new UserNavigationButton(this, *user, image);
+  connect(userButton, SIGNAL(userDeleted(UserNavigationButton*)),
+	  this, SLOT(deleteUser(UserNavigationButton*)));
+
+  layout()->addWidget(userButton);
   layout()->addItem(addUserItem);
 }
 
@@ -62,7 +110,7 @@ void UserNavigation::loadUsers()
       	image = pictureDao.loadImage(picture.getId());
       }
 
-      addUser(user, image);
+      addUser(&user, image);
     }
   }
 }

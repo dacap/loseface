@@ -23,11 +23,24 @@ public:
 
   QSize sizeHint() const;
 
+  const dto::User& getUser() const { return m_user; }
+
+signals:
+  void userDeleted(UserNavigationButton*);
+
 protected:
   void paintEvent(QPaintEvent* event);
   void enterEvent(QEvent* event);
   void leaveEvent(QEvent* event);
   void mousePressEvent(QMouseEvent* event);
+
+private slots:
+  void deleteUser();
+
+private:
+  void createActions();
+
+  QAction* m_deleteUser;
 
 };
 

@@ -3,6 +3,8 @@
 // that can be found in the LICENSE.txt file.
 
 #include "UserNavigationButton.h"
+#include "dao/User.h"
+#include "LoseFaceApp.h"
 #include <QtGui>
 		       
 UserNavigationButton::UserNavigationButton(QWidget* parent,
@@ -12,6 +14,8 @@ UserNavigationButton::UserNavigationButton(QWidget* parent,
   , m_photo(photo)
   , m_forceHot(false)
 {
+  createActions();
+
   setBackgroundRole(QPalette::Base);
   setAutoFillBackground(true);
 }
@@ -71,10 +75,21 @@ void UserNavigationButton::mousePressEvent(QMouseEvent* event)
     QMenu bar(this);
     bar.addAction(tr("Photos"));
     bar.addSeparator();
-    bar.addAction(tr("Remove"));
+    bar.addAction(m_deleteUser);
     bar.exec(mapToGlobal(event->pos()));
 
     m_forceHot = underMouse();	// TODO
     update(rect());
-  }  
+  }
+}
+
+void UserNavigationButton::deleteUser()
+{
+  emit userDeleted(this);
+}
+
+void UserNavigationButton::createActions()
+{
+  m_deleteUser = new QAction(tr("&Delete"), this);
+  connect(m_deleteUser, SIGNAL(triggered()), this, SLOT(deleteUser()));
 }
