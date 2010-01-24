@@ -1,0 +1,6 @@
+This directory should contain all folders in the following .zip file:
+
+  http://www.cl.cam.ac.uk/research/dtg/attarchive/pub/data/att_faces.zip
+
+It contains the original photos of the ORL database to create the
+training patterns.
