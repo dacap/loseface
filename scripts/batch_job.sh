@@ -1,6 +1,6 @@
 #! /bin/sh
 
-LOSEFACE=../build/loseface
+LOSEFACE=../loseface
 FACES=$1
 SUBJECTS=$2
 if [ x"$FACES" = x"" ] ; then FACES=orl_patterns ; fi
