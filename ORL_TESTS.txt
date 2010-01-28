@@ -3,11 +3,11 @@ ORL TESTS
 
   To reproduce the JAIIO'09 results, run:
 
-    script\orl_faces\download_faces.bat
+    scripts\orl_faces\download_faces.bat
 
   And then:
 
-    script\batch_job.bat
+    scripts\batch_job.bat
 
   This job will take days or weeks to be completed.
 
