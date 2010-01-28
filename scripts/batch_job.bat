@@ -4,7 +4,12 @@ set LOSEFACE=..\loseface
 set FACES=orl_patterns
 set SUBJECTS=40
 
+echo IMPORTANT! The following steps will take a lot of time (days, maybe weeks)
 echo Patterns="%FACES%", Subjects=%SUBJECTS%
+
+echo Creating patterns...
+%LOSEFACE% %FACES%.lua >nul
+echo Done
 
 echo "MLP global (25 inputs)..."
 %LOSEFACE% mlp_global.lua %FACES% 25 25 %SUBJECTS% mse > %FACES%/mlp_global_25_25.output
