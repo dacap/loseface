@@ -3,7 +3,7 @@ ORL TESTS
 
   To reproduce the JAIIO'09 results, run:
 
-    script\orl_patterns\download_faces.bat
+    script\orl_faces\download_faces.bat
 
   And then:
 
