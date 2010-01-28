@@ -32,12 +32,12 @@ static int mlparray__load(lua_State* L)
 {
   lua_MlpArray** net = toMlpArray(L, 1);
   if (net) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     string file;
-    lua_getfield(L, 2, "file");
-    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
-    lua_pop(L, 1);
+
+    if (lua_isstring(L, 2))
+      file = lua_tostring(L, 2);
+    else
+      return luaL_error(L, "Invalid argument in MlpArray:load function (string expected).");
 
     (*net)->load(file.c_str());
 
@@ -50,19 +50,19 @@ static int mlparray__load(lua_State* L)
 /// Saves the network to the specified file.
 /// 
 /// @code
-/// net:save({ file=FILENAME })
+/// net:save(FILENAME)
 /// @endcode
 ///
 static int mlparray__save(lua_State* L)
 {
   lua_MlpArray** net = toMlpArray(L, 1);
   if (net) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     string file;
-    lua_getfield(L, 2, "file");
-    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
-    lua_pop(L, 1);
+
+    if (lua_isstring(L, 2))
+      file = lua_tostring(L, 2);
+    else
+      return luaL_error(L, "Invalid argument in MlpArray:save function (string expected).");
 
     (*net)->save(file.c_str());
   }
@@ -76,12 +76,10 @@ static int mlparray__recall(lua_State* L)
     return 0;
 
   lua_MlpArray& array(**_array);
-  luaL_checktype(L, 2, LUA_TTABLE);
 
   lua_PatternSet* set = NULL;
-  lua_getfield(L, 2, "set");
-  if (lua_isuserdata(L, -1)) set = *toPatternSet(L, -1);
-  lua_pop(L, 1);
+  if (lua_isuserdata(L, 2))
+    set = *toPatternSet(L, -1);
 
   if (!set)
     return luaL_error(L, "Invalid pattern set specified");

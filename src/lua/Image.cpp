@@ -28,19 +28,13 @@ static int image__create(lua_State* L)
 {
   lua_Image** img = toImage(L, 1);
   if (img) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     int width = 0;
     int height = 0;
-    lua_getfield(L, 2, "width");
-    lua_getfield(L, 2, "height");
-    if (lua_isnumber(L, -1)) height = lua_tonumber(L, -1);
-    if (lua_isnumber(L, -2)) width = lua_tonumber(L, -2);
-    lua_pop(L, 2);
+    if (lua_isnumber(L, 2)) width = lua_tonumber(L, 2);
+    if (lua_isnumber(L, 3)) height = lua_tonumber(L, 3);
 
-    if (width > 0 && height > 0) {
+    if (width > 0 && height > 0)
       (*img)->assign(width, height, 1, 1);
-    }
   }
   return 0;
 }
@@ -49,21 +43,16 @@ static int image__draw(lua_State* L)
 {
   lua_Image** img = toImage(L, 1);
   if (img) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     lua_Image* sprite = NULL;
     int x = 0;
     int y = 0;
-    lua_getfield(L, 2, "x");
-    lua_getfield(L, 2, "y");
-    lua_getfield(L, 2, "sprite");
-    if (lua_isuserdata(L, -1)) sprite = *toImage(L, -1);
-    if (lua_isnumber(L, -2)) y = lua_tonumber(L, -2);
-    if (lua_isnumber(L, -3)) x = lua_tonumber(L, -3);
-    lua_pop(L, 3);
+
+    if (lua_isuserdata(L, 2)) sprite = *toImage(L, 2);
+    if (lua_isnumber(L, 3)) x = lua_tonumber(L, 3);
+    if (lua_isnumber(L, 4)) y = lua_tonumber(L, 4);
 
     if (!sprite)
-      return luaL_error(L, "Invalid sprite image. 'sprite' parameter expected.");
+      return luaL_error(L, "Invalid sprite image. Image expected as first parameter.");
 
     (*img)->draw_image(*sprite, x, y, 0, 0);
   }
@@ -74,12 +63,12 @@ static int image__load(lua_State* L)
 {
   lua_Image** img = toImage(L, 1);
   if (img) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     string file;
-    lua_getfield(L, 2, "file");
-    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
-    lua_pop(L, 1);
+
+    if (lua_isstring(L, 2))
+      file = lua_tostring(L, 2);
+    else
+      return luaL_error(L, "Invalid argument in Image:load function (string expected).");
 
     (*img)->load(file.c_str());
 
@@ -92,12 +81,12 @@ static int image__save(lua_State* L)
 {
   lua_Image** img = toImage(L, 1);
   if (img) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     string file;
-    lua_getfield(L, 2, "file");
-    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
-    lua_pop(L, 1);
+
+    if (lua_isstring(L, 2))
+      file = lua_tostring(L, 2);
+    else
+      return luaL_error(L, "Invalid argument in Image:save function (string expected).");
 
     (*img)->save(file.c_str());
 

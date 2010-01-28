@@ -35,7 +35,7 @@ function get_faces_of_cidisinc_images()
       io.flush()
       
       image = img.Image()
-      image:load({ file=file })
+      image:load(file)
 
       print("  Getting the face...")
       io.flush()
@@ -45,7 +45,7 @@ function get_faces_of_cidisinc_images()
 
       print("  Saving "..file.."...")
       io.flush()
-      face:save({ file=file })
+      face:save(file)
     end
   end
 end

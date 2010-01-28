@@ -9,8 +9,6 @@
 using namespace std;
 using namespace annlib::details;
 
-static double calculate_hits(lua_Mlp& net, lua_PatternSet& pattern_set);
-
 lua_Mlp** annlib::details::toMlp(lua_State* L, int pos)
 {
   return ((lua_Mlp**)luaL_checkudata(L, pos, LUAOBJ_MLP));
@@ -61,19 +59,19 @@ static int mlp__init(lua_State* L)
 
 /// Loads a neural network from the specified file.
 /// @code
-/// net:load({ file=FILENAME })
+/// net:load(FILENAME)
 /// @endcode
 ///
 static int mlp__load(lua_State* L)
 {
   lua_Mlp** net = toMlp(L, 1);
   if (net) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     string file;
-    lua_getfield(L, 2, "file");
-    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
-    lua_pop(L, 1);
+
+    if (lua_isstring(L, 2))
+      file = lua_tostring(L, 2);
+    else
+      return luaL_error(L, "Invalid argument in Mlp:load function (string expected).");
 
     (*net)->load(file.c_str());
 
@@ -86,19 +84,19 @@ static int mlp__load(lua_State* L)
 /// Saves the network to the specified file.
 /// 
 /// @code
-/// net:save({ file=FILENAME })
+/// net:save(FILENAME)
 /// @endcode
 ///
 static int mlp__save(lua_State* L)
 {
   lua_Mlp** net = toMlp(L, 1);
   if (net) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     string file;
-    lua_getfield(L, 2, "file");
-    if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
-    lua_pop(L, 1);
+
+    if (lua_isstring(L, 2))
+      file = lua_tostring(L, 2);
+    else
+      return luaL_error(L, "Invalid argument in Mlp:save function (string expected).");
 
     (*net)->save(file.c_str());
   }
@@ -265,53 +263,19 @@ static int mlp__train(lua_State* L)
   return 1;
 }
 
-/// Tests the network model
-/// 
-/// @code
-/// net:test({ set=PatternSet,
-///            criterion=TODO })
-/// @endcode
-///
-static int mlp__test(lua_State* L)
-{
-  lua_Mlp** _net = toMlp(L, 1);
-  if (_net) {
-    lua_Mlp& net(**_net);
-
-    luaL_checktype(L, 2, LUA_TTABLE);
-
-    lua_PatternSet* set = NULL;
-    lua_getfield(L, 2, "set");
-    if (lua_isuserdata(L, -1)) set = *toPatternSet(L, -1);
-    lua_pop(L, 1);
-
-    if (!set)
-      return luaL_error(L, "Invalid pattern set specified");
-
-    lua_PatternSet& pattern_set(*set);
-    double hits = calculate_hits(net, pattern_set);
-    lua_pushnumber(L, hits);
-    return 1;
-  }
-  return 0;
-}
-
 /// Calculates MSE given a set of patterns.
 /// 
 /// @code
-/// net:mse({ set=PatternSet })
+/// net:mse(set)
 /// @endcode
 ///
 static int mlp__mse(lua_State* L)
 {
   lua_Mlp** net = toMlp(L, 1);
   if (net) {
-    luaL_checktype(L, 2, LUA_TTABLE);
-
     lua_PatternSet* set = NULL;
-    lua_getfield(L, 2, "set");
-    if (lua_isuserdata(L, -1)) set = *toPatternSet(L, -1);
-    lua_pop(L, 1);
+    if (lua_isuserdata(L, 2))
+      set = *toPatternSet(L, 2);
 
     if (!set)
       return luaL_error(L, "Invalid pattern set specified");
@@ -337,12 +301,10 @@ static int mlp__recall(lua_State* L)
     return 0;
 
   lua_Mlp& net(**_net);
-  luaL_checktype(L, 2, LUA_TTABLE);
 
   lua_PatternSet* set = NULL;
-  lua_getfield(L, 2, "set");
-  if (lua_isuserdata(L, -1)) set = *toPatternSet(L, -1);
-  lua_pop(L, 1);
+  if (lua_isuserdata(L, 2))
+    set = *toPatternSet(L, -1);
 
   if (!set)
     return luaL_error(L, "Invalid pattern set specified");
@@ -391,7 +353,6 @@ static const luaL_Reg mlp_metatable[] = {
   { "load", mlp__load },
   { "save", mlp__save },
   { "train", mlp__train },
-  { "test", mlp__test },
   { "mse", mlp__mse },
   { "recall", mlp__recall },
   { "__gc", mlp__gc },
@@ -431,19 +392,4 @@ int annlib::details::MlpCtor(lua_State* L)
 
   **newmlp(L) = lua_Mlp(inputs, hiddens, outputs);
   return 1;
-}
-
-static double calculate_hits(lua_Mlp& net, lua_PatternSet& pattern_set)
-{
-  Vector<double> hidden, output;
-  int hits = 0;
-
-  for (size_t c=0; c<pattern_set.size(); ++c) {
-    net.recall(pattern_set[c].input, hidden, output);
-
-    if (output.getMaxPos() == pattern_set[c].output.getMaxPos())
-      ++hits;
-  }
-
-  return (double)hits / (double)pattern_set.size();
 }

@@ -73,6 +73,48 @@ function mlp_global()
 
   ----------------------------------------------------------------------
 
+  function prepare_positive_patterns(subject_nth, set)
+    local positive_set = set:split_by_output({ subject_nth })[1]
+    positive_set:set_output({ 1 })
+    return positive_set
+  end
+
+  ----------------------------------------------------------------------
+
+  function test_mlp(mlp, set)
+    local hits = 0
+    local total = 0
+    for subject_nth = 1,SUBJECTS do
+      -- Here we call prepare_positive_patterns to get the pattern of
+      -- 'subject_nth', but we do not use the 'target' for testing,
+      -- so the outputs of 'positive_set' is irrelevant
+      local positive_set = prepare_positive_patterns(subject_nth, set)
+      local outputs = mlp:recall(positive_set)
+      for j=1,#outputs do
+	local output = outputs[j]
+	
+	-- get the max output
+	local max_pos = 0
+	for i=1,#output do
+	  --if output[i] > 0 then
+	  if max_pos == 0 or output[max_pos] < output[i] then
+	    max_pos = i
+	  end
+	  --end
+	end
+
+	if max_pos == subject_nth then
+	  hits = hits+1;
+	end
+	total = total+1;
+      end
+    end
+
+    return hits/total
+  end
+
+  ----------------------------------------------------------------------
+
   local total_train = 0
   local total_test = 0
 
@@ -80,8 +122,8 @@ function mlp_global()
     local train_set, test_set = get_partition(i)
 
     -- Normalize patterns
-    local n = ann.Normalizer({ type=ann.MINMAX, set=train_set })
-    n:normalize({ train_set, test_set })
+    local n = ann.Normalizer(train_set)
+    n:normalize(train_set, test_set)
 
     local hits_train = {}
     local hits_test = {}
@@ -99,11 +141,11 @@ function mlp_global()
 
       t2 = os.date()
 
-      table.insert(hits_train, mlp:test({ set=train_set }))
-      table.insert(hits_test, mlp:test({ set=test_set }))
+      table.insert(hits_train, test_mlp(mlp, train_set))
+      table.insert(hits_test, test_mlp(mlp, test_set))
 
       print(string.format("  RUN#%02d MSE=%.16g Hits TRAIN=%.16g TEST=%.16g\t(%s-%s) epochs=%d",
-			  seed, mlp:mse({ set=train_set }),
+			  seed, mlp:mse(train_set),
 			  hits_train[#hits_train],
 			  hits_test[#hits_test], t1, t2, epochs))
     end

@@ -69,54 +69,42 @@ static int patternset__add_pattern(lua_State* L)
   if (!p)
     return luaL_error(L, "Invalid pattern set specified");
 
-  luaL_checktype(L, 2, LUA_TTABLE);
-
   Pattern<double> newPattern;
 
-  lua_getfield(L, 2, "input");
-  if (lua_istable(L, -1)) {
-    size_t N = lua_objlen(L, -1);
-    if (N == 0) {
-      lua_pop(L, 1);
+  if (lua_istable(L, 2)) {
+    size_t N = lua_objlen(L, 2);
+    if (N == 0)
       return luaL_error(L, "Invalid 'input' vector with zero length");
-    }
     newPattern.input.resize(N);
 
     // iterate the 'input' table
     lua_pushnil(L);		// push nil for first element of table
     size_t i = 0;
-    while (lua_next(L, -2) != 0) {
+    while (lua_next(L, 2) != 0) {
       newPattern.input(i++) = lua_tonumber(L, -1); // get value
       lua_pop(L, 1);		// remove value, the key is in stack for next iteration
     }
-    lua_pop(L, 1);		// pop the 'input' table
   }
   else {
-    lua_pop(L, 1);
-    return luaL_error(L, "You have to specified the 'input' vector");
+    return luaL_error(L, "You have to specified the 'input' vector as first argument");
   }
 
-  lua_getfield(L, 2, "output");
-  if (lua_istable(L, -1)) {
-    size_t N = lua_objlen(L, -1);
-    if (N == 0) {
-      lua_pop(L, 1);
+  if (lua_istable(L, 3)) {
+    size_t N = lua_objlen(L, 3);
+    if (N == 0)
       return luaL_error(L, "Invalid 'output' vector with zero length");
-    }
     newPattern.output.resize(N);
 
     // iterate the 'output' table
     lua_pushnil(L);		// push nil for first element of table
     size_t i = 0;
-    while (lua_next(L, -2) != 0) {
+    while (lua_next(L, 3) != 0) {
       newPattern.output(i++) = lua_tonumber(L, -1); // get value
       lua_pop(L, 1);		// remove value, the key is in stack for next iteration
     }
-    lua_pop(L, 1);		// pop the 'output' table
   }
   else {
-    lua_pop(L, 1);
-    return luaL_error(L, "You have to specified the 'output' vector");
+    return luaL_error(L, "You have to specified the 'output' vector as second argument");
   }
 
   // add the new pattern
@@ -169,10 +157,57 @@ static int patternset__shuffle(lua_State* L)
 /// partitions.
 ///
 /// @code
-/// PatternSet:split({ bypercentage={ percentage1, percentage2... } })
-/// PatternSet:split({ byoutput={ output1, output2, output3... } })
+/// PatternSet:split_by_percentage({ percentage1, percentage2... })
+/// PatternSet:split_by_output({ output1, output2, output3... })
 /// @endcode
-static int patternset__split(lua_State* L)
+static int patternset__split_by_percentage(lua_State* L)
+{
+  lua_PatternSet** p = toPatternSet(L, 1);
+  if (!p)
+    return luaL_error(L, "Invalid pattern set specified");
+
+  lua_PatternSet* set = *p;
+
+  // Split by percentage...
+  vector<double> percentages;
+
+  if (lua_istable(L, 2)) {
+    // iterate the table
+    lua_pushnil(L);		// push nil for first element of table
+    while (lua_next(L, 2) != 0) {
+      double percentage = lua_tonumber(L, -1); // get value
+      percentages.push_back(percentage);
+      lua_pop(L, 1);		// remove value, the key is in stack for next iteration
+    }
+  }
+
+  // put in the stack the return value (a new table)
+  lua_newtable(L);
+  int i = 1;
+  int beg = 0, end;
+  for (vector<double>::iterator it = percentages.begin(); it != percentages.end(); ++it, ++i) {
+    // a new pattern in the stack
+    lua_pushinteger(L, i);
+    lua_PatternSet* newset = *newpatternset(L);
+    lua_settable(L, -3);
+
+    // chunk of the patterns to split
+    double percentage = *it;
+
+    // for each pattern in the original set
+    end = beg + set->size()*percentage/100.0;
+    end = end < set->size() ? end: set->size();
+    for (int c=beg; c<end; ++c) {
+      Pattern<double>& pat = (*set)[c];
+      newset->push_back(pat);
+    }
+    beg = end;
+  }
+
+  return 1;
+}
+
+static int patternset__split_by_output(lua_State* L)
 {
   lua_PatternSet** p = toPatternSet(L, 1);
   if (!p)
@@ -183,37 +218,14 @@ static int patternset__split(lua_State* L)
   // Split by output...
   vector<int> outputs;
 
-  lua_getfield(L, 2, "byoutput");
-  if (lua_istable(L, -1)) {
-    // iterate the 'byoutput' table
+  if (lua_istable(L, 2)) {
+    // iterate the table
     lua_pushnil(L);		// push nil for first element of table
-    while (lua_next(L, -2) != 0) {
+    while (lua_next(L, 2) != 0) {
       int output_nth = lua_tointeger(L, -1); // get value
       outputs.push_back(output_nth);
       lua_pop(L, 1);		// remove value, the key is in stack for next iteration
     }
-    lua_pop(L, 1);		// pop the byoutput table
-  }
-  else {
-    lua_pop(L, 1);
-  }
-
-  // Split by percentage...
-  vector<double> percentages;
-
-  lua_getfield(L, 2, "bypercentage");
-  if (lua_istable(L, -1)) {
-    // iterate the 'bypercentage' table
-    lua_pushnil(L);		// push nil for first element of table
-    while (lua_next(L, -2) != 0) {
-      double percentage = lua_tonumber(L, -1); // get value
-      percentages.push_back(percentage);
-      lua_pop(L, 1);		// remove value, the key is in stack for next iteration
-    }
-    lua_pop(L, 1);		// pop the bypercentage table
-  }
-  else {
-    lua_pop(L, 1);
   }
 
   // put in the stack the return value (a new table)
@@ -238,33 +250,13 @@ static int patternset__split(lua_State* L)
     }
   }
 
-  int beg = 0, end;
-  for (vector<double>::iterator it = percentages.begin(); it != percentages.end(); ++it, ++i) {
-    // a new pattern in the stack
-    lua_pushinteger(L, i);
-    lua_PatternSet* newset = *newpatternset(L);
-    lua_settable(L, -3);
-
-    // chunk of the patterns to split
-    double percentage = *it;
-
-    // for each pattern in the original set
-    end = beg + set->size()*percentage/100.0;
-    end = end < set->size() ? end: set->size();
-    for (int c=beg; c<end; ++c) {
-      Pattern<double>& pat = (*set)[c];
-      newset->push_back(pat);
-    }
-    beg = end;
-  }
-
   return 1;
 }
 
 /// Adds to this set of patterns other patterns.
 /// 
 /// @code
-/// set:merge({ set1, set2, set3, ... })
+/// set:merge(set1, set2, set3, ...)
 /// @endcode
 static int patternset__merge(lua_State* L)
 {
@@ -272,18 +264,14 @@ static int patternset__merge(lua_State* L)
   if (!p)
     return luaL_error(L, "Invalid pattern set specified");
 
-  luaL_checktype(L, 2, LUA_TTABLE);
-
-  // iterate table
-  lua_pushnil(L);		// push nil for first element of table
-  while (lua_next(L, 2) != 0) {
-    lua_PatternSet* set = *toPatternSet(L, -1); // get value
-
-    // Add all patterns of 'set' in 'p'
-    for (lua_PatternSet::iterator it=set->begin(); it!=set->end(); ++it)
-      (*p)->push_back(**it);
-
-    lua_pop(L, 1);		// remove value, the key is in stack for next iteration
+  int n = lua_gettop(L);	// number of arguments
+  for (int i=2; i<=n; ++i) {
+    lua_PatternSet* set = *toPatternSet(L, i); // get argument "i"
+    if (set) {
+      // Add all patterns of 'set' in 'p'
+      for (lua_PatternSet::iterator it=set->begin(); it!=set->end(); ++it)
+	(*p)->push_back(**it);
+    }
   }
 
   return 0;
@@ -315,7 +303,8 @@ static const luaL_Reg patternset_metatable[] = {
   { "add_pattern", patternset__add_pattern },
   { "set_output", patternset__set_output },
   { "shuffle", patternset__shuffle },
-  { "split", patternset__split },
+  { "split_by_percentage", patternset__split_by_percentage },
+  { "split_by_output", patternset__split_by_output },
   { "merge", patternset__merge },
   { "__gc", patternset__gc },
   { "__len", patternset__len },

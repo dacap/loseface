@@ -29,12 +29,9 @@ static int eigenfaces__reserve(lua_State* L)
   if (!eig)
     return luaL_error(L, "No Eigenfaces user-data specified");
 
-  luaL_checktype(L, 2, LUA_TTABLE);
-
   int size = 0;
-  lua_getfield(L, 2, "size");
-  if (lua_isnumber(L, -1)) size = lua_tonumber(L, -1);
-  lua_pop(L, 1);
+  if (lua_isnumber(L, 2))
+    size = lua_tonumber(L, 2);
 
   if (size <= 0)
       return luaL_error(L, "'size' argument expected with a value greater than zero");
@@ -49,18 +46,14 @@ static int eigenfaces__add_image(lua_State* L)
   if (!eig)
     return luaL_error(L, "No Eigenfaces user-data specified");
 
-  luaL_checktype(L, 2, LUA_TTABLE);
-
-  // iterate table
-  lua_pushnil(L);		// push nil for first element of table
-  while (lua_next(L, 2) != 0) {
-    lua_Image* img = *toImage(L, -1); // get value
+  int n = lua_gettop(L);	// number of arguments
+  for (int i=2; i<=n; ++i) {
+    lua_Image* img = *toImage(L, i); // get argument "i"
     if (img) {
       Vector<double> imgVector;
       imglib::details::image2vector(img, imgVector);
       (*eig)->addImage(imgVector);
     }
-    lua_pop(L, 1);		// remove value, the key is in stack for next iteration
   }
 
   return 0;
@@ -108,14 +101,14 @@ static int eigenfaces__save(lua_State* L)
   if (!eig)
     return luaL_error(L, "No Eigenfaces user-data specified");
 
-  luaL_checktype(L, 2, LUA_TTABLE);
-
   string file;
-  lua_getfield(L, 2, "file");
-  if (lua_isstring(L, -1)) file = lua_tostring(L, -1);
-  lua_pop(L, 1);
+  if (lua_isstring(L, 2))
+    file = lua_tostring(L, 2);
+  else
+    return luaL_error(L, "File-name expected in Eigenfaces:save() as first argument");
 
   (*eig)->save(file.c_str());
+
   // TODO error
   return 0;
 }

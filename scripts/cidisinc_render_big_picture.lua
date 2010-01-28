@@ -41,7 +41,7 @@ for i = 1,#folders do
     print(string.format("%d %s", i, file))
   
     image = img.Image()
-    image:load({ file=file })
+    image:load(file)
     table.insert(images, image)
 
     w = w + image:width()
@@ -57,17 +57,17 @@ for i = 1,#folders do
 end
 
 big_image = img.Image()
-big_image:create({ width=max_w, height=max_h })
+big_image:create(max_w, max_h)
 y = 0
 for i = 1,#folders do
   x = 0
   h = 0
   for j = 1,#folders[i][4] do
     image = folders[i][4][j]
-    big_image:draw({ sprite=image, x=x, y=y })
+    big_image:draw(image, x, y)
     x = x + image:width()
     h = math.max(h, image:height())
   end
   y = y + h
 end
-big_image:save({ file="cidisinc_big_picture.png" })
+big_image:save("cidisinc_big_picture.png")

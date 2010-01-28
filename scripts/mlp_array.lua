@@ -78,7 +78,7 @@ function mlp_array()
   ----------------------------------------------------------------------
 
   function prepare_positive_patterns(subject_nth, set)
-    local positive_set = set:split({ byoutput={ subject_nth } })[1]
+    local positive_set = set:split_by_output({ subject_nth })[1]
     positive_set:set_output({ 1 })
     return positive_set
   end
@@ -91,7 +91,7 @@ function mlp_array()
       end
     end
 
-    local negative_sets = set:split({ byoutput=all_others })
+    local negative_sets = set:split_by_output(all_others)
 
     for i=1,#negative_sets do
       negative_sets[i]:set_output({ 0 })
@@ -110,7 +110,7 @@ function mlp_array()
       -- 'subject_nth', but we do not use the 'target' for testing,
       -- so the outputs of 'positive_set' is irrelevant
       local positive_set = prepare_positive_patterns(subject_nth, set)
-      local outputs = array:recall({ set=positive_set })
+      local outputs = array:recall(positive_set)
       for j=1,#outputs do
 	local output = outputs[j]
 	
@@ -143,8 +143,8 @@ function mlp_array()
     local train_set, test_set = get_partition(i)
 
     -- Normalize patterns
-    local n = ann.Normalizer({ type=ann.MINMAX, set=train_set })
-    n:normalize({ train_set, test_set })
+    local n = ann.Normalizer(train_set)
+    n:normalize(train_set, test_set)
 
     print(string.format("    TRAINING BEGIN "..os.date()))
 
@@ -164,8 +164,10 @@ function mlp_array()
 	local negative_sets = prepare_negative_patterns(subject_nth, train_set)
 
 	local fullmix = ann.PatternSet()
-	fullmix:merge({ positive_set })
-	fullmix:merge(negative_sets)
+	fullmix:merge(positive_set)
+	for i=1,#negative_sets do
+	  fullmix:merge(negative_sets[i])
+	end
 
 	local epochs = 0
 	local adjustements = 0
@@ -186,10 +188,10 @@ function mlp_array()
 	    for i=1,10 do
 	      for j=1,#negative_sets,NUMBER_OF_NEGATIVES do -- rotate negative patterns
 		local mix = ann.PatternSet()
-		mix:merge({ positive_set })
+		mix:merge(positive_set)
 		for k=0,NUMBER_OF_NEGATIVES-1 do
 		  if negative_sets[j+k] == nil then break end
-		  mix:merge({ negative_sets[j+k] })
+		  mix:merge(negative_sets[j+k])
 		end
 		mix:shuffle()
 
@@ -200,7 +202,7 @@ function mlp_array()
 	    end
 	  elseif STOP_GOAL == "mse" then
 	    local seed2 = seed
-	    while mlp:mse({ set=fullmix }) > MSE_GOAL do
+	    while mlp:mse(fullmix) > MSE_GOAL do
 
 	      -- if the model has not convergence, lets initialize the weights again
 	      if epochs >= 100000 then
@@ -211,10 +213,10 @@ function mlp_array()
 
 	      for j=1,#negative_sets,NUMBER_OF_NEGATIVES do -- rotate negative patterns
 		local mix = ann.PatternSet()
-		mix:merge({ positive_set })
+		mix:merge(positive_set)
 		for k=0,NUMBER_OF_NEGATIVES-1 do
 		  if negative_sets[j+k] == nil then break end
-		  mix:merge({ negative_sets[j+k] })
+		  mix:merge(negative_sets[j+k])
 		end
 		mix:shuffle()
 
@@ -229,7 +231,7 @@ function mlp_array()
 
 	t2 = os.date()
 	print(string.format("    MLP#%02d MSE=%.16g\t(%s-%s) epochs=%d (adjustements=%d)",
-			    subject_nth, mlp:mse({ set=fullmix }), t1, t2, epochs, adjustements))
+			    subject_nth, mlp:mse(fullmix), t1, t2, epochs, adjustements))
 
 	table.insert(mlps, mlp)
       end
@@ -244,7 +246,7 @@ function mlp_array()
 
       -- -- save the array of networks
       -- for j = 1,SUBJECTS do
-      -- 	array:save({ file=string.format("_saved_models_%d/cross%d_run%02d_net%02d.txt", TRAINING_TYPE, i, seed, j) })
+      -- 	array:save(string.format("_saved_models_%d/cross%d_run%02d_net%02d.txt", TRAINING_TYPE, i, seed, j))
       -- end
     end
 

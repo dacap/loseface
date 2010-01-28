@@ -19,8 +19,10 @@ function calculate_eigenfaces_for_given_variance(images_matrix, partitions, perc
 
   -- Create the eigenfaces class
   local eig = img.Eigenfaces()
-  eig:reserve({ size=num_of_images })
-  eig:add_image(images_for_training)
+  eig:reserve(#images_for_training)
+  for i = 1,#images_for_training do
+    eig:add_image(images_for_training[i])
+  end
 
   local results = {}
   for i = 1,#percentages do

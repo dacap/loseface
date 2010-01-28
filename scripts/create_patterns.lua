@@ -16,8 +16,10 @@ function create_patterns(images_matrix, inputs, partitions, outputfile_prefix)
 
   -- Create the eigenfaces class
   local eig = img.Eigenfaces()
-  eig:reserve({ size=num_of_images })
-  eig:add_image(images_for_training)
+  eig:reserve(#images_for_training)
+  for i = 1,#images_for_training do
+    eig:add_image(images_for_training[i])
+  end
 
   -- Calculate eigenfaces
   print("Calculating eigenfaces...")
@@ -39,13 +41,13 @@ function create_patterns(images_matrix, inputs, partitions, outputfile_prefix)
   -- 		      #eigenpoints, #subject_for_training, #images_for_training))
   for i = 1,#eigenpoints do
     -- print("  >>> new in training_set "..subject_for_training[i])
-    training_set:add_pattern({ input=eigenpoints[i], output={ subject_for_training[i] } })
+    training_set:add_pattern(eigenpoints[i], { subject_for_training[i] })
   end
 
   eigenpoints = eig:project_in_eigenspace(images_for_testing)
   for i = 1,#eigenpoints do
     -- print("  >>> new in testing_set "..subject_for_testing[i])
-    testing_set:add_pattern({ input=eigenpoints[i], output={ subject_for_testing[i] } })
+    testing_set:add_pattern(eigenpoints[i], { subject_for_testing[i] })
   end
 
   -- Save the pattern set

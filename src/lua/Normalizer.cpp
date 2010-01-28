@@ -30,15 +30,9 @@ static int normalizer__normalize(lua_State* L)
     Vector<double>& normalMin = (*n)->min;
     Vector<double>& normalMax = (*n)->max;
 
-    luaL_checktype(L, 2, LUA_TTABLE);
-    size_t N = lua_objlen(L, 2);
-    if (N < 1)
-      return luaL_error(L, "Error empty set of patterns");
-
-    // iterate table
-    lua_pushnil(L);		// push nil for first element of table
-    while (lua_next(L, 2) != 0) {
-      lua_PatternSet* set = *toPatternSet(L, -1); // get value
+    int n = lua_gettop(L);	// number of arguments
+    for (int i=2; i<=n; ++i) {
+      lua_PatternSet* set = *toPatternSet(L, i); // get argument "i"
 
       // Here we normalize the other pattern set through the calculate range
       for (lua_PatternSet::iterator it=set->begin(); it!=set->end(); ++it) {
@@ -50,8 +44,6 @@ static int normalizer__normalize(lua_State* L)
 				 (normalMax(i) - normalMin(i))) - 1.0;
 	}
       }
-
-      lua_pop(L, 1);		// remove value, the key is in stack for next iteration
     }
 
     return 0;
@@ -86,37 +78,19 @@ void annlib::details::registerNormalizer(lua_State* L)
 
 /// Normalizes a pattern set.
 ///
-/// @param set
-///   Set of patterns to be used in the calculation of bounds
-///   or statistics.
-///
-/// @param type
-///   Type of normalizer:
-///   @li ann.MINMAX
-///     Calculates minimum and maximum values of the set
-///     so then patterns are normalized between [-1,1] range.
-///   @li ann.STDDEV
-///     Calculates the mean and standard deviation of the
-///     specified pattern set so then the normalization makes
-///     sets to have a mean of zero and a standard deviation
-///     of one.
+/// Calculates minimum and maximum values of the set
+/// so then patterns are normalized between [-1,1] range.
 /// 
 /// @code
-/// n = ann.Normalizer({ set=PatternSet
-///			 type=ann.MINMAX|ann.STDDEV })
+/// n = ann.Normalizer(set)
 /// @endcode
 int annlib::details::NormalizerCtor(lua_State* L)
 {
   int type = MINMAX;
   lua_PatternSet* set = NULL;
 
-  if (lua_istable(L, 1)) {
-    lua_getfield(L, 1, "type");
-    lua_getfield(L, 1, "set");
-    if (lua_isuserdata(L, -1)) set = *toPatternSet(L, -1);
-    if (lua_isnumber(L, -2)) type = lua_tointeger(L, -2);
-    lua_pop(L, 2);
-  }
+  if (lua_isuserdata(L, 1))
+    set = *toPatternSet(L, 1);
 
   if (!set)
     return luaL_error(L, "Invalid pattern set specified");

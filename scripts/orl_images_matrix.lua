@@ -37,7 +37,7 @@ function load_orl_images_matrix()
       io.flush()
       
       image = img.Image()
-      image:load({ file=file })
+      image:load(file)
       table.insert(images, image)
     end
     table.insert(images_matrix, images)

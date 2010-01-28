@@ -24,17 +24,17 @@ end
 -- create a big image with the required size and draw the whole
 -- images_matrix on it
 big_image = img.Image()
-big_image:create({ width=max_w, height=max_h })
+big_image:create(max_w, max_h)
 y = 0
 for i = 1,#images_matrix do
   x = 0
   h = 0
   for j = 1,#images_matrix[i] do
     image = images_matrix[i][j]
-    big_image:draw({ sprite=image, x=x, y=y })
+    big_image:draw(image, x, y)
     x = x + image:width()
     h = math.max(h, image:height())
   end
   y = y + h
 end
-big_image:save({ file="cidisinc_images_matrix.png" })
+big_image:save("cidisinc_images_matrix.png")
