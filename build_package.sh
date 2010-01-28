@@ -9,9 +9,11 @@ mkdir $package/scripts
 
 cd $package
 
-# Copy LoseFace executable
+# Copy LoseFace main files
 cp ../build/loseface.exe \
    ../start_cmd.bat \
+   ../README.txt \
+   ../ORL_TESTS.txt \
    .
 
 # Copy manual

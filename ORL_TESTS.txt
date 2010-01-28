@@ -1,0 +1,14 @@
+ORL TESTS
+---------
+
+  To reproduce the JAIIO'09 results, run:
+
+    script\orl_patterns\download_faces.bat
+
+  And then:
+
+    script\batch_job.bat
+
+  This job will take days or weeks to be completed.
+
+  Finally you can get the result in "scripts\orl_patterns\*.output" files.
