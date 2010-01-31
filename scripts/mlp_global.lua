@@ -3,7 +3,7 @@
 -- All rights reserved.
 
 MSE_GOAL = 2.5e-4
-MSE_GOAL = 0.1
+-- MSE_GOAL = 0.1
 
 PATTERNS_DIR = arg[1]
 INPUTS = tonumber(arg[2])
