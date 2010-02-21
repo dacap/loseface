@@ -1,7 +1,41 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+--
+-- Description:
+--   This file defines the auxiliary function divide_images_matrix
+--   used in "calculate_from_variance.lua" and "create_patterns.lua".
 
+
+-- Function "divide_images_matrix":
+--   Divides an images-matrix in partitions for training and test.
+--
+--   An images-matrix is a Lua array of arrays where:
+--     images_matrix = { subject1, subject2, ..., subjectN }
+--     subject1 = { image1, image2, ..., imageM }
+--     ...
+--   See the script "orl_images_matrix.lua" for example of how to
+--   create an images-matrix.
+--
+--   The partitions are an array of numbers (percentages) that
+--   indicates how many images goes to each partition:
+--     partitions = { percetage1, percentage2, ..., percentageQ }
+--   where percetange1+percentage2+...+percentageQ should be
+--   equal to 100.
+--   E.g.  partitions = { 60, 20, 20 }
+--         The first 60% of images (of each subject) will be used for
+--         training, then the next 20% will be used for testing, and
+--         finally the remaining 20% will be used for training too.
+--
+--   Returns the following values (in this order):
+--     images_for_training: An array with all images for training.
+--     images_for_testing: An array with all images for testing.
+--     subject_for_training: An array of the same size than "images_for_training"
+--                           where the i-element indicates the subject which
+--                           belong the images_for_training[i]
+--     subject_for_testing: An array of the same size than "images_for_testing"
+--                          where the i-element indicates the subject which
+--                          belong the images_for_testing[i]
 function divide_images_matrix(images_matrix, partitions)
   -- Preparing partition
   do
@@ -74,7 +108,6 @@ function divide_images_matrix(images_matrix, partitions)
     os.exit()
   end
 
-  return num_of_images,
-         images_for_training, images_for_testing,
+  return images_for_training, images_for_testing,
          subject_for_training, subject_for_testing
 end

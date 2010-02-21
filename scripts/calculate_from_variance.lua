@@ -1,19 +1,32 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+--
+-- Description:
+--   This file defines the calculate_eigenfaces_for_given_variance()
+--   function used in "orl_patterns_variance.lua" and
+--   "cidisinc_patterns_variance.lua" scripts.
 
 dofile("divide_images_matrix.lua")
 
--- Parameters:
--- images_matrix = { { subject1-image1, subject1-image2, ... }
---		     { subject2-image1, subject2-image2, ... } ... }
+-- calculate_eigenfaces_for_given_variance:
+--   Auxiliary function to calculate the number of eigenfaces
+--   needed to maintain a certain level of variance with a
+--   given images-matrix.
 --
--- percentages = { 50, 70, 80, 90, ... }
+-- Parameters:
+--   images_matrix: As in divide_images_matrix
+--   partitions: As in divide_images_matrix
+--   percentages: Array of percentages to be tested
+--                E.g. percentages = { 50, 70, 80, 90, ... }
+--
+-- Returns:
+--   An array where the i-element correspond to how many eigenfaces
+--   are needed for the percentages[i] level of variance. 
 --
 function calculate_eigenfaces_for_given_variance(images_matrix, partitions, percentages)
 
-  local num_of_images, 
-  	images_for_training, images_for_testing,
+  local images_for_training, images_for_testing,
   	subject_for_training, subject_for_testing
     = divide_images_matrix(images_matrix, partitions)
 

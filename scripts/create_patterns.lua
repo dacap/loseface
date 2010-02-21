@@ -1,16 +1,35 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+--
+-- Description:
+--   This script defines a function to convert a image-matrix in MLP
+--   patterns ready-to-use (to train and to test the neural network)
 
 dofile("divide_images_matrix.lua")
 
+-- create_patterns:
+--  Converts a images-matrix in training/testing patterns, saving them in
+--  separated files. 
+--
+-- Parameters:
+--   images_matrix: Array of arrays of images.
+--   inputs: Number of inputs that patterns should contain.
+--   partitions: An array of numbers (percentages) which indicates what
+--               images will be used for training and testing.
+--   outputfile_prefix: Patterns will be saved with the following names:
+--                      outputfile_prefix.."_training.txt"
+--                      outputfile_prefix.."_testing.txt"
+--
+-- See divide_images_matrix() function to know more about
+-- images_matrix and partitions parameters.
+--
 function create_patterns(images_matrix, inputs, partitions, outputfile_prefix)
   -- Add images to calculate eigenfaces
   print("Adding images to calculate eigenfaces...")
   io.flush()
 
-  local num_of_images, 
-  	images_for_training, images_for_testing,
+  local images_for_training, images_for_testing,
   	subject_for_training, subject_for_testing
     = divide_images_matrix(images_matrix, partitions)
 

@@ -1,5 +1,5 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
 
 -- MSE_GOAL = 1.5e-5
@@ -25,12 +25,7 @@ function mlp_array()
   MOMENTUM = 0.1
   INIT_WEIGHTS_MIN = -1.0
   INIT_WEIGHTS_MAX =  1.0
-
-  CROSS_VALIDATION = { { 80, 20,  0 },
-		       { 60, 20, 20 },
-		       { 40, 20, 40 },
-		       { 20, 20, 60 },
-		       {  0, 20, 80 } }
+  FOLDS = 5
 
   ----------------------------------------------------------------------
 
@@ -69,9 +64,9 @@ function mlp_array()
 
   ----------------------------------------------------------------------
 
-  function get_partition(partition_number)
-    local training_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_training.txt", PATTERNS_DIR, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
-    local testing_set = ann.PatternSet({ file=string.format("%s/%d_cross%d_testing.txt", PATTERNS_DIR, INPUTS, partition_number), inputs=INPUTS, outputs=SUBJECTS })
+  function get_fold(k)
+    local training_set = ann.PatternSet({ file=string.format("%s/%d_fold%d_training.txt", PATTERNS_DIR, INPUTS, k), inputs=INPUTS, outputs=SUBJECTS })
+    local testing_set = ann.PatternSet({ file=string.format("%s/%d_fold%d_testing.txt", PATTERNS_DIR, INPUTS, k), inputs=INPUTS, outputs=SUBJECTS })
     return training_set, testing_set
   end
 
@@ -131,6 +126,7 @@ function mlp_array()
       end
     end
 
+    --print("   > hits/total = "..hits.."/"..total.." = "..hits/total)
     return hits/total
   end
 
@@ -139,8 +135,8 @@ function mlp_array()
   local total_train = 0
   local total_test = 0
 
-  for i=1,#CROSS_VALIDATION do
-    local train_set, test_set = get_partition(i)
+  for i=1,FOLDS do
+    local train_set, test_set = get_fold(i)
 
     -- Normalize patterns
     local n = ann.Normalizer(train_set)
@@ -239,7 +235,9 @@ function mlp_array()
 
       -- create the array of networks
       local array = ann.MlpArray(mlps)
+      --print("  test_array(train_set)")
       table.insert(hits_train, test_array(array, train_set))
+      --print("  test_array(test_set)")
       table.insert(hits_test, test_array(array, test_set))
 
       print("  RUN#"..seed.." Hits TRAIN="..hits_train[#hits_train].." TEST="..hits_test[#hits_test])
@@ -260,7 +258,7 @@ function mlp_array()
     total_test = total_test + (accum_test / #hits_test)
   end
 
-  print("AVG TRAIN="..(total_train/#CROSS_VALIDATION).." TEST="..(total_test/#CROSS_VALIDATION))
+  print("AVG TRAIN="..(total_train/FOLDS).." TEST="..(total_test/FOLDS))
 end
 
 mlp_array()

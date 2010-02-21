@@ -1,8 +1,16 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+-- 
+-- Description:
+--   Creates an images-matrix from the CIDISINC faces database. The
+--   images must be located in the "cidisinc_faces" folder.
 
--- Loads the selected set of images from the cidisinc database
+
+-- load_cidisinc_images_matrix:
+--   Returns an images-matrix reading a selected group of faces
+--   of the CIDISINC database.
+--
 function load_cidisinc_images_matrix()
   local selected_images =
     { { "cidisinc_faces/001/080829_172631-face.png",

@@ -1,6 +1,10 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+--
+-- Description:
+--   Renders all images from the CIDISINC database. The result is saved
+--   in "cidisinc_big_picture.png" file.
 
 -- Get an ordered list of folders s1, s2, s3, ..., s40
 folders = {}

@@ -1,6 +1,11 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+--
+-- Description:
+--   This script crops all the faces from .ppm files in cidisinc_faces/
+--   directory.  Each face-file is saved with the same original file-name
+--   but with "-face" suffix and in PNG format
 
 function get_faces_of_cidisinc_images()
   -- Get an ordered list of folders (001, 002, etc.)

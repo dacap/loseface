@@ -1,7 +1,19 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+-- 
+-- Description:
+--   Creates an images-matrix from the ORL faces database. The
+--   images must be located in the "orl_faces" folder.
+--   You can run the "orl_faces\download_faces.bat" file to
+--   get the ORL images.
 
+
+-- load_orl_images_matrix:
+--   Returns an images-matrix reading all pictures of the ORL
+--   database. This images-matrix can be used as argument
+--   with divide_images_matrix function.
+--
 function load_orl_images_matrix()
   -- Get an ordered list of folders s1, s2, s3, ..., s40 (subjects)
   local folders = {}

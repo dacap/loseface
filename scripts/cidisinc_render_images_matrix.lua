@@ -1,6 +1,10 @@
 -- Lose Face - An open source face recognition project
--- Copyright (C) 2008-2009 David Capello
+-- Copyright (C) 2008-2010 David Capello
 -- All rights reserved.
+--
+-- Description:
+--   Renders the selected faces CIDISINC images-matrix. The result is saved
+--   in "cidisinc_images_matrix.png" file.
 
 dofile("cidisinc_images_matrix.lua")
 
