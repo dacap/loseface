@@ -1,12 +1,15 @@
 #! /bin/sh
 
 LOSEFACE=../loseface
-FACES=$1
-SUBJECTS=$2
-if [ x"$FACES" = x"" ] ; then FACES=orl_patterns ; fi
-if [ x"$SUBJECTS" = x"" ] ; then SUBJECTS=40 ; fi
+FACES=orl_patterns
+SUBJECTS=40
 
+echo "IMPORTANT! The following steps will take a lot of time (days, maybe weeks)"
 echo "Patterns=\"$FACES\", Subjects=$SUBJECTS"
+
+echo "Creating patterns..."
+$LOSEFACE $FACES.lua >/dev/null
+echo "Done"
 
 echo "MLP global (25 inputs)..."
 $LOSEFACE mlp_global.lua $FACES 25 25 $SUBJECTS mse > $FACES/mlp_global_25_25.output
