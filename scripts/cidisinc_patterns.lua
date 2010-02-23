@@ -7,6 +7,12 @@
 --   These points (patterns) can be used as input for a MLP neural net.
 --   The faces are loaded from cidisinc_faces/ directory, and patterns are
 --   saved in cidisinc_patterns/ directory.
+--
+-- Usage:
+--   You can use this script directly running the following command:
+--
+--     loseface cidisinc_patterns.lua
+--
 
 dofile("create_patterns.lua")
 dofile("cidisinc_images_matrix.lua")

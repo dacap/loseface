@@ -5,6 +5,10 @@
 -- Description:
 --   This script defines a function to convert a image-matrix in MLP
 --   patterns ready-to-use (to train and to test the neural network)
+--
+-- Usage:
+--   You cannot use this script directly, it should be included
+--   in another script to have create_patterns() function available.
 
 dofile("divide_images_matrix.lua")
 

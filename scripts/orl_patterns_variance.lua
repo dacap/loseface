@@ -5,6 +5,12 @@
 -- Description:
 --   This script show you how many eigenfaces you need for 75%, 80%,
 --   85% and 90% of variance using the ORL database.
+--
+-- Usage:
+--   You can use this script directly running the following command:
+--
+--     loseface orl_patterns_variance.lua
+--
 
 dofile("calculate_from_variance.lua")
 dofile("orl_images_matrix.lua")

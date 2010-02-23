@@ -5,6 +5,13 @@
 -- Description:
 --   This script show you how many eigenfaces you need for 75%, 80%,
 --   85% and 90% of variance using the CIDISINC database.
+--
+-- Usage:
+--   You can use this script directly running the following command:
+--
+--     loseface cidisinc_patterns_variance.lua
+--
+
 
 dofile("calculate_from_variance.lua")
 dofile("cidisinc_images_matrix.lua")

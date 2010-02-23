@@ -7,6 +7,10 @@
 --   images must be located in the "orl_faces" folder.
 --   You can run the "orl_faces\download_faces.bat" file to
 --   get the ORL images.
+--
+-- Usage:
+--   You cannot use this script directly, it should be included
+--   in another script to have load_orl_images_matrix() function available.
 
 
 -- load_orl_images_matrix:

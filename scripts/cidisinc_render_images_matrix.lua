@@ -5,6 +5,12 @@
 -- Description:
 --   Renders the selected faces CIDISINC images-matrix. The result is saved
 --   in "cidisinc_images_matrix.png" file.
+--
+-- Usage:
+--   You can use this script directly running the following command:
+--
+--     loseface cidisinc_render_images_matrix.lua
+--
 
 dofile("cidisinc_images_matrix.lua")
 

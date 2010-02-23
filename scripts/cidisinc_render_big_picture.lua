@@ -5,6 +5,12 @@
 -- Description:
 --   Renders all images from the CIDISINC database. The result is saved
 --   in "cidisinc_big_picture.png" file.
+--
+-- Usage:
+--   You can use this script directly running the following command:
+--
+--     loseface cidisinc_render_big_picture.lua
+--
 
 -- Get an ordered list of folders s1, s2, s3, ..., s40
 folders = {}

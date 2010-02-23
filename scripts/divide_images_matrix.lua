@@ -5,6 +5,10 @@
 -- Description:
 --   This file defines the auxiliary function divide_images_matrix
 --   used in "calculate_from_variance.lua" and "create_patterns.lua".
+--
+-- Usage:
+--   You cannot use this script directly, it should be included
+--   in another script to have divide_images_matrix() function available.
 
 
 -- Function "divide_images_matrix":

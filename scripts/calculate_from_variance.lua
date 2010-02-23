@@ -6,6 +6,10 @@
 --   This file defines the calculate_eigenfaces_for_given_variance()
 --   function used in "orl_patterns_variance.lua" and
 --   "cidisinc_patterns_variance.lua" scripts.
+--
+-- Usage:
+--   You cannot use this script directly, it should be included
+--   in another script to have calculate_eigenfaces_for_given_variance() function available.
 
 dofile("divide_images_matrix.lua")
 

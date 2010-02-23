@@ -5,6 +5,10 @@
 -- Description:
 --   Creates an images-matrix from the CIDISINC faces database. The
 --   images must be located in the "cidisinc_faces" folder.
+--
+-- Usage:
+--   You cannot use this script directly, it should be included
+--   in another script to have load_cidisinc_images_matrix() function available.
 
 
 -- load_cidisinc_images_matrix:
