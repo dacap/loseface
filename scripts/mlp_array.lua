@@ -57,7 +57,7 @@ SPECIAL_TRAINING_SUBSET_EPOCHS = 10 -- Repeat 10 epochs each (positive+negatives
 ----------------------------------------------------------------------
 
 function reset_mlp(mlp, seed)
-  ann.init_random({ seed=seed })
+  ann.init_random(seed)
   mlp:init({ min=INIT_WEIGHTS_MIN, max=INIT_WEIGHTS_MAX })
   return mlp
 end

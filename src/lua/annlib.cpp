@@ -10,7 +10,7 @@ using namespace std;
 /// Changes the seed of pseudo-random number generator
 /// 
 /// @code
-/// ann.init_random({ seed=NUMBER })
+/// ann.init_random(NUMBER)
 /// @endcode
 ///
 static int annlib_init_random(lua_State* L)
@@ -18,9 +18,8 @@ static int annlib_init_random(lua_State* L)
   luaL_checktype(L, 1, LUA_TTABLE);
 
   int seed = 1;
-  lua_getfield(L, 1, "seed");
-  if (lua_isnumber(L, -1)) seed = (int)lua_tonumber(L, -1);
-  lua_pop(L, 1);
+  if (lua_isnumber(L, 1))
+    seed = (int)lua_tonumber(L, 1);
 
   srand(seed);
   Random::init(seed);

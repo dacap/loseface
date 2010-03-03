@@ -47,7 +47,7 @@ REPEAT_EACH_FOLD = 10 -- Repeat each fold 10 times
 ----------------------------------------------------------------------
 
 function create_mlp(seed)
-  ann.init_random({ seed=seed })
+  ann.init_random(seed)
 
   local mlp = ann.Mlp({ inputs=INPUTS, hiddens=HIDDENS, outputs=SUBJECTS })
   mlp:init({ min=INIT_WEIGHTS_MIN, max=INIT_WEIGHTS_MAX })
