@@ -58,6 +58,22 @@ y `5 <http://www.lua.org/manual/5.1/es/manual.html#5>`_ de dicho manual para
 conocer la sintaxis y funciones utilitarias del lenguaje (e.j. para manejar archivos
 de texto, tablas, funciones matemáticas, fechas, etc.).
 
+-----------------------
+ Funciones de LoseFace
+-----------------------
+
+ann.init_random
+===============
+
+Inicializa el generar de números aleatorios con la semilla especificada.
+
+  ann.init_random(seed)
+
+Parámetros:
+
+- seed: Semilla para generador de números aleatorios. Un número
+entero positivo.
+
 ----------------------
  Objectos de LoseFace
 ----------------------
@@ -66,8 +82,8 @@ Para realizar experimentos LoseFace le ofrece una serie de objetos (*userdata*)
 que puede utilizar en sus scripts Lua. A continuación se da una referencia
 de los objetos disponibles.
 
-Eigenfaces
-==========
+img.Eigenfaces
+==============
 
 Representa un conjunto de eigenfaces, útil para proyectar imágenes en
 al eigenspace.
@@ -219,8 +235,8 @@ Ejemplo::
 
   eig:save("patterns.txt")
 
-Image
-=====
+img.Image
+=========
 
 Representa una imagen (vacía, creada en memoria, o leída desde un archivo).
 
@@ -330,8 +346,8 @@ image:width
 
 Devuelve el ancho de la imagen en pixeles (un número entero).
 
-Normalizer
-==========
+ann.Normalizer
+==============
 
 Objeto para normalizar patrones de entrenamiento.
 
@@ -364,8 +380,8 @@ Ejemplo::
     local n = ann.Normalizer(train_set)
     n:normalize(train_set, test_set)
 
-PatternSet
-==========
+ann.PatternSet
+==============
 
 Representa un conjunto de patrones (ya sean de entrenamiento o prueba)
 que pueden ser utilizados en un Mlp_.
@@ -506,8 +522,8 @@ Ejemplo::
   local subsets1 = all_patterns:split_by_percentage({ 20, 60, 20 })
   local subsets2 = all_patterns:split_by_output({ 1, 2, 3 })
 
-Mlp
-===
+ann.Mlp
+=======
 
 Representa una red neuronal artificial de tipo perceptrón multicapa.
 El modelo tiene tres capas (neuronas de entradas, capa oculta, y capa de salida).
@@ -661,8 +677,8 @@ Existen tres formas de utilizar esta función de entrenamiento:
 - Especificando *epochs* y *goal_mse*, con lo cual se intentará llegar al
   valor de MSE indicado, en un máximo de épocas dado.
 
-MlpArray
-========
+ann.MlpArray
+============
 
 Representa un arreglo de redes MLP.
 
@@ -705,3 +721,6 @@ mlparray:save
   mlparray:save(filename)
 
 Guarda el arreglo de MLPs en el archivo *filename* especificado.
+
+.. _PatternSet: ann.PatternSet
+.. _Mlp: ann.Mlp
