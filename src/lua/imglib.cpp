@@ -19,6 +19,7 @@ void imglib::registerLibrary(lua_State* L)
   // Functions
   luaL_register(L, "img", imglib_funcstable);
 
+  // Userdatas
   imglib::details::registerImage(L);
   imglib::details::registerEigenfaces(L);
 }

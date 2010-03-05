@@ -8,20 +8,20 @@
 #include <string>
 #include <lua.hpp>
 
-#include "Ann.h"
+#include "AnnDynamic.h"
 
 namespace annlib {
 
   // Constants
-  enum { LAST, BESTMSE };	// learning algorithm goal
-  enum { MINMAX, STDDEV };	// type of normalizer
+  enum { LAST, BESTMSE };	    // Learning algorithm goal
+  enum { MINMAX, STDDEV };	    // Type of normalizer
+  enum { PURELIN, LOGSIG, TANSIG }; // Type of activation function
 
   void registerLibrary(lua_State* L);
 
   namespace details {
 
-    typedef Mlp<double, Logsig<double>, Logsig<double> > lua_Mlp;
-
+    typedef DynamicMlp<double> lua_Mlp;
     typedef NetArray<lua_Mlp> lua_MlpArray;
 
     typedef PatternSet<double> lua_PatternSet;

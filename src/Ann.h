@@ -12,16 +12,25 @@
 #include "Matrix.h"
 #include "Random.h"
 
-template<typename> class Pattern;
-template<typename> class PatternSet;
+//////////////////////////////////////////////////////////////////////
+// Forward declarations
+//////////////////////////////////////////////////////////////////////
 
-template<typename> struct Purelin;
-template<typename> struct Logsig;
-template<typename> struct Tansig;
-template<typename> struct Radbas;
-template<typename, class, class> class Mlp;
+// Patterns
+template<class> class Pattern;
+template<class> class PatternSet;
+
+// Activation functions
+template<class> struct Purelin;
+template<class> struct Logsig;
+template<class> struct Tansig;
+template<class> struct Radbas;
+
+// Artificial Neural Networks
+template<class, class, class> class Mlp;
 template<class> class NetArray;
 
+// Helpers/Modifications for the Training Algorithms
 template<class> class WithMomentum;
 template<class> class AccumulateWeights;
 template<class> class AccumulateWeightsWithMomentum;
@@ -29,6 +38,8 @@ template<class> class UpdateWeightsImmediately;
 template<class> class UpdateWeightsImmediatelyWithMomentum;
 template<class> class NoAdaptativeLearningRate;
 template<class> class BoldDriverMethod;
+
+// Training Algorithms
 template<class,
 	 template<class> class,
 	 template<class> class>
@@ -131,7 +142,7 @@ public:
 
 /// Linear activation function.
 /// 
-template<typename T>
+template<class T>
 struct Purelin
 {
   inline static T  f(T x)      { return x; }
@@ -149,7 +160,7 @@ struct Logsig
 
 /// Hyperbolic tangent sigmoid activation function.
 /// 
-template<typename T>
+template<class T>
 struct Tansig
 {
   inline static T  f(T x)      { return std::tanh(x); }
@@ -158,7 +169,7 @@ struct Tansig
 
 /// Radial basis function.
 /// 
-template<typename T>
+template<class T>
 struct Radbas
 {
   inline static T  f(T x)      { return std::exp(-x*x); }
@@ -176,7 +187,7 @@ struct Radbas
 /// @tparam HAF Activation function in the hidden neurons.
 /// @tparam OAF Activation function in the output neurons.
 /// 
-template<typename T,
+template<class T,
 	 class HAF = Logsig<T>,
 	 class OAF = Purelin<T> >
 class Mlp
@@ -192,6 +203,8 @@ public:
 
   Matrix w1, w2; // weights
   Vector b1, b2; // bias
+  HiddenFunc hiddenFunc;
+  OutputFunc outputFunc;
 
   Mlp()
   {
@@ -212,6 +225,8 @@ public:
     , w2(mlp.w2)
     , b1(mlp.b1)
     , b2(mlp.b2)
+    , hiddenFunc(mlp.hiddenFunc)
+    , outputFunc(mlp.outputFunc)
   {
   }
 
@@ -278,21 +293,21 @@ public:
 #if 1
     hidden = w1 * input + b1;
     for (size_t j=0; j<hidden.size(); ++j)
-      hidden(j) = HiddenFunc::f(hidden(j));
+      hidden(j) = hiddenFunc.f(hidden(j));
 
     output = w2 * hidden + b2;
     for (size_t k=0; k<output.size(); ++k)
-      output(k) = OutputFunc::f(output(k));
+      output(k) = outputFunc.f(output(k));
 #else  // optimized (to avoid temporary objects)
     w1.multiply(input, hidden);
     hidden += b1;
     for (size_t j=0; j<hidden.size(); ++j)
-      hidden(j) = HiddenFunc::f(hidden(j));
+      hidden(j) = hiddenFunc.f(hidden(j));
 
     w2.multiply(hidden, output);
     output += b2;
     for (size_t k=0; k<output.size(); ++k)
-      output(k) = OutputFunc::f(output(k));
+      output(k) = outputFunc.f(output(k));
 #endif
   }
 
@@ -304,24 +319,24 @@ public:
     hidden0 = w1 * input + b1;
     hidden.resize(hidden0.size());
     for (size_t j=0; j<hidden0.size(); ++j)
-      hidden(j) = HiddenFunc::f(hidden0(j));
+      hidden(j) = hiddenFunc.f(hidden0(j));
 
     output0 = w2 * hidden + b2;
     output.resize(output0.size());
     for (size_t k=0; k<output0.size(); ++k)
-      output(k) = OutputFunc::f(output0(k));
+      output(k) = outputFunc.f(output0(k));
 #else  // optimized
     w1.multiply(input, hidden0);
     hidden0 += b1;
     hidden.resize(hidden0.size());
     for (size_t j=0; j<hidden0.size(); ++j)
-      hidden(j) = HiddenFunc::f(hidden0(j));
+      hidden(j) = hiddenFunc.f(hidden0(j));
 
     w2.multiply(hidden, output0);
     output0 += b2;
     output.resize(output0.size());
     for (size_t k=0; k<output0.size(); ++k)
-      output(k) = OutputFunc::f(output0(k));
+      output(k) = outputFunc.f(output0(k));
 #endif
   }
 
@@ -836,7 +851,7 @@ public:
       // ...for output neurons
       delta_output = target - output;
       for (k=0; k<m_net.getOutputs(); ++k) {
-	delta_output(k) *= Net::OutputFunc::df(output0(k), output(k));
+	delta_output(k) *= m_net.outputFunc.df(output0(k), output(k));
 	delta.b2(k) = m_eta * delta_output(k);
 
 	for (j=0; j<m_net.getHiddens(); ++j)
@@ -846,7 +861,7 @@ public:
       // ..for hidden neurons
       delta_hidden = m_net.w2.getTranspose() * delta_output;
       for (j=0; j<m_net.getHiddens(); ++j) {
-	delta_hidden(j) *= Net::HiddenFunc::df(hidden0(j), hidden(j));
+	delta_hidden(j) *= m_net.hiddenFunc.df(hidden0(j), hidden(j));
 	delta.b1(j) = m_eta * delta_hidden(j);
 
 	for (i=0; i<m_net.getInputs(); ++i)

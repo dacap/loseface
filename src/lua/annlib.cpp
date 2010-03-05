@@ -54,6 +54,14 @@ void annlib::registerLibrary(lua_State* L)
   lua_pushnumber(L, STDDEV);
   lua_setfield(L, -2, "STDDEV");
 
+  lua_pushnumber(L, PURELIN);
+  lua_setfield(L, -2, "PURELIN");
+  lua_pushnumber(L, LOGSIG);
+  lua_setfield(L, -2, "LOGSIG");
+  lua_pushnumber(L, TANSIG);
+  lua_setfield(L, -2, "TANSIG");
+
+  // Userdatas
   annlib::details::registerMlp(L);
   annlib::details::registerMlpArray(L);
   annlib::details::registerNormalizer(L);

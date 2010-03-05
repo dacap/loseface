@@ -9,6 +9,16 @@
 using namespace std;
 using namespace annlib::details;
 
+template<class T>
+static void convert_func_constant(int funcType, DynamicFunction<T>& func)
+{
+  switch (funcType) {
+    case annlib::PURELIN: func.setFunction<Purelin>();
+    case annlib::LOGSIG: func.setFunction<Logsig>();
+    case annlib::TANSIG: func.setFunction<Tansig>();
+  }
+}
+
 lua_Mlp** annlib::details::toMlp(lua_State* L, int pos)
 {
   return ((lua_Mlp**)luaL_checkudata(L, pos, LUAOBJ_MLP));
@@ -374,22 +384,35 @@ void annlib::details::registerMlp(lua_State* L)
 /// perceptrons of 3 layers.
 /// 
 /// @code
-/// ann.Mlp({ inputs=NUMBER, hiddens=NUMBER, outputs=NUMBER })
+/// ann.Mlp({ inputs=NUMBER, hiddens=NUMBER, outputs=NUMBER,
+//            hiddenfunc=ANN.PURELIN|ANN.LOGSIG|ANN.TANSIG,
+//            outputfunc=ANN.PURELIN|ANN.LOGSIG|ANN.TANSIG })
 /// @endcode
 ///
 int annlib::details::MlpCtor(lua_State* L)
 {
   int inputs = 1, hiddens = 1, outputs = 1;
+  int hiddenfunc = LOGSIG;
+  int outputfunc = LOGSIG;
+
   if (lua_istable(L, 1)) {
     lua_getfield(L, 1, "inputs");
     lua_getfield(L, 1, "hiddens");
     lua_getfield(L, 1, "outputs");
-    if (lua_isnumber(L, -3)) inputs = (int)lua_tonumber(L, -3);
-    if (lua_isnumber(L, -2)) hiddens = (int)lua_tonumber(L, -2);
-    if (lua_isnumber(L, -1)) outputs = (int)lua_tonumber(L, -1);
-    lua_pop(L, 3);
+    lua_getfield(L, 1, "hiddenfunc");
+    lua_getfield(L, 1, "outputfunc");
+    if (lua_isnumber(L, -5)) inputs = (int)lua_tonumber(L, -5);
+    if (lua_isnumber(L, -4)) hiddens = (int)lua_tonumber(L, -4);
+    if (lua_isnumber(L, -3)) outputs = (int)lua_tonumber(L, -3);
+    if (lua_isnumber(L, -2)) hiddenfunc = (int)lua_tonumber(L, -2);
+    if (lua_isnumber(L, -1)) outputfunc = (int)lua_tonumber(L, -1);
+    lua_pop(L, 5);
   }
 
-  **newmlp(L) = lua_Mlp(inputs, hiddens, outputs);
+  lua_Mlp mlp(inputs, hiddens, outputs);
+  convert_func_constant<double>(hiddenfunc, mlp.hiddenFunc);
+  convert_func_constant<double>(outputfunc, mlp.outputFunc);
+
+  **newmlp(L) = mlp;
   return 1;
 }
