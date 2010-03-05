@@ -28,7 +28,7 @@ extern "C" {
 		    int *lwork, int *info);
 }
 
-template<typename T>
+template<class T>
 class Matrix
 {
   friend class Vector<T>;
@@ -658,7 +658,7 @@ public:
 
 }; // class Matrix
 
-template<typename T>
+template<class T>
 bool approx_eq(const Matrix<T>& A, const Matrix<T>& B, unsigned precision)
 {
   if (A.rows() != B.rows() ||
@@ -675,7 +675,7 @@ bool approx_eq(const Matrix<T>& A, const Matrix<T>& B, unsigned precision)
   return true;
 }
 
-template<typename T>
+template<class T>
 std::ostream& operator<<(std::ostream& s, const Matrix<T>& A)
 {
   s.precision(16);
@@ -701,7 +701,7 @@ std::ostream& operator<<(std::ostream& s, const Matrix<T>& A)
   return s;
 }
 
-template<typename T>
+template<class T>
 std::istream& operator>>(std::istream& s, Matrix<T>& A)
 {
   char c = 0;

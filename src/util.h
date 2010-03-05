@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <sstream>
 
-template<typename T>
+template<class T>
 std::string lexical_cast(T p)
 {
   std::ostringstream t;
@@ -17,7 +17,7 @@ std::string lexical_cast(T p)
   return t.str();
 }
 
-template<typename T1, typename T2>
+template<class T1, class T2>
 T1 lexical_cast(const T2& a)
 {
   std::istringstream s(a);

@@ -14,10 +14,10 @@
 
 #include "approx_eq.h"
 
-template<typename T>
+template<class T>
 class Matrix;
 
-template<typename T>
+template<class T>
 class Vector
 {
 public:
@@ -285,13 +285,13 @@ public:
 
 }; // class Vector
 
-template<typename T>
+template<class T>
 inline Vector<T> operator*(T s, const Vector<T>& u)
 {
   return u.operator*(s);
 }
 
-template<typename T>
+template<class T>
 bool approx_eq(const Vector<T>& u, const Vector<T>& v, unsigned precision)
 {
   if (u.size() != v.size())
@@ -308,7 +308,7 @@ bool approx_eq(const Vector<T>& u, const Vector<T>& v, unsigned precision)
 // Text I/O
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 std::ostream& operator<<(std::ostream& o, const Vector<T>& v)
 {
   o.precision(16);
@@ -324,7 +324,7 @@ std::ostream& operator<<(std::ostream& o, const Vector<T>& v)
   return o;
 }
 
-template<typename T>
+template<class T>
 std::istream& operator>>(std::istream& s, Vector<T>& v)
 {
   char c = 0;

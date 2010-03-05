@@ -70,7 +70,7 @@
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename F>
+template<class F>
 double chrono_func(const F& f, const std::string& name, int times = 10)
 {
   double last, accum = 0.0;

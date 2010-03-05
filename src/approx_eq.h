@@ -5,7 +5,7 @@
 #ifndef LOSEFACE_APPROX_EQ_H
 #define LOSEFACE_APPROX_EQ_H
 
-template<typename T>
+template<class T>
 bool approx_eq(T a, T b, unsigned precision)
 {
   T diff = std::fabs(a - b);

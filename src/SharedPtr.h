@@ -14,7 +14,7 @@
 /// references counter is embedded in the same SharedPtr and not in
 /// the pointed object.
 ///
-template<typename T>
+template<class T>
 class SharedPtr
 {
   T* m_ptr;

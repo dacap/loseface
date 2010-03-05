@@ -15,7 +15,7 @@
 
 /// Calculates eigenfaces from a set of images (vectors really).
 ///
-template<typename T>
+template<class T>
 class Eigenfaces
 {
   /// Number of pixels per picture. It is the number of dimensions in the

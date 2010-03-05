@@ -38,7 +38,7 @@ struct TranslationTemplate
   double degree_step;
   double degree_threshold;
 
-  template<typename T>
+  template<class T>
   double calculate_percentage(const CImg<T>& img, T label)
   {
     CImg<T> ellipse_mask;
@@ -54,7 +54,7 @@ struct TranslationTemplate
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void locate_face_center(const CImg<T>& img,
 			unsigned regions,
 			T first_label,
@@ -124,7 +124,7 @@ void label_skin_regions(const CImg<T1>& src,
 
 /// Main routine to locate the face region in a photography.
 /// 
-template<typename T>
+template<class T>
 void get_face(const CImg<T>& photo, CImg<T>& face,
 	      int face_width,
 	      int face_height)
@@ -196,7 +196,7 @@ void get_face(const CImg<T>& photo, CImg<T>& face,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void detect_skin_in_rgb_model(const CImg<T>& src,
 			      CImg<T>& dst,
 			      T min_r = 80,
@@ -231,7 +231,7 @@ void detect_skin_in_rgb_model(const CImg<T>& src,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void refine_translation_template(const CImg<T>& img,
 				 double& percentage,
 				 T label,
@@ -256,7 +256,7 @@ void refine_translation_template(const CImg<T>& img,
 #endif
 }
 
-template<typename T>
+template<class T>
 void refine_translation_template_center(const CImg<T>& img,
 					double& percentage,
 					T label,
@@ -288,7 +288,7 @@ void refine_translation_template_center(const CImg<T>& img,
   }
 }
 
-template<typename T>
+template<class T>
 void refine_translation_template_radius(const CImg<T>& img,
 					double& percentage,
 					T label,
@@ -314,7 +314,7 @@ void refine_translation_template_radius(const CImg<T>& img,
   }
 }
 
-template<typename T>
+template<class T>
 void refine_translation_template_degree(const CImg<T>& img,
 					double& percentage,
 					T label,
@@ -366,7 +366,7 @@ void refine_translation_template_degree(const CImg<T>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void crop_face_using_template(const CImg<T>& photo,
 #ifndef FIXED_IMPL
 			      CImg<T>& rotated_photo,
@@ -439,7 +439,7 @@ void segment_eye_regions(const CImg<T1>& src, CImg<T2>& dst,
 ///   Color for the first label (regions must be
 ///   labeled in sequence).
 /// 
-template<typename T>
+template<class T>
 double locate_best_eyes(const CImg<T> img,
 			const std::vector<imageproc::Point>& centers,
 			T first_label,
@@ -501,7 +501,7 @@ double locate_best_eyes(const CImg<T> img,
   return pmax;
 }
 
-template<typename T>
+template<class T>
 double detect_eyes(const CImg<T>& img,
 		   imageproc::Point& eye1,
 		   imageproc::Point& eye2)
@@ -539,7 +539,7 @@ double detect_eyes(const CImg<T>& img,
   return locate_best_eyes<unsigned>(eyes_regions, centers, first_label, eye1, eye2);
 }
 
-template<typename T>
+template<class T>
 void crop_face_using_eyes(CImg<T>& img,
 			  const imageproc::Point& eye1,
 			  const imageproc::Point& eye2,

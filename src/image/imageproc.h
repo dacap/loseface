@@ -30,7 +30,7 @@ using namespace cimg_library;
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T1, typename T2>
+template<class T1, class T2>
 void rgb_to_gray(const CImg<T1>& src, CImg<T2>& dst)
 {
   dst.assign(src.width,src.height,1,1,0);
@@ -43,7 +43,7 @@ void rgb_to_gray(const CImg<T1>& src, CImg<T2>& dst)
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T1, typename T2>
+template<class T1, class T2>
 void make_binary(const CImg<T1>& src, CImg<T2>& dst,
 		 T1 threshold = T1(0),
 		 T2 black = T2(0),
@@ -60,7 +60,7 @@ void make_binary(const CImg<T1>& src, CImg<T2>& dst,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void recursive_floodfill8(CImg<T>& img,
 			  int x, int y,
 			  T replace_this,
@@ -87,7 +87,7 @@ void recursive_floodfill8(CImg<T>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void stack_floodfill8(CImg<T>& img,
 		      int x, int y,
 		      T replace_this,
@@ -124,7 +124,7 @@ void stack_floodfill8(CImg<T>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T, typename Floodfill>
+template<class T, class Floodfill>
 void labeling_image(CImg<T>& img,
 		    unsigned& regions,  // number of regions found
 		    T first_label,      // value for the first label to use
@@ -146,7 +146,7 @@ void labeling_image(CImg<T>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void calculate_region_center(const CImg<T>& img,
 			     T label,
 			     int& center_x,
@@ -180,7 +180,7 @@ void calculate_region_center(const CImg<T>& img,
 /// @return Percentage of masked pixels (in @a mask image) touching
 ///         labeled pixels (in @a img) with the specified @a label.
 /// 
-template<typename T1, typename T2>
+template<class T1, class T2>
 double calculate_mask_percentage(const CImg<T1>& img,
 				 const CImg<T2>& mask,
 				 T1 label,
@@ -202,7 +202,7 @@ double calculate_mask_percentage(const CImg<T1>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void create_ellipse_mask(CImg<T>& img,
 			 int w, int h,
 			 int center_x, int center_y,
@@ -220,7 +220,7 @@ void create_ellipse_mask(CImg<T>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void discard_regions(CImg<T>& img,
 		     unsigned regions,
 		     unsigned min_threshold, // minimum number of pixels accepted in a region
@@ -254,7 +254,7 @@ void discard_regions(CImg<T>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T>
+template<class T>
 void calculate_regions_center(const CImg<T>& img,
 			      unsigned regions,
 			      T first_label,
@@ -269,7 +269,7 @@ void calculate_regions_center(const CImg<T>& img,
   }
 }
 
-template<typename T>
+template<class T>
 void draw_points(CImg<T>& img,
 		 const std::vector<Point>& centers,
 		 T black,
@@ -288,7 +288,7 @@ void draw_points(CImg<T>& img,
 
 //////////////////////////////////////////////////////////////////////
 
-template<typename T1, typename T2, typename T>
+template<class T1, class T2, class T>
 void gamma_correction(const CImg<T1>& src,
 		      CImg<T2>& dst,
 		      T gamma,
