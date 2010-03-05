@@ -72,7 +72,7 @@ Inicializa el generar de números aleatorios con la semilla especificada.
 Parámetros:
 
 - seed: Semilla para generador de números aleatorios. Un número
-entero positivo.
+  entero positivo.
 
 ----------------------
  Objectos de LoseFace
