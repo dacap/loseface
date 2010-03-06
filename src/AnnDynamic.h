@@ -68,7 +68,7 @@ public:
 
 };
 
-// An MLP where you can change activation functions in runtime
+// A MLP where you can change activation functions in runtime
 template<class T>
 class DynamicMlp : public Mlp<T, DynamicFunction<T>, DynamicFunction<T> >
 {
