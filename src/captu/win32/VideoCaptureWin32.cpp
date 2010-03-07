@@ -5,6 +5,7 @@
 #include "captu/VideoCapture.h"
 #include <vector>
 #include <tchar.h>
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <vfw.h>
 
