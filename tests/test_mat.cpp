@@ -41,15 +41,14 @@
 
 using namespace std;
 
-template<typename T>
 void test_vector_index()
 {
   // Create a vector of 3 elements
-  Vector<T> v(3);
+  Vector v(3);
   assert(v.size() == 3);
 
   // Create an array of 3 elements with some value
-  T a[3];
+  double a[3];
   for (size_t i=0; i<3; ++i)
     a[i] = Random::getReal();
 
@@ -67,14 +66,13 @@ void test_vector_index()
 
   // Resize to four elements, the new elements should be zero
   v.resize(4);
-  assert(approx_eq(v(2), T(0.0), 10));
-  assert(approx_eq(v(3), T(0.0), 10));
+  assert(approx_eq(v(2), double(0.0), 10));
+  assert(approx_eq(v(3), double(0.0), 10));
 }
 
-template<typename T>
 void test_vector_equal()
 {
-  Vector<T> v(3), u(3);
+  Vector v(3), u(3);
 
   for (size_t i=0; i<3; ++i)
     v(i) = u(i) = Random::getReal();
@@ -88,11 +86,10 @@ void test_vector_equal()
   assert(v != u);		// different sizes
 }
 
-template<typename T>
 void test_matrix_mult_vector()
 {
-  Matrix<T> A(3, 2);
-  Vector<T> u(2), v(3);
+  Matrix A(3, 2);
+  Vector u(2), v(3);
 
   A(0,0) = 0; A(0,1) = 2;
   A(1,0) = 2; A(1,1) = 3;
@@ -108,10 +105,9 @@ void test_matrix_mult_vector()
   assert(approx_eq(A*u, v, 10));
 }
 
-template<typename T>
 void test_matrix_resize()
 {
-  Matrix<T> A(3, 3), B;
+  Matrix A(3, 3), B;
 
   for (size_t j=0; j<A.cols(); ++j)
     for (size_t i=0; i<A.rows(); ++i)
@@ -130,7 +126,7 @@ void test_matrix_resize()
     }
 
   // Check that new rows and columns are zero
-  Vector<T> zero(4);
+  Vector zero(4);
   zero.zero();
 
   assert(approx_eq(zero, A.getCol(3), 10));
@@ -144,10 +140,9 @@ void test_matrix_resize()
     }
 }
 
-template<typename T>
 void test_vector_io()
 {
-  Vector<T> a(6);
+  Vector a(6);
   a(0) = 2;
   a(1) = 3.2;
   a(2) = 50.23;
@@ -155,7 +150,7 @@ void test_vector_io()
   a(4) = 93.0;
   a(5) = 0;
 
-  Vector<T> b;
+  Vector b;
 
   stringstream s;
   s << a;
@@ -164,16 +159,15 @@ void test_vector_io()
   assert(approx_eq(a, b, 10));
 }
 
-template<typename T>
 void test_matrix_io()
 {
-  Matrix<T> A(2, 2);
+  Matrix A(2, 2);
   A(0,0) = 432.2;
   A(0,1) = 43254.2;
   A(1,0) = 43.3;
   A(1,1) = 342.33;
 
-  Matrix<T> B;
+  Matrix B;
 
   stringstream s;
   s << A;
@@ -182,23 +176,16 @@ void test_matrix_io()
   assert(approx_eq(A, B, 10));
 }
 
-template<typename T>
-void do_all_tests()
+int main(int argc, char *argv[])
 {
   for (int i=0; i<10; ++i) {
     Random::init(i);
-    test_vector_index<T>();
-    test_vector_equal<T>();
-    test_matrix_mult_vector<T>();
-    test_matrix_resize<T>();
-    test_vector_io<T>();
-    test_matrix_io<T>();
+    test_vector_index();
+    test_vector_equal();
+    test_matrix_mult_vector();
+    test_matrix_resize();
+    test_vector_io();
+    test_matrix_io();
   }
-}
-
-int main(int argc, char *argv[])
-{
-  do_all_tests<float>();
-  do_all_tests<double>();
   return 0;
 }

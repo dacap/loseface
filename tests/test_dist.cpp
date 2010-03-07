@@ -39,8 +39,8 @@ using namespace std;
 
 static void test_matrix_dist()
 {
-  Matrix<double> A(2, 2);
-  Matrix<double> B(2, 2);
+  Matrix A(2, 2);
+  Matrix B(2, 2);
 
   B(0, 0) = 5.;    B(0, 1) = 6.;
   B(1, 0) = 7.;    B(1, 1) = 8.;
@@ -48,8 +48,8 @@ static void test_matrix_dist()
   A(0, 0) = 1.;    A(0, 1) = 2.;
   A(1, 0) = 3.;    A(1, 1) = 4.;
 
-  Matrix<double> C = A.dist(B);
-  Matrix<double> D(2, 2);
+  Matrix C = A.dist(B);
+  Matrix D(2, 2);
 
   D(0, 0) = sqrt(pow(1.-5., 2.) + pow(2.-7., 2.));
   D(0, 1) = sqrt(pow(1.-6., 2.) + pow(2.-8., 2.));

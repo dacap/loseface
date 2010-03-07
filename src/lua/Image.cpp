@@ -170,7 +170,7 @@ int imglib::details::ImageCtor(lua_State* L)
   return 1;
 }
 
-void imglib::details::image2vector(const lua_Image* _img, Vector<double>& output)
+void imglib::details::image2vector(const lua_Image* _img, Vector& output)
 {
   assert(_img != NULL);
 

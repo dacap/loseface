@@ -9,16 +9,6 @@
 using namespace std;
 using namespace annlib::details;
 
-template<class T>
-static void convert_func_constant(int funcType, DynamicFunction<T>& func)
-{
-  switch (funcType) {
-    case annlib::PURELIN: func.setFunction<Purelin>();
-    case annlib::LOGSIG: func.setFunction<Logsig>();
-    case annlib::TANSIG: func.setFunction<Tansig>();
-  }
-}
-
 lua_Mlp** annlib::details::toMlp(lua_State* L, int pos)
 {
   return ((lua_Mlp**)luaL_checkudata(L, pos, LUAOBJ_MLP));
@@ -191,8 +181,7 @@ static int mlp__train(lua_State* L)
     return luaL_error(L, "Invalid pattern set specified");
 
   /// Backpropagation algorithm configuration
-  Backpropagation<lua_Mlp, NoAdaptativeLearningRate, UpdateWeightsImmediatelyWithMomentum> bp(net);
-  // Backpropagation<lua_Mlp, BoldDriverMethod, UpdateWeightsImmediatelyWithMomentum> bp(net);
+  Backpropagation bp(net);
   bp.setLearningRate(learning_rate);
   bp.setMomentum(momentum);
 
@@ -319,7 +308,7 @@ static int mlp__recall(lua_State* L)
   if (!set)
     return luaL_error(L, "Invalid pattern set specified");
 
-  Vector<double> input, hidden, output;
+  Vector input, hidden, output;
 
   // Put a table in the stack: array of outputs
   lua_newtable(L);
@@ -329,7 +318,7 @@ static int mlp__recall(lua_State* L)
   size_t i = 1;
   for (; it != end; ++it, ++i) {
     // Execute the neural network
-    net.recall((*it)->input, hidden, output);
+    net.recall((*it)->getInput(), hidden, output);
 
     // A new table in the stack: output vector
     lua_pushinteger(L, i);
@@ -410,8 +399,18 @@ int annlib::details::MlpCtor(lua_State* L)
   }
 
   lua_Mlp mlp(inputs, hiddens, outputs);
-  convert_func_constant<double>(hiddenfunc, mlp.hiddenFunc);
-  convert_func_constant<double>(outputfunc, mlp.outputFunc);
+
+  switch (hiddenfunc) {
+    case annlib::PURELIN: mlp.setHiddenActivationFunction(Purelin());
+    case annlib::LOGSIG: mlp.setHiddenActivationFunction(Logsig());
+    case annlib::TANSIG: mlp.setHiddenActivationFunction(Tansig());
+  }
+
+  switch (outputfunc) {
+    case annlib::PURELIN: mlp.setOutputActivationFunction(Purelin());
+    case annlib::LOGSIG: mlp.setOutputActivationFunction(Logsig());
+    case annlib::TANSIG: mlp.setOutputActivationFunction(Tansig());
+  }
 
   **newmlp(L) = mlp;
   return 1;

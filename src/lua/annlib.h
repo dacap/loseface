@@ -8,7 +8,7 @@
 #include <string>
 #include <lua.hpp>
 
-#include "AnnDynamic.h"
+#include "Ann.h"
 
 namespace annlib {
 
@@ -21,13 +21,14 @@ namespace annlib {
 
   namespace details {
 
-    typedef DynamicMlp<double> lua_Mlp;
-    typedef NetArray<lua_Mlp> lua_MlpArray;
+    typedef Mlp lua_Mlp;
+    typedef MlpArray lua_MlpArray;
 
-    typedef PatternSet<double> lua_PatternSet;
+    typedef PatternSet lua_PatternSet;
 
-    struct lua_Normalizer {
-      Vector<double> min, max;
+    struct lua_Normalizer
+    {
+      Vector min, max;
     };
 
     void registerMlp(lua_State* L);

@@ -66,9 +66,17 @@ add_executable(loseface
   src/loseface.cpp)
 
 add_library(loseface-lib
+  src/Backpropagation.cpp
+  src/Eigenfaces.cpp
+  src/Matrix.cpp
+  src/Mlp.cpp
+  src/MlpArray.cpp
+  src/Pattern.cpp
+  src/PatternSet.cpp
+  src/Vector.cpp
   ${platforms_sources})
 
-target_link_libraries(loseface ${sys_libs} ${libs})
+target_link_libraries(loseface loseface-lib ${sys_libs} ${libs})
 
 set_target_properties(loseface PROPERTIES
   COMPILE_FLAGS "-Dcimg_debug=0 -Dcimg_use_png=1 -Dcimg_display=0")
