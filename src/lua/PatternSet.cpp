@@ -47,15 +47,15 @@ static int patternset__save(lua_State* L)
 
     for (lua_PatternSet::const_iterator
 	   it=(*p)->begin(); it!=(*p)->end(); ++it) {
-      const Pattern<double>* pat = *it;
+      const Pattern* pat = *it;
 
-      for (size_t i=0; i<pat->input.size(); ++i)
-	f << '\t' << pat->input(i);
+      for (size_t i=0; i<pat->getInput().size(); ++i)
+	f << '\t' << pat->getInput(i);
 
-      if (pat->output.size() > 1)
-	f << '\t' << ((int)pat->output.getMaxPos()+1);
+      if (pat->getOutput().size() > 1)
+	f << '\t' << ((int)pat->getOutput().getMaxPos()+1);
       else
-	f << '\t' << pat->output(0);
+	f << '\t' << pat->getOutput(0);
 
       f << std::endl;
     }
@@ -69,19 +69,20 @@ static int patternset__add_pattern(lua_State* L)
   if (!p)
     return luaL_error(L, "Invalid pattern set specified");
 
-  Pattern<double> newPattern;
+  Pattern newPattern;
 
   if (lua_istable(L, 2)) {
     size_t N = lua_objlen(L, 2);
     if (N == 0)
       return luaL_error(L, "Invalid 'input' vector with zero length");
-    newPattern.input.resize(N);
+
+    newPattern.resizeInput(N);
 
     // iterate the 'input' table
     lua_pushnil(L);		// push nil for first element of table
     size_t i = 0;
     while (lua_next(L, 2) != 0) {
-      newPattern.input(i++) = lua_tonumber(L, -1); // get value
+      newPattern.setInput(i++, lua_tonumber(L, -1)); // get value
       lua_pop(L, 1);		// remove value, the key is in stack for next iteration
     }
   }
@@ -93,13 +94,14 @@ static int patternset__add_pattern(lua_State* L)
     size_t N = lua_objlen(L, 3);
     if (N == 0)
       return luaL_error(L, "Invalid 'output' vector with zero length");
-    newPattern.output.resize(N);
+
+    newPattern.resizeOutput(N);
 
     // iterate the 'output' table
     lua_pushnil(L);		// push nil for first element of table
     size_t i = 0;
     while (lua_next(L, 3) != 0) {
-      newPattern.output(i++) = lua_tonumber(L, -1); // get value
+      newPattern.setOutput(i++, lua_tonumber(L, -1)); // get value
       lua_pop(L, 1);		// remove value, the key is in stack for next iteration
     }
   }
@@ -121,7 +123,7 @@ static int patternset__set_output(lua_State* L)
     if (N < 1)
       return luaL_error(L, "Error empty output vector");
 
-    Vector<double> newoutput(N);
+    Vector newoutput(N);
     size_t i = 0;
 
     // iterate table
@@ -134,8 +136,8 @@ static int patternset__set_output(lua_State* L)
     // Setup all outputs
     for (lua_PatternSet::iterator
 	   it=(*p)->begin(); it!=(*p)->end(); ++it) {
-      Pattern<double>& pat(**it);
-      pat.output = newoutput;
+      Pattern& pat(**it);
+      pat.setOutput(newoutput);
     }
     
     return 0;
@@ -184,7 +186,7 @@ static int patternset__split_by_percentage(lua_State* L)
   // put in the stack the return value (a new table)
   lua_newtable(L);
   int i = 1;
-  int beg = 0, end;
+  size_t beg = 0, end;
   for (vector<double>::iterator it = percentages.begin(); it != percentages.end(); ++it, ++i) {
     // a new pattern in the stack
     lua_pushinteger(L, i);
@@ -197,8 +199,8 @@ static int patternset__split_by_percentage(lua_State* L)
     // for each pattern in the original set
     end = beg + set->size()*percentage/100.0;
     end = end < set->size() ? end: set->size();
-    for (int c=beg; c<end; ++c) {
-      Pattern<double>& pat = (*set)[c];
+    for (size_t c=beg; c<end; ++c) {
+      Pattern& pat = (*set)[c];
       newset->push_back(pat);
     }
     beg = end;
@@ -241,11 +243,11 @@ static int patternset__split_by_output(lua_State* L)
     int output_nth = *it;
 
     // for each pattern in the original set
-    for (int c=0; c<set->size(); ++c) {
-      Pattern<double>& pat = (*set)[c];
+    for (size_t c=0; c<set->size(); ++c) {
+      Pattern& pat = (*set)[c];
 
       // this is a pattern for output_nth
-      if (output_nth == pat.output.getMaxPos()+1) // TODO this should be parametric
+      if (output_nth == pat.getOutput().getMaxPos()+1) // TODO this should be parametric
 	newset->push_back(pat);
     }
   }
@@ -332,7 +334,7 @@ void annlib::details::registerPatternSet(lua_State* L)
 int annlib::details::PatternSetCtor(lua_State* L)
 {
   string file;
-  int inputs = 1, outputs = 1;
+  size_t inputs = 1, outputs = 1;
   if (lua_istable(L, 1)) {
     lua_getfield(L, 1, "file");
     lua_getfield(L, 1, "inputs");
@@ -364,23 +366,26 @@ int annlib::details::PatternSetCtor(lua_State* L)
     istringstream str(buf);
 
     // Create one pattern (input/target pair)
-    Pattern<double> pat(inputs, outputs);
+    Pattern pat(inputs, outputs);
 
     // Read input
-    for (size_t c=0; c<inputs; ++c)
-      str >> pat.input(c);
+    for (size_t c=0; c<inputs; ++c) {
+      double input;
+      str >> input;
+      pat.setInput(c, input);
+    }
 
     // Read last digit (target)
     int target = 0;
     str >> target;
 
     for (size_t c=0; c<outputs; ++c)
-      pat.output(c) = (c == target-1) ? 1.0: 0.0;
+      pat.setOutput(c, (c == target-1) ? 1.0: 0.0);
 
 #if 0			// To see if patterns are loaded correctly
     cout << "Pattern loaded:" << endl;
-    cout << "  in  = " << pat.input << endl;
-    cout << "  out = " << pat.output << endl;
+    cout << "  in  = " << pat.getInput() << endl;
+    cout << "  out = " << pat.getOutput() << endl;
 #endif
 
     pattern_set.push_back(pat);

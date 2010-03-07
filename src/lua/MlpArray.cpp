@@ -84,7 +84,7 @@ static int mlparray__recall(lua_State* L)
   if (!set)
     return luaL_error(L, "Invalid pattern set specified");
 
-  Vector<double> input, output;
+  Vector input, output;
 
   // Put a table in the stack: array of outputs
   lua_newtable(L);
@@ -94,7 +94,7 @@ static int mlparray__recall(lua_State* L)
   size_t i = 1;
   for (; it != end; ++it, ++i) {
     // Execute the array of neural networks
-    array.recall((*it)->input, output);
+    array.recall((*it)->getInput(), output);
 
     // A new table in the stack: output vector
     lua_pushinteger(L, i);

@@ -17,7 +17,7 @@ namespace imglib {
 
   namespace details {
 
-    typedef Eigenfaces<double> lua_Eigenfaces;
+    typedef Eigenfaces lua_Eigenfaces;
     typedef cimg_library::CImg<unsigned char> lua_Image;
 
     void registerEigenfaces(lua_State* L);
@@ -29,7 +29,7 @@ namespace imglib {
     lua_Eigenfaces** toEigenfaces(lua_State* L, int pos);
     lua_Image** toImage(lua_State* L, int pos);
 
-    void image2vector(const lua_Image* img, Vector<double>& output);
+    void image2vector(const lua_Image* img, Vector& output);
 
   }
 

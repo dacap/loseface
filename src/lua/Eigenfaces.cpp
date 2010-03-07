@@ -34,7 +34,7 @@ static int eigenfaces__reserve(lua_State* L)
     size = lua_tonumber(L, 2);
 
   if (size <= 0)
-      return luaL_error(L, "'size' argument expected with a value greater than zero");
+    return luaL_error(L, "'size' argument expected with a value greater than zero");
 
   (*eig)->reserve(size);
   return 0;
@@ -50,7 +50,7 @@ static int eigenfaces__add_image(lua_State* L)
   for (int i=2; i<=n; ++i) {
     lua_Image* img = *toImage(L, i); // get argument "i"
     if (img) {
-      Vector<double> imgVector;
+      Vector imgVector;
       imglib::details::image2vector(img, imgVector);
       (*eig)->addImage(imgVector);
     }
@@ -137,14 +137,14 @@ static int eigenfaces__project_in_eigenspace(lua_State* L)
 
   luaL_checktype(L, 2, LUA_TTABLE);
 
-  vector<Vector<double> > outputs;
+  vector<Vector> outputs;
 
   // iterate table
   lua_pushnil(L);		// push nil for first element of table
   while (lua_next(L, 2) != 0) {
     lua_Image* img = *toImage(L, -1); // get value
     if (img) {
-      Vector<double> imgVector, output;
+      Vector imgVector, output;
       imglib::details::image2vector(img, imgVector);
 
       (*eig)->projectInEigenspace(imgVector, output);
@@ -156,13 +156,13 @@ static int eigenfaces__project_in_eigenspace(lua_State* L)
   // Create table of converted images
   lua_newtable(L);
   size_t i = 1;
-  for (vector<Vector<double> >::iterator it =
+  for (vector<Vector>::iterator it =
   	 outputs.begin(); it != outputs.end(); ++it, ++i) {
     // a new table in the stack
     lua_pushinteger(L, i);
     lua_newtable(L);
 
-    Vector<double>& output(*it);
+    Vector& output(*it);
     for (size_t j=0; j<output.size(); ++j) {
       lua_pushinteger(L, j+1);
       lua_pushnumber(L, output(j));

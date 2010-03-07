@@ -36,7 +36,7 @@
 
 static void test_vector_mean()
 {
-  Vector<double> v(4);
+  Vector v(4);
   v(0) = 10.0;
   v(1) = 3.0;
   v(2) = -4.0;
@@ -46,18 +46,18 @@ static void test_vector_mean()
 
 static void test_matrix_mean()
 {
-  Matrix<double> A(2, 3);
+  Matrix A(2, 3);
 
   A(0,0) = 1.0;  A(0,1) = 2.4;  A(0,2) = 0.2;
   A(1,0) = 1.4;  A(1,1) = 4.4;  A(1,2) = 0.1;
 
-  Vector<double> u(3);
+  Vector u(3);
   u(0) = (1.0 + 1.4) / 2.0;
   u(1) = (2.4 + 4.4) / 2.0;
   u(2) = (0.2 + 0.1) / 2.0;
   assert(A.meanRow() == u);
 
-  Vector<double> v(2);
+  Vector v(2);
   v(0) = (1.0 + 2.4 + 0.2) / 3.0;
   v(1) = (1.4 + 4.4 + 0.1) / 3.0;
   assert(A.meanCol() == v);
