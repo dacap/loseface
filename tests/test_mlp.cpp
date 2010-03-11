@@ -232,7 +232,7 @@ void test_grid()
 
 void test_sin()
 {
-  std::cout << "sin(x)" << std::endl;
+  std::cout << "sin(x)\n";
 
   Mlp net(1, 10, 1);
   net.setHiddenActivationFunction(Tansig());
@@ -271,7 +271,7 @@ void test_sin()
 
 void test_iris()
 {
-  std::cout << "iris" << std::endl;
+  std::cout << "iris\n";
 
   Mlp net(4, 3, 3);
   net.initRandom(-1.0, 1.0);
@@ -307,9 +307,9 @@ void test_iris()
     set.push_back(pat);
   }
 
-  // std::cout << "Patterns: " << set.size() << std::endl << std::endl;
+  // std::cout << "Patterns: " << set.size() << "\n\n";
   // for (int p=0; p<set.size(); ++p)
-  //   std::cout << "Pattern["<<p<<"]: " << set[p].input << " => " << set[p].output << std::endl;
+  //   std::cout << "Pattern[" << p << "]: " << set[p].getInput() << " => " << set[p].getOutput() << "\n";
 
   // normalize patterns
   Vector min_vector;
@@ -353,9 +353,9 @@ void test_iris()
 	    << "------+----+----+----+" << std::endl;
   for (int i=0; i<3; ++i) {
     std::printf("   %2d | %2d | %2d | %2d |\n", i,
-		distribution(i, 0),
-		distribution(i, 1),
-		distribution(i, 2));
+		(int)distribution(i, 0),
+		(int)distribution(i, 1),
+		(int)distribution(i, 2));
   }
   std::cout << "------+----+----+----+" << std::endl;
 }
