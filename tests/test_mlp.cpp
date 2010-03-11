@@ -274,12 +274,11 @@ void test_iris()
   std::cout << "iris\n";
 
   Mlp net(4, 3, 3);
-  net.initRandom(-1.0, 1.0);
+  net.initRandom(0.0, 1.0);
 
   Backpropagation bp(net);
-  bp.setLearningRate(0.0001);
-  // bp.setLearningRate(0.25);
-  // bp.setMomentum(0.9);
+  bp.setLearningRate(0.2);
+  bp.setMomentum(0.1);
 
   std::ifstream f("iris.csv");
   PatternSet set;
