@@ -38,7 +38,7 @@ public:
   double* getRaw() { return &m_data[0]; }
   const double* getRaw() const { return &m_data[0]; }
 
-  size_t Vector::size() const { return m_data.size(); }
+  size_t size() const { return m_data.size(); }
 
   double magnitude() const;
   double mean() const;
