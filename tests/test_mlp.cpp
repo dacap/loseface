@@ -368,16 +368,5 @@ int main()
   srand(1); test_grid();
   srand(1); test_sin();
   srand(1); test_iris();
-
-  // DynamicMlp sinnet(1, 10, 1);
-  // sinnet.hiddenFunc.setFunction<Tansig>();
-  // srand(1); test_sin(sinnet); // chrono_func(test_sin, "sin(x)");
-  // srand(1); test_iris<DynamicMlp>();
-
-  // for (int s=0; s<10; ++s) {
-  //   std::cout << "Seed " << s << std::endl;
-  //   srand(s);
-  //   test_iris();
-  // }
   return 0;
 }
