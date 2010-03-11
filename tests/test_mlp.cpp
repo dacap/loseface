@@ -239,7 +239,7 @@ void test_sin()
   net.initRandom(-1.0, 1.0);
 
   Backpropagation bp(net);
-  bp.setLearningRate(0.6);
+  bp.setLearningRate(0.001);
   bp.setMomentum(0.1);
 
   PatternSet set;
@@ -366,7 +366,7 @@ int main()
   srand(1); test_logical_op("OR",  0,0,0, 0,1,1, 1,0,1, 1,1,1);
   srand(1); test_logical_op("XOR", 0,0,0, 0,1,1, 1,0,1, 1,1,0);
   srand(1); test_grid();
-  srand(1); test_sin(); // chrono_func(test_sin, "sin(x)");
+  srand(1); test_sin();
   srand(1); test_iris();
 
   // DynamicMlp sinnet(1, 10, 1);
