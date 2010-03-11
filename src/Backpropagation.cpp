@@ -19,31 +19,28 @@ class UpdateWeightsHelper
 public:
   UpdateWeightsHelper()
   {
+    m_valid = false;
   }
 
-  void beforePatterns()
+  void beforePatterns(Mlp& zeroDelta)
   {
-    m_valid = false;
+    if (!m_valid) {
+      m_valid = true;
+      m_oldDelta = zeroDelta;
+    }
   }
 
   void applyWeights(Mlp& net, Mlp& delta, double momentum)
   {
-    if (!m_valid) {
-      m_valid = true;
-      m_oldDelta = delta;	// It is only to setup an MLP of the same dimmensions
-      m_oldDelta.zero();	// <- because here we put all weights to zero
-    }
-
 #if 0
     m_oldDelta = delta + m_oldDelta * momentum;
-    net += m_oldDelta;
 #else  // optimized (without temporary objects)
     m_tmp = m_oldDelta;
     m_tmp *= momentum;
     m_tmp += delta;
-    net += m_tmp;
     m_oldDelta = m_tmp;
 #endif
+    net += m_oldDelta;
   }
 
 };
@@ -141,7 +138,7 @@ void Backpropagation::train(const PatternSet& training_set)
   delta.zero();
 
   // Pre-processing policies
-  m_updateWeightsHelper->beforePatterns();
+  m_updateWeightsHelper->beforePatterns(delta);
   m_adaptativeLearningRate->beforePatterns(m_net, training_set);
   
   // for each pattern in the training set
