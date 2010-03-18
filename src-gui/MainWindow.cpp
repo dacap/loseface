@@ -5,7 +5,7 @@
 #include "MainWindow.h"
 #include "IdentifyDialog.h"
 #include "LoginDialog.h"
-#include "UserNavigation.h"
+#include "Navigation.h"
 #include <QtGui>
 
 MainWindow::MainWindow()
@@ -16,33 +16,30 @@ MainWindow::MainWindow()
   setWindowTitle(tr("Lose Face"));
   resize(500, 400);
 
-  UserNavigation* userNav = new UserNavigation();
-  m_scrollArea = new QScrollArea();
-  m_scrollArea->setWidgetResizable(true);
-  m_scrollArea->setWidget(userNav);
-  m_scrollArea->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Maximum);
-
-  setCentralWidget(m_scrollArea);
-}
-
-void MainWindow::resizeEvent(QResizeEvent* event)
-{
-  QMainWindow::resizeEvent(event);
-
-  m_scrollArea->adjustSize();
+  m_navigation = new Navigation(this);
+  setCentralWidget(m_navigation);
 }
 
 void MainWindow::createActions()
 {
   m_fileLoginMode = new QAction(tr("&Login Mode"), this);
-  connect(m_fileLoginMode, SIGNAL(triggered()), this, SLOT(goLoginMode()));
+  connect(m_fileLoginMode, SIGNAL(triggered()), this, SLOT(onLoginMode()));
 
   m_fileIdentifyMode = new QAction(tr("&Identify Mode"), this);
-  connect(m_fileIdentifyMode, SIGNAL(triggered()), this, SLOT(goIdentifyMode()));
+  connect(m_fileIdentifyMode, SIGNAL(triggered()), this, SLOT(onIdentifyMode()));
 
   m_fileExit = new QAction(tr("&Exit"), this);
   m_fileExit->setShortcuts(QKeySequence::Quit);
   connect(m_fileExit, SIGNAL(triggered()), this, SLOT(close()));
+
+  m_editNewUser = new QAction(tr("&New User"), this);
+  connect(m_editNewUser, SIGNAL(triggered()), this, SLOT(onNewUser()));
+
+  m_editSearchUser = new QAction(tr("&Search User"), this);
+  connect(m_editSearchUser, SIGNAL(triggered()), this, SLOT(onSearchUser()));
+
+  m_toolsPreferences = new QAction(tr("&Preferences"), this);
+  connect(m_toolsPreferences, SIGNAL(triggered()), this, SLOT(onPreferences()));
 }
 
 void MainWindow::createMenus()
@@ -54,12 +51,18 @@ void MainWindow::createMenus()
   m_fileMenu->addAction(m_fileExit);
 
   m_editMenu = menuBar()->addMenu(tr("&Edit"));
+  m_editMenu->addAction(m_editNewUser);
+  m_editMenu->addAction(m_editSearchUser);
+
   m_toolsMenu = menuBar()->addMenu(tr("&Tools"));
+  m_toolsMenu->addAction(m_toolsPreferences);
+
   menuBar()->addSeparator();
+
   m_helpMenu = menuBar()->addMenu(tr("&Help"));
 }
 
-void MainWindow::goLoginMode()
+void MainWindow::onLoginMode()
 {
   // Create login dialog
   LoginDialog dlg(this);
@@ -99,7 +102,7 @@ void MainWindow::goLoginMode()
   } while (tryAgain);
 }
 
-void MainWindow::goIdentifyMode()
+void MainWindow::onIdentifyMode()
 {
   hide();
 
@@ -113,3 +116,17 @@ void MainWindow::goIdentifyMode()
 // {
 // }
 
+void MainWindow::onNewUser()
+{
+  m_navigation->openCreateUserPanel();
+}
+
+void MainWindow::onSearchUser()
+{
+  m_navigation->openSearchPanel();
+}
+
+void MainWindow::onPreferences()
+{
+  m_navigation->openPreferencesPanel();
+}

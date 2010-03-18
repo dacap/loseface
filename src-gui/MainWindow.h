@@ -9,23 +9,23 @@
 
 class QMenu;
 class QAction;
-class QScrollArea;
+class Navigation;
 
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
 
-  QScrollArea* m_scrollArea;
+  Navigation* m_navigation;
 
 public:
   MainWindow();
 
-protected:
-  void resizeEvent(QResizeEvent* event);
-
 private slots:
-  void goLoginMode();
-  void goIdentifyMode();
+  void onLoginMode();
+  void onIdentifyMode();
+  void onNewUser();
+  void onSearchUser();
+  void onPreferences();
 
 private:
   void createActions();
@@ -34,6 +34,9 @@ private:
   QAction* m_fileLoginMode;
   QAction* m_fileIdentifyMode;
   QAction* m_fileExit;
+  QAction* m_editNewUser;
+  QAction* m_editSearchUser;
+  QAction* m_toolsPreferences;
   QMenu* m_fileMenu;
   QMenu* m_editMenu;
   QMenu* m_toolsMenu;

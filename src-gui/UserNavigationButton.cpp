@@ -40,17 +40,25 @@ void UserNavigationButton::paintEvent(QPaintEvent* event)
     painter.setBrush(brush);
   }
 
-  painter.drawRoundedRect(rc, 16, 16);
+  painter.drawRoundedRect(rc, 8, 8);
+
+  QSize sz;
 
   if (m_photo.isNull()) {
-    painter.setFont(QFont("Tahoma", 14));
-    painter.drawText(rc, Qt::AlignHCenter | Qt::AlignVCenter, tr("No photo"));
+    QFont font("Tahoma", 14);
+    QString text = tr("No photo");
+    painter.setFont(font);
+    painter.drawText(rc, Qt::AlignLeft | Qt::AlignVCenter, text);
+    sz = QFontMetrics(font).size(Qt::TextSingleLine, text);
   }
   else {
-    QSize sz(m_photo.size());
+    sz = m_photo.size();
     sz.scale(rc.size()*0.9, Qt::KeepAspectRatio);
-    painter.drawImage(QRect(rc.center()-QPoint(sz.width()/2, sz.height()/2), sz), m_photo);
+    painter.drawImage(QRect(QPoint(4, rc.center().y()-sz.height()/2), sz), m_photo);
   }
+
+  painter.setFont(QFont("Tahoma", 14));
+  painter.drawText(QPoint(4+sz.width()+4, rc.y()), tr("Name"));
 }
 
 void UserNavigationButton::enterEvent(QEvent* event)

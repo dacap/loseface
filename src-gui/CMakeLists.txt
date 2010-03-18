@@ -4,7 +4,9 @@ find_package(Qt4)
 
 if(QT4_FOUND)
 
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+  include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src)
 
   # Use QtSql
   set(QT_USE_QTSQL true)
@@ -17,23 +19,29 @@ if(QT4_FOUND)
     dao/General.cpp
     dao/Photo.cpp
     dao/User.cpp
-    FlowLayout.cpp
+    CreateUserPanel.cpp
     IdentifyDialog.cpp
     LoginDialog.cpp
     LoseFaceApp.cpp
-    main.cpp
     MainWindow.cpp
-    UserNavigation.cpp
+    Navigation.cpp
+    PreferencesPanel.cpp
+    Recognizer.cpp
+    SearchPanel.cpp
     UserNavigationButton.cpp
-    WebCamWidget.cpp)
+    WebCamWidget.cpp
+    main.cpp)
 
   set(loseface-ui-mocs-srcs
-    FlowLayout.h
+    CreateUserPanel.h
     IdentifyDialog.h
     LoginDialog.h
     LoseFaceApp.h
     MainWindow.h
-    UserNavigation.h
+    Navigation.h
+    PreferencesPanel.h
+    Recognizer.h
+    SearchPanel.h
     UserNavigationButton.h
     WebCamWidget.h)
 
@@ -47,7 +55,8 @@ if(QT4_FOUND)
   target_link_libraries(loseface-ui
     ${QT_LIBRARIES}
     loseface-lib
-    ${sys_libs})
+    ${sys_libs}
+    ${libs})
 
   # Extra flags
   set_target_properties(loseface-ui PROPERTIES
