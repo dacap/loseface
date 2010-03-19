@@ -388,7 +388,8 @@ int annlib::details::PatternSetCtor(lua_State* L)
     cout << "  out = " << pat.getOutput() << endl;
 #endif
 
-    pattern_set.push_back(pat);
+    if (target <= outputs)
+      pattern_set.push_back(pat);
   }
 
   // if (verbose_mode)
