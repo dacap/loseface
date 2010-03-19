@@ -38,6 +38,7 @@ if STOP_GOAL == nil then STOP_GOAL = "fixed" end
 print("----------------------------------------------------------------------")
 print("INPUTS="..INPUTS)
 print("HIDDENS="..HIDDENS)
+print("SUBJECTS="..SUBJECTS)
 print("NUMBER_OF_NEGATIVES = "..NUMBER_OF_NEGATIVES)
 print("STOP_GOAL = "..STOP_GOAL)
 
