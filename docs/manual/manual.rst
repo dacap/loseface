@@ -531,14 +531,20 @@ Cada neurona de la capa oculta y la de salida tiene un parámetro de *bias*.
 
 Al crear un nuevo modelo red MLP debe especificar la cantidad de neuronas en cada capa::
 
-  local mlp = ann.Mlp({ inputs=number, hiddens=number, outputs=number })
+  local mlp = ann.Mlp({ inputs=number, hiddens=number, outputs=number,
+                        hiddenfunc=constant,
+                        outputfunc=constant })
 
 Donde *inputs* es la cantidad de entradas del modelo, *hiddens* la cantidad
 de neuronas en la capa oculta, y *outputs* es la cantidad de salidas.
+Las funciones *hiddenfunc* y *outputfunc* pueden tener uno de los siguientes
+valores: ann.PURELIN, ann.LOGSIG o ann.TANSIG.
 
 Ejemplo::
 
-  local logic_gate = ann.Mlp({ inputs=2, hiddens=2, outputs=1 })
+  local logic_gate = ann.Mlp({ inputs=2, hiddens=2, outputs=1,
+                               hiddenfunc=ann.LOGSIG,
+                               outputfunc=ann.PURELIN })
 
 mlp:clone
 ---------
