@@ -13,6 +13,14 @@ class CreateUserPanel : public QWidget
 
 public:
   CreateUserPanel(QWidget* parent = 0);
+
+signals:
+  void ok();
+  void cancel();
+
+private slots:
+  void onOK();
+  void onCancel();
 };
 
 #endif

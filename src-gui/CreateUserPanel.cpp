@@ -3,9 +3,7 @@
 // that can be found in the LICENSE.txt file.
 
 #include "CreateUserPanel.h"
-#include <QLabel>
-#include <QLineEdit>
-#include <QGridLayout>
+#include <QtGui>
 
 CreateUserPanel::CreateUserPanel(QWidget* parent)
   : QWidget(parent)
@@ -36,6 +34,15 @@ CreateUserPanel::CreateUserPanel(QWidget* parent)
   QLabel* ssnLabel = new QLabel(tr("Social Security Number:"));
   QLineEdit* ssnEdit = new QLineEdit(tr(""));
 
+  QPushButton* okButton = new QPushButton(tr("&OK"));
+  QPushButton* cancelButton = new QPushButton(tr("&Cancel"));
+  connect(okButton, SIGNAL(clicked()), this, SLOT(onOK()));
+  connect(cancelButton, SIGNAL(clicked()), this, SLOT(onCancel()));
+
+  QHBoxLayout* buttonslayout = new QHBoxLayout();
+  buttonslayout->addWidget(okButton);
+  buttonslayout->addWidget(cancelButton);
+
   QGridLayout* layout = new QGridLayout();
   layout->addWidget(titleLabel, 0, 0);
   layout->addWidget(userNameLabel, 1, 0);
@@ -48,6 +55,20 @@ CreateUserPanel::CreateUserPanel(QWidget* parent)
   layout->addWidget(emailEdit, 4, 1);
   layout->addWidget(ssnLabel, 5, 0);
   layout->addWidget(ssnEdit, 5, 1);
+  layout->addLayout(buttonslayout, 6, 1);
   layout->setColumnStretch(1, 100);
+  layout->setColumnStretch(2, 100);
+  layout->setRowStretch(7, 100);
   setLayout(layout);
 }
+
+void CreateUserPanel::onOK()
+{
+  emit ok();
+}
+
+void CreateUserPanel::onCancel()
+{
+  emit cancel();
+}
+
