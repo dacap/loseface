@@ -17,5 +17,6 @@ PreferencesPanel::PreferencesPanel(QWidget* parent)
 
   QGridLayout* layout = new QGridLayout();
   layout->addWidget(titleLabel, 0, 0);
+  layout->setRowStretch(1, 100);
   setLayout(layout);
 }
