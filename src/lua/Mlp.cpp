@@ -401,15 +401,15 @@ int annlib::details::MlpCtor(lua_State* L)
   lua_Mlp mlp(inputs, hiddens, outputs);
 
   switch (hiddenfunc) {
-    case annlib::PURELIN: mlp.setHiddenActivationFunction(Purelin());
-    case annlib::LOGSIG: mlp.setHiddenActivationFunction(Logsig());
-    case annlib::TANSIG: mlp.setHiddenActivationFunction(Tansig());
+    case annlib::PURELIN: mlp.setHiddenActivationFunction(Purelin()); break;
+    case annlib::LOGSIG: mlp.setHiddenActivationFunction(Logsig()); break;
+    case annlib::TANSIG: mlp.setHiddenActivationFunction(Tansig()); break;
   }
 
   switch (outputfunc) {
-    case annlib::PURELIN: mlp.setOutputActivationFunction(Purelin());
-    case annlib::LOGSIG: mlp.setOutputActivationFunction(Logsig());
-    case annlib::TANSIG: mlp.setOutputActivationFunction(Tansig());
+    case annlib::PURELIN: mlp.setOutputActivationFunction(Purelin()); break;
+    case annlib::LOGSIG: mlp.setOutputActivationFunction(Logsig()); break;
+    case annlib::TANSIG: mlp.setOutputActivationFunction(Tansig()); break;
   }
 
   **newmlp(L) = mlp;
