@@ -15,8 +15,6 @@ using namespace std;
 ///
 static int annlib_init_random(lua_State* L)
 {
-  luaL_checktype(L, 1, LUA_TTABLE);
-
   int seed = 1;
   if (lua_isnumber(L, 1))
     seed = (int)lua_tonumber(L, 1);
