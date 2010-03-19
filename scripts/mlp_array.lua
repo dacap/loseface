@@ -63,7 +63,7 @@ function reset_mlp(mlp, seed)
 end
 
 function create_mlp(seed)
-  local mlp = ann.Mlp({ inputs=INPUTS, hiddens=HIDDENS, outputs=1 })
+  local mlp = ann.Mlp({ inputs=INPUTS, hiddens=HIDDENS, outputs=1, hiddenfunc=ann.LOGSIG, outputfunc=ann.LOGSIG })
   return reset_mlp(mlp, seed)
 end
 
