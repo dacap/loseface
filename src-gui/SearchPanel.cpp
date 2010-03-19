@@ -12,6 +12,9 @@
 SearchPanel::SearchPanel(QWidget* parent)
   : QWidget(parent)
 {
+  setBackgroundRole(QPalette::Base);
+  setAutoFillBackground(true);
+
   QLabel* titleLabel = new QLabel(tr("Search for registered users:"));
   titleLabel->setFont(QFont("Tahoma", 12));
 

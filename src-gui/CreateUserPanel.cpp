@@ -10,6 +10,9 @@
 CreateUserPanel::CreateUserPanel(QWidget* parent)
   : QWidget(parent)
 {
+  setBackgroundRole(QPalette::Base);
+  setAutoFillBackground(true);
+
   QLabel* titleLabel = new QLabel(tr("Create User"));
   titleLabel->setFont(QFont("Tahoma", 12));
 

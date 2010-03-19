@@ -9,6 +9,9 @@
 PreferencesPanel::PreferencesPanel(QWidget* parent)
   : QWidget(parent)
 {
+  setBackgroundRole(QPalette::Base);
+  setAutoFillBackground(true);
+
   QLabel* titleLabel = new QLabel(tr("Preferences"));
   titleLabel->setFont(QFont("Tahoma", 12));
 

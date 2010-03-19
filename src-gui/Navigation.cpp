@@ -19,6 +19,8 @@
 Navigation::Navigation(QWidget* parent)
   : QWidget(parent)
 {
+  setBackgroundRole(QPalette::Base);
+  setAutoFillBackground(true);
   setLayout(new QHBoxLayout());
 
   m_currentPanel = NULL;
