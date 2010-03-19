@@ -40,9 +40,10 @@ public:
   void openCreateUserPanel() { changePanel(CREATE_USER); }
   void openPreferencesPanel() { changePanel(PREFERENCES); }
 
-// private slots:
+private slots:
 //   void addNewUser();
 //   void deleteUser(UserNavigationButton* button);
+  void openCreateUserPanelSlot();
 
 // private:
 //   void addUser(dto::User* user, QImage image);

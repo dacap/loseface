@@ -73,7 +73,7 @@ void Navigation::changePanel(panel_t panel)
     case SEARCH:
       if (!m_searchPanel) {
 	m_searchPanel = new SearchPanel(this);
-	connect(m_searchPanel, SIGNAL(createUser()), this, SLOT(openCreateUserPanel()));
+	connect(m_searchPanel, SIGNAL(createUser()), this, SLOT(openCreateUserPanelSlot()));
       }
       m_currentPanel = m_searchPanel;
       break;
@@ -100,6 +100,11 @@ void Navigation::changePanel(panel_t panel)
     layout()->addWidget(m_currentPanel);
     m_currentPanel->setVisible(true);
   }
+}
+
+void Navigation::openCreateUserPanelSlot()
+{
+  openCreateUserPanel();
 }
 
 #if 0
