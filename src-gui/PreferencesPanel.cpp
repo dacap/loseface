@@ -13,7 +13,7 @@ PreferencesPanel::PreferencesPanel(QWidget* parent)
   setAutoFillBackground(true);
 
   QLabel* titleLabel = new QLabel(tr("Preferences"));
-  titleLabel->setFont(QFont("Tahoma", 12));
+  titleLabel->setFont(QFont("Tahoma", 12, QFont::Bold));
 
   QGridLayout* layout = new QGridLayout();
   layout->addWidget(titleLabel, 0, 0);

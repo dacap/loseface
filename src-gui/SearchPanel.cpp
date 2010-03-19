@@ -16,7 +16,7 @@ SearchPanel::SearchPanel(QWidget* parent)
   setAutoFillBackground(true);
 
   QLabel* titleLabel = new QLabel(tr("Search for registered users:"));
-  titleLabel->setFont(QFont("Tahoma", 12));
+  titleLabel->setFont(QFont("Tahoma", 12, QFont::Bold));
 
   QLineEdit* nameLabel = new QLineEdit(tr(""));
 

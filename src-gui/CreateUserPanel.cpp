@@ -14,7 +14,7 @@ CreateUserPanel::CreateUserPanel(QWidget* parent)
   setAutoFillBackground(true);
 
   QLabel* titleLabel = new QLabel(tr("Create User"));
-  titleLabel->setFont(QFont("Tahoma", 12));
+  titleLabel->setFont(QFont("Tahoma", 12, QFont::Bold));
 
   QFont helpFont("Tahoma", 8);
   helpFont.setItalic(true);
