@@ -28,7 +28,6 @@ Navigation::Navigation(QWidget* parent)
   m_createUserPanel = NULL;
   m_preferencesPanel = NULL;
 
-  // setBackgroundRole(QPalette::Window);
   // setBackgroundRole(QPalette::Base);
   // setAutoFillBackground(true);
 
@@ -79,8 +78,11 @@ void Navigation::changePanel(panel_t panel)
       break;
 
     case CREATE_USER:
-      if (!m_createUserPanel)
+      if (!m_createUserPanel) {
 	m_createUserPanel = new CreateUserPanel(this);
+	connect(m_createUserPanel, SIGNAL(ok()), this, SLOT(openSearchPanelSlot()));
+	connect(m_createUserPanel, SIGNAL(cancel()), this, SLOT(openSearchPanelSlot()));
+      }
       m_currentPanel = m_createUserPanel;
       break;
 
@@ -105,6 +107,11 @@ void Navigation::changePanel(panel_t panel)
 void Navigation::openCreateUserPanelSlot()
 {
   openCreateUserPanel();
+}
+
+void Navigation::openSearchPanelSlot()
+{
+  openSearchPanel();
 }
 
 #if 0

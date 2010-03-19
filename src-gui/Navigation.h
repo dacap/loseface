@@ -44,6 +44,7 @@ private slots:
 //   void addNewUser();
 //   void deleteUser(UserNavigationButton* button);
   void openCreateUserPanelSlot();
+  void openSearchPanelSlot();
 
 // private:
 //   void addUser(dto::User* user, QImage image);
