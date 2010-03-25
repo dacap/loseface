@@ -4,3 +4,6 @@
 
 add_library(sqlite
   sqlite3.c)
+
+set_target_properties(sqlite PROPERTIES
+  COMPILE_FLAGS "-DSQLITE_THREADSAFE")
