@@ -7,18 +7,26 @@
 
 #include <QWidget>
 
-class QListWidget;
-// class QImage;
-// class UserSearchPanelButton;
+class QLineEdit;
+class QPushButton;
+class QListView;
+class QTimer;
 
 class SearchPanel : public QWidget
 {
   Q_OBJECT
 
-  QListWidget* m_usersList;
+  class SearchThread;
+
+  QLineEdit* m_searchBox;
+  QPushButton* m_searchButton;
+  QListView* m_usersList;
+  SearchThread* m_thread;
+  QTimer* m_poll;
 
 public:
   SearchPanel(QWidget* parent = 0);
+  ~SearchPanel();
 
 signals:
   void createUser();
@@ -26,6 +34,7 @@ signals:
 private slots:
   void onSearchClicked();
   void onNewUserClicked();
+  void pollResults();
 
 // private slots:
 //   void addNewUser();
