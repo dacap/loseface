@@ -103,3 +103,10 @@ dao::UserIteratorPtr dao::User::getIterator()
 {
   return UserIteratorPtr(new UserIteratorImpl(m_general->getDatabase()));
 }
+
+dao::UserIteratorPtr dao::User::getSearchIterator(const char* searchWords)
+{
+  return UserIteratorPtr(new UserIteratorImpl(m_general->getDatabase()));
+}
+
+

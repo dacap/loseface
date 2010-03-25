@@ -28,6 +28,7 @@ namespace dao {
     int getCount();
     dto::UserPtr getById(int id);
     UserIteratorPtr getIterator();
+    UserIteratorPtr getSearchIterator(const char* searchWords);
 
     int insertUser(dto::User* user);
     void deleteUser(int id);
