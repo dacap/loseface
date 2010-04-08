@@ -137,73 +137,6 @@ void SearchPanel::onNewUserClicked()
   emit createUser();
 }
 
-#if 0
-class UserResultsItem : public QListItem
-{
-  dto::User m_user;
-  QImage m_photo;
-
-public:
-
-  UserResultItem(dto::User user)
-    : m_user(user)
-  {
-    dao::General* generalDao = get_general_dao();
-    if (generalDao) {
-      // Load the first photo of the specified user
-      dao::Photo pictureDao(generalDao);
-      dao::PhotoIteratorPtr pictureIter = pictureDao.getIterator(user.getId());
-      dto::Photo picture;
-      if (pictureIter->next(picture)) {
-	m_photo = pictureDao.loadImage(picture.getId());
-      }
-    }
-  }
-
-  // QSize sizeHint() const
-  // {
-  //   return QSize(128, 128);
-  // }
-  
-  // void paintEvent(QPaintEvent* event)
-  // {
-  //   QPainter painter(this);
-  //   QPen pen(QColor(0, 128, 255));
-  //   painter.setPen(pen);
-
-  //   painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
-
-  //   QRect rc(0, 0, width()-1, height()-1);
-
-  //   if (underMouse() || m_forceHot) {
-  //     QBrush brush(QColor(100, 240, 255));
-  //     painter.setBrush(brush);
-  //   }
-
-  //   painter.drawRoundedRect(rc, 8, 8);
-
-  //   QSize sz;
-
-  //   if (m_photo.isNull()) {
-  //     QFont font("Tahoma", 14);
-  //     QString text = tr("No photo");
-  //     painter.setFont(font);
-  //     painter.drawText(rc, Qt::AlignLeft | Qt::AlignVCenter, text);
-  //     sz = QFontMetrics(font).size(Qt::TextSingleLine, text);
-  //   }
-  //   else {
-  //     sz = m_photo.size();
-  //     sz.scale(rc.size()*0.9, Qt::KeepAspectRatio);
-  //     painter.drawImage(QRect(QPoint(4, rc.center().y()-sz.height()/2), sz), m_photo);
-  //   }
-
-  //   painter.setFont(QFont("Tahoma", 14));
-  //   painter.drawText(QPoint(4+sz.width()+4, rc.y()), tr("Name"));
-  // }
-
-};
-#endif
-
 void SearchPanel::pollResults()
 {
   assert(m_thread != NULL);
@@ -224,11 +157,12 @@ void SearchPanel::pollResults()
 	if (pictureIter->next(picture)) {
 	  image = pictureDao.loadImage(picture.getId());
 	}
-	QStandardItem* item = new QStandardItem(QIcon(QPixmap::fromImage(image)), user.getName());
-	list.append(item);
+	list.append(new QStandardItem(QIcon(QPixmap::fromImage(image)), user.getUserName()));
       }
     }
-    list.append(new QStandardItem(user.getName()));
+    list.append(new QStandardItem(user.getFirstName()));
+    list.append(new QStandardItem(user.getLastName()));
+    list.append(new QStandardItem(user.getEmail()));
     m_model->insertRow(count++, list);
   }
 

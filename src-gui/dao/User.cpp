@@ -31,7 +31,7 @@ int dao::User::getCount()
 dto::UserPtr dao::User::getById(int id)
 {
   QSqlQuery query(m_general->getDatabase());
-  query.prepare("SELECT name FROM users WHERE id=?");
+  query.prepare("SELECT user_name,first_name,last_name,email,ssn FROM users WHERE id=?");
   query.addBindValue(id);
   query.exec();
 
@@ -41,7 +41,11 @@ dto::UserPtr dao::User::getById(int id)
   if (query.next()) {
     user = dto::UserPtr(new dto::User);
     user->setId(id);
-    user->setName(query.value(0).toString());
+    user->setUserName(query.value(0).toString());
+    user->setFirstName(query.value(1).toString());
+    user->setLastName(query.value(2).toString());
+    user->setEmail(query.value(3).toString());
+    user->setSsn(query.value(4).toString());
   }
 
   return user;
@@ -50,8 +54,12 @@ dto::UserPtr dao::User::getById(int id)
 int dao::User::insertUser(dto::User* user)
 {
   QSqlQuery query(m_general->getDatabase());
-  query.prepare("INSERT INTO users (name) VALUES (?)");
-  query.addBindValue(user->getName());
+  query.prepare("INSERT INTO users (user_name,first_name,last_name,email,ssn) VALUES (?,?,?,?,?)");
+  query.addBindValue(user->getUserName());
+  query.addBindValue(user->getFirstName());
+  query.addBindValue(user->getLastName());
+  query.addBindValue(user->getEmail());
+  query.addBindValue(user->getSsn());
   query.exec();
   
   QVariant id = query.lastInsertId();
@@ -81,7 +89,7 @@ public:
   UserIteratorImpl(const QSqlDatabase& db)
     : m_query(db)
   {
-    m_query.exec("SELECT id,name FROM users");
+    m_query.exec("SELECT id,user_name,first_name,last_name,email FROM users");
   }
 
   // Iterator<dto::User> implementation
@@ -90,7 +98,10 @@ public:
   {
     if (m_query.next()) {
       user.setId(m_query.value(0).toInt());
-      user.setName(m_query.value(0).toString());
+      user.setUserName(m_query.value(1).toString());
+      user.setFirstName(m_query.value(2).toString());
+      user.setLastName(m_query.value(3).toString());
+      user.setEmail(m_query.value(4).toString());
       return true;
     }
     else
@@ -108,5 +119,3 @@ dao::UserIteratorPtr dao::User::getSearchIterator(const char* searchWords)
 {
   return UserIteratorPtr(new UserIteratorImpl(m_general->getDatabase()));
 }
-
-
