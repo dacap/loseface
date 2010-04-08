@@ -119,7 +119,12 @@ SearchPanel::~SearchPanel()
 
 void SearchPanel::onSearchClicked()
 {
+  // Disable search button (to avoid other signal when we are already searching users)
   m_searchButton->setEnabled(false);
+
+  // Remove all rows from the list of users (old results)
+  if (m_model->rowCount())
+    m_model->removeRows(0, m_model->rowCount());
 
   // Create the search thread
   m_thread = new SearchThread(m_searchBox->text(), this);
