@@ -143,6 +143,9 @@ void SearchPanel::pollResults()
   int count = 0;
   while (m_thread->getNextUser(user)) {
     QList<QStandardItem*> list;
+    QStandardItem* item;
+
+    // Get the photo of the user
     {
       dao::General* generalDao = get_general_dao();
       if (generalDao) {
@@ -154,12 +157,25 @@ void SearchPanel::pollResults()
 	if (pictureIter->next(picture)) {
 	  image = pictureDao.loadImage(picture.getId());
 	}
-	list.append(new QStandardItem(QIcon(QPixmap::fromImage(image)), user.getUserName()));
+
+	item = new QStandardItem(QIcon(QPixmap::fromImage(image)), user.getUserName());
+	item->setEditable(false);
+	list.append(item);
       }
     }
-    list.append(new QStandardItem(user.getFirstName()));
-    list.append(new QStandardItem(user.getLastName()));
-    list.append(new QStandardItem(user.getEmail()));
+
+    item = new QStandardItem(user.getFirstName());
+    item->setEditable(false);
+    list.append(item);
+
+    item = new QStandardItem(user.getLastName());
+    item->setEditable(false);
+    list.append(item);
+
+    item = new QStandardItem(user.getEmail());
+    item->setEditable(false);
+    list.append(item);
+
     m_model->insertRow(count++, list);
   }
 
@@ -180,10 +196,10 @@ void SearchPanel::pollResults()
 void SearchPanel::setupModel()
 {
   m_model = new QStandardItemModel(0, 4, this);
-  m_model->setHeaderData(0, Qt::Horizontal, tr("User"));
-  m_model->setHeaderData(1, Qt::Horizontal, tr("First Name"));
-  m_model->setHeaderData(2, Qt::Horizontal, tr("Last Name"));
-  m_model->setHeaderData(3, Qt::Horizontal, tr("E-mail"));
+  m_model->setHeaderData(0, Qt::Horizontal, tr("User"), Qt::DisplayRole);
+  m_model->setHeaderData(1, Qt::Horizontal, tr("First Name"), Qt::DisplayRole);
+  m_model->setHeaderData(2, Qt::Horizontal, tr("Last Name"), Qt::DisplayRole);
+  m_model->setHeaderData(3, Qt::Horizontal, tr("E-mail"), Qt::DisplayRole);
 }
 
 void SearchPanel::setupView()
