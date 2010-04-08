@@ -9,8 +9,9 @@
 
 class QLineEdit;
 class QPushButton;
-class QListView;
+class QTableView;
 class QTimer;
+class QStandardItemModel;
 
 class SearchPanel : public QWidget
 {
@@ -20,9 +21,10 @@ class SearchPanel : public QWidget
 
   QLineEdit* m_searchBox;
   QPushButton* m_searchButton;
-  QListView* m_usersList;
+  QTableView* m_usersList;
   SearchThread* m_thread;
   QTimer* m_poll;
+  QStandardItemModel* m_model;
 
 public:
   SearchPanel(QWidget* parent = 0);
@@ -35,6 +37,10 @@ private slots:
   void onSearchClicked();
   void onNewUserClicked();
   void pollResults();
+
+private:
+  void setupModel();
+  void setupView();
 
 // private slots:
 //   void addNewUser();

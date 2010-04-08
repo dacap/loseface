@@ -3,6 +3,7 @@
 // that can be found in the LICENSE.txt file.
 
 #include "SearchPanel.h"
+// #include "SearchResultsModel.h"
 #include "LoseFaceApp.h"
 #include "dao/User.h"
 #include "dao/Photo.h"
@@ -12,7 +13,7 @@
 class SearchPanel::SearchThread : public QThread
 {
   QString m_term;
-  QMutex m_mutex;
+  QMutex m_mutex;		// Mutex between producer and consumer
   std::list<dto::User> m_users;
   bool m_done;
 
@@ -40,7 +41,6 @@ public:
 	}
       }
     }
-    m_done = true;
   }
 
   bool getNextUser(dto::User& user)
@@ -49,15 +49,17 @@ public:
 
     if (!m_users.empty()) {
       // Get the next user from the list
-      user = *m_users.begin();
+      user = m_users.front();
 
       // And remove it
       m_users.erase(m_users.begin());
 
       return true;
     }
-    else
+    else {
+      m_done = true;
       return false;
+    }
   }
 
   bool done() const
@@ -85,8 +87,18 @@ SearchPanel::SearchPanel(QWidget* parent)
   QPushButton* newUser = new QPushButton(tr("New User"));
   connect(newUser, SIGNAL(clicked()), this, SLOT(onNewUserClicked()));
 
-  m_usersList = new QListView();
+  // Create the list of users (to show the search results)
+  // m_usersList = new QListView();
 
+  // SearchResultsModel* model = new SearchResultsModel();
+  // m_usersList->setModel(model);
+
+  setupModel();
+  setupView();
+
+  // QTableView
+
+  // Create the layout of the dialog
   QGridLayout* layout = new QGridLayout();
   layout->addWidget(titleLabel, 0, 0);
   layout->addWidget(m_searchBox, 1, 0);
@@ -126,40 +138,6 @@ void SearchPanel::onNewUserClicked()
 }
 
 #if 0
-class UserResultsModel : public QAbstractListModel
-{
-  std::vector<dto::User> m_users;
-
-public:
-  UserResultsModel(QObject* parent = 0)
-    : QAbstractListModel(parent)
-  {
-  }
-
-  int rowCount(const QModelIndex& parent = QModelIndex()) const
-  {
-    return m_users.size();
-  }
-
-  QVariant data(const QModelIndex& index, int role) const
-  {
-    if (!index.isValid() || index.row() >= m_users.size())
-      return QVariant();
-
-    if (role == Qt::DisplayRole)
-      return m_users[index.row()];
-    else
-      return QVariant();
-  }
-
-  QVariant headerData(int section, Qt::Orientation orientation,
-		      int role = Qt::DisplayRole) const
-  {
-    return QVariant();
-  }
-
-};
-
 class UserResultsItem : public QListItem
 {
   dto::User m_user;
@@ -232,8 +210,26 @@ void SearchPanel::pollResults()
 
   // Get all users from the working thread
   dto::User user;
+  int count = 0;
   while (m_thread->getNextUser(user)) {
-    // m_usersList->addItem(new UserResultItem(user));
+    QList<QStandardItem*> list;
+    {
+      dao::General* generalDao = get_general_dao();
+      if (generalDao) {
+	// Load the first photo of the specified user
+	dao::Photo pictureDao(generalDao);
+	dao::PhotoIteratorPtr pictureIter = pictureDao.getIterator(user.getId());
+	dto::Photo picture;
+	QImage image;
+	if (pictureIter->next(picture)) {
+	  image = pictureDao.loadImage(picture.getId());
+	}
+	QStandardItem* item = new QStandardItem(QIcon(QPixmap::fromImage(image)), user.getName());
+	list.append(item);
+      }
+    }
+    list.append(new QStandardItem(user.getName()));
+    m_model->insertRow(count++, list);
   }
 
   // If the thread finishes, join it and stop the timer
@@ -250,3 +246,21 @@ void SearchPanel::pollResults()
   }
 }
 
+void SearchPanel::setupModel()
+{
+  m_model = new QStandardItemModel(0, 4, this);
+  m_model->setHeaderData(0, Qt::Horizontal, tr("User"));
+  m_model->setHeaderData(1, Qt::Horizontal, tr("First Name"));
+  m_model->setHeaderData(2, Qt::Horizontal, tr("Last Name"));
+  m_model->setHeaderData(3, Qt::Horizontal, tr("E-mail"));
+}
+
+void SearchPanel::setupView()
+{
+  m_usersList = new QTableView();
+  m_usersList->setModel(m_model);
+  m_usersList->setIconSize(QSize(32, 32));
+
+  QItemSelectionModel* selectionModel = new QItemSelectionModel(m_model);
+  m_usersList->setSelectionModel(selectionModel);
+}
