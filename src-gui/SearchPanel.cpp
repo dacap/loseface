@@ -87,16 +87,8 @@ SearchPanel::SearchPanel(QWidget* parent)
   QPushButton* newUser = new QPushButton(tr("New User"));
   connect(newUser, SIGNAL(clicked()), this, SLOT(onNewUserClicked()));
 
-  // Create the list of users (to show the search results)
-  // m_usersList = new QListView();
-
-  // SearchResultsModel* model = new SearchResultsModel();
-  // m_usersList->setModel(model);
-
   setupModel();
   setupView();
-
-  // QTableView
 
   // Create the layout of the dialog
   QGridLayout* layout = new QGridLayout();
