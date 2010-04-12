@@ -33,7 +33,7 @@ orl_patterns.lua
 
 
 ========================================
-CIDIsinc DB Scripts
+Cidisinc DB Scripts
 ========================================
 
 cidisinc_get_faces.lua
@@ -58,4 +58,8 @@ cidisinc_render_big_picture.lua
 MLP Scripts
 ========================================
 
-TODO write
+mlp_global.lua
+  Trains one MLP to recognize a number of subjects.
+
+mlp_array.lua
+  Trains an array of MLPs to recognize a number of subjects.
