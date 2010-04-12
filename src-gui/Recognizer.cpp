@@ -3,19 +3,72 @@
 // that can be found in the LICENSE.txt file.
 
 #include "Recognizer.h"
+#include "dao/User.h"
+#include "dao/Photo.h"
+#include "LoseFaceApp.h"
+#include "ActivationFunctions.h"
 #include <QThread>
 #include <QString>
 
 class RecognizerBuilderThread : public QThread
 {
+  Mlp& m_mlp;
+  bool m_stop;
 public:
-  RecognizerBuilderThread(QObject* parent = NULL)
-    : QThread(parent)
+  RecognizerBuilderThread(Mlp& mlp, QObject* parent = NULL)
+    : m_mlp(mlp)
+    , QThread(parent)
   {
+    m_stop = false;
+  }
+  void stopTrainingProcess()
+  {
+    m_stop = true;
   }
   void run()
   {
-    exec();			// TODO train the MLP in background
+    int subjects = 0;
+
+    // Load all photos of all users and convert them to training patterns
+    {
+      dao::General* generalDao = get_general_dao();
+      if (generalDao) {
+	dao::User userDao(generalDao);
+	dao::Photo pictureDao(generalDao);
+	dao::UserIteratorPtr userIter = userDao.getIterator();
+	dto::User user;
+	
+	while (userIter->next(user)) {
+	  QImage image;
+	  dao::PhotoIteratorPtr pictureIter = pictureDao.getIterator(user.getId());
+	  dto::Photo picture;
+	  while (pictureIter->next(picture)) {
+	    image = pictureDao.loadImage(picture.getId());
+
+	    printf("Loading picture %d for subject %d\n", user.getId(), picture.getId());
+	    // TODO
+	  }
+	}
+
+	subjects++;
+      }
+    }
+
+    fflush(stdout);
+
+    if (!subjects)
+      return;
+
+    m_mlp = Mlp(10, 10, subjects);
+    m_mlp.setHiddenActivationFunction(Logsig());
+    m_mlp.setOutputActivationFunction(Logsig());
+    m_mlp.initRandom(-1.0, +1.0);
+
+    // Backpropagation bp(m_mlp);
+    // while (!m_stop) {
+    //   //exec();			// TODO train the MLP in background
+    //   m_mlp.train();
+    // }
   }
 };
 
@@ -27,7 +80,7 @@ Recognizer::Recognizer()
 Recognizer::~Recognizer()
 {
   if (m_thread != NULL) {
-    m_thread->exit(1);
+    m_thread->stopTrainingProcess();
     m_thread->wait();
     delete m_thread;
   }
@@ -46,12 +99,12 @@ QString Recognizer::identify(const QImage& photo)
 void Recognizer::rebuild()
 {
   if (m_thread == NULL) {
-    m_thread = new RecognizerBuilderThread();
+    m_thread = new RecognizerBuilderThread(m_mlp);
     m_thread->start();
   }
 }
 
 double Recognizer::getBuildProgress()
 {
-  return 0.0;
+  return 0.5;
 }

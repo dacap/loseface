@@ -5,6 +5,7 @@
 #include "MainWindow.h"
 #include "LoginDialog.h"
 #include "Navigation.h"
+#include "Recognizer.h"
 #include <QtGui>
 
 MainWindow::MainWindow()
@@ -118,6 +119,8 @@ void MainWindow::onIdentifyMode()
 
 void MainWindow::onTrainModel()
 {
+  Recognizer recognizer;
+  recognizer.rebuild();
 }
 
 void MainWindow::onNewUser()
