@@ -3,7 +3,6 @@
 // that can be found in the LICENSE.txt file.
 
 #include "MainWindow.h"
-#include "IdentifyDialog.h"
 #include "LoginDialog.h"
 #include "Navigation.h"
 #include <QtGui>
@@ -104,12 +103,6 @@ void MainWindow::onLoginMode()
 
 void MainWindow::onIdentifyMode()
 {
-  hide();
-
-  IdentifyDialog dlg;
-  dlg.exec();
-
-  show();
 }
 
 // void MainWindow::paintEvent(QPaintEvent* event)

@@ -20,7 +20,6 @@ if(QT4_FOUND)
     dao/Photo.cpp
     dao/User.cpp
     CreateUserPanel.cpp
-    IdentifyDialog.cpp
     LoginDialog.cpp
     LoseFaceApp.cpp
     MainWindow.cpp
@@ -33,7 +32,6 @@ if(QT4_FOUND)
 
   set(loseface-ui-mocs-srcs
     CreateUserPanel.h
-    IdentifyDialog.h
     LoginDialog.h
     LoseFaceApp.h
     MainWindow.h
