@@ -55,6 +55,9 @@ SPECIAL_TRAINING_WHOLE_PROCESS_TIMES = 10 -- Repeat 10 times the whole special t
 SPECIAL_TRAINING_SUBSET_EPOCHS = 10 -- Repeat 10 epochs each (positive+negatives) subset
                                     -- in the special training process
 
+SPECIAL_TRAINING_REINIT_IN_N_EPOCHS = 100000 -- After this number of epochs the weights
+                                             -- are reinitialized because we are not converging
+
 ----------------------------------------------------------------------
 
 function reset_mlp(mlp, seed)
@@ -229,7 +232,7 @@ for i=1,FOLDS do
 	  while mlp:mse(fullmix) > MSE_GOAL do
 
 	    -- if the model has not convergence, lets initialize the weights again
-	    if epochs >= 100000 then
+	    if epochs >= SPECIAL_TRAINING_REINIT_IN_N_EPOCHS then
 	      epochs = 0
 	      seed2 = seed2 + 1
 	      reset_mlp(mlp, seed2)
