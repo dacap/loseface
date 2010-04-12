@@ -28,7 +28,6 @@ if(QT4_FOUND)
     PreferencesPanel.cpp
     Recognizer.cpp
     SearchPanel.cpp
-    UserNavigationButton.cpp
     WebCamWidget.cpp
     main.cpp)
 
@@ -42,7 +41,6 @@ if(QT4_FOUND)
     PreferencesPanel.h
     Recognizer.h
     SearchPanel.h
-    UserNavigationButton.h
     WebCamWidget.h)
 
   # Wrap cpp files to moc'em
