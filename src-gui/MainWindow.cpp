@@ -27,6 +27,9 @@ void MainWindow::createActions()
   m_fileIdentifyMode = new QAction(tr("&Identify Mode"), this);
   connect(m_fileIdentifyMode, SIGNAL(triggered()), this, SLOT(onIdentifyMode()));
 
+  m_retrain = new QAction(tr("&Train Model (TEST ONLY)"), this);
+  connect(m_retrain, SIGNAL(triggered()), this, SLOT(onTrainModel()));
+
   m_fileExit = new QAction(tr("&Exit"), this);
   m_fileExit->setShortcuts(QKeySequence::Quit);
   connect(m_fileExit, SIGNAL(triggered()), this, SLOT(close()));
@@ -47,6 +50,8 @@ void MainWindow::createMenus()
   m_fileMenu->addAction(m_fileLoginMode);
   m_fileMenu->addAction(m_fileIdentifyMode);
   m_fileMenu->addSeparator();
+  m_fileMenu->addAction(m_retrain);
+  m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_fileExit);
 
   m_editMenu = menuBar()->addMenu(tr("&Edit"));
@@ -61,7 +66,7 @@ void MainWindow::createMenus()
   m_helpMenu = menuBar()->addMenu(tr("&Help"));
 }
 
-void MainWindow::onLoginMode()
+void MainWindow::webCamMode(bool identify)
 {
   // Create login dialog
   LoginDialog dlg(this);
@@ -101,13 +106,19 @@ void MainWindow::onLoginMode()
   } while (tryAgain);
 }
 
-void MainWindow::onIdentifyMode()
+void MainWindow::onLoginMode()
 {
+  webCamMode(false);
 }
 
-// void MainWindow::paintEvent(QPaintEvent* event)
-// {
-// }
+void MainWindow::onIdentifyMode()
+{
+  webCamMode(true);
+}
+
+void MainWindow::onTrainModel()
+{
+}
 
 void MainWindow::onNewUser()
 {

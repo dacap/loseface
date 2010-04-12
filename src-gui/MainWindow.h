@@ -23,16 +23,19 @@ public:
 private slots:
   void onLoginMode();
   void onIdentifyMode();
+  void onTrainModel();
   void onNewUser();
   void onSearchUser();
   void onPreferences();
 
 private:
+  void webCamMode(bool identify);
   void createActions();
   void createMenus();
 
   QAction* m_fileLoginMode;
   QAction* m_fileIdentifyMode;
+  QAction* m_retrain;
   QAction* m_fileExit;
   QAction* m_editNewUser;
   QAction* m_editSearchUser;
