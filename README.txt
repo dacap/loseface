@@ -24,12 +24,11 @@
   GETTING SOURCE CODE
   ========================================
 
-  You can get the last copy of source code from SVN
+  You can get clone the Git repository
 
-    svn co https://loseface.svn.sourceforge.net/svnroot/loseface/trunk loseface
+    git clone git://loseface.git.sourceforge.net/gitroot/loseface/loseface 
 
-  Code in SVN is under development, so there are big chances
-  to be unstable.
+  Code in Git repository is under development, so it is unstable.
 
 
   ========================================
