@@ -1,6 +1,6 @@
 #! /bin/sh
 
-version=0.1
+version=0.2
 package=LoseFace-$version
 
 mkdir $package
