@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include <iostream>
 #include <lua.hpp>
@@ -19,7 +20,7 @@ using namespace std;
 
 /// Lose Face command line utility.
 ///
-/// Usage: 
+/// Usage:
 /// @code
 /// losefase [SCRIPT_FILE [ARGUMENTS...]]
 /// @endcode
@@ -30,7 +31,7 @@ int main(int argc, const char *argv[])
   // We can modify process priority to avoid killing the CPU
   ::SetPriorityClass(::GetCurrentProcess(), BELOW_NORMAL_PRIORITY_CLASS);
 #endif
-  
+
   try {
     lua::LuaState L;
     luaL_openlibs(L);		     // Register command libraries

@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "Eigenfaces.h"
 
@@ -80,7 +81,7 @@ size_t Eigenfaces::getEigenvaluesCount() const
 }
 
 /// Calculate eivenvalues and sort them in descendant order.
-/// 
+///
 bool Eigenfaces::calculateEigenvalues()
 {
   // If there are reserved columns we just removed them so they do
@@ -155,11 +156,11 @@ bool Eigenfaces::calculateEigenvalues()
 
   return true;
 }
-  
+
 /// Calculates the eigenfaces.
-/// 
+///
 /// @warning You have to call #calculateEigenvalues before.
-/// 
+///
 void Eigenfaces::calculateEigenfaces(size_t components)
 {
   if (components < 1 && components > m_eigenvalues.size()) {
@@ -188,13 +189,13 @@ void Eigenfaces::calculateEigenfaces(size_t components)
 
 /// Returns the number of eigenfaces required to represent the
 /// specified level of variance.
-/// 
+///
 /// @param variance
 ///   1.0 means all the variance, 0.8 is 80%, etc.
 /// @return
 ///   The number of components for eigenfaces. Then you should call
 ///   #calculateEigenfaces with this returned value.
-/// 
+///
 size_t Eigenfaces::getNumComponentsFor(double variance) const
 {
   double total = 0.0;
@@ -219,7 +220,7 @@ size_t Eigenfaces::getNumComponentsFor(double variance) const
 ///
 /// @param eigenspacePoint
 ///   Resulting point in the eigenspace.
-/// 
+///
 void Eigenfaces::projectInEigenspace(const Vector& faceImage, Vector& eigenspacePoint) const
 {
   eigenspacePoint.resize(m_eigenfaceComponents);

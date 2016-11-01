@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "Recognizer.h"
 #include "dao/User.h"
@@ -37,7 +38,7 @@ public:
 	dao::Photo pictureDao(generalDao);
 	dao::UserIteratorPtr userIter = userDao.getIterator();
 	dto::User user;
-	
+
 	while (userIter->next(user)) {
 	  QImage image;
 	  dao::PhotoIteratorPtr pictureIter = pictureDao.getIterator(user.getId());

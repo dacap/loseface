@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "recog/FrEigenfacesMlp.h"
 #include <iostream>
@@ -62,11 +63,11 @@ void FrEigenfacesMlp::convertToPatterns(SubjectsListPtr subjectsList,
 
 /// Calcula los límites mínimos y máximos de los patrones especificados
 /// para luego normalizar las entradas a dichos límites.
-/// 
+///
 /// Debería llamar esta función una única vez y con los patrones de
 /// entrenamiento. Luego debería normalizar todos los patrones
 /// (entrenamiento y prueba) utilizando #normalizePatterns.
-/// 
+///
 void FrEigenfacesMlp::calcBoundsToNormalize(PatternSet& patterns)
 {
   normalize = false;
@@ -184,10 +185,10 @@ int FrEigenfacesMlp::calcMinDistance(const Vector<double>& eigenspacePoint) cons
 }
 
 /// Interpreta la salida de la red neuronal.
-/// 
+///
 /// @param z
 ///   Resultado que debió disparar la llamada a @ref Net#recall.
-/// 
+///
 int FrEigenfacesMlp::interpretOutput(const Vector<double>& z) const
 {
 #if 0				// using threshold
@@ -213,13 +214,13 @@ int FrEigenfacesMlp::interpretOutput(const Vector<double>& z) const
 }
 
 /// Crea una patrón de entrenamiento para el sujeto especificado.
-/// 
+///
 /// @param eigenspacePoint
 ///   Representa una foto del sujeto proyectada en el eigenspace.
 /// @param s
 ///   Índice del sujeto al cual pertenece la foto/punto @a eigenspacePoint,
 ///   y para el cual queremos crear un patrón de entrenamiento.
-/// 
+///
 Pattern<double> FrEigenfacesMlp::makePattern(const Vector<double>& eigenspacePoint, int s) const
 {
   Pattern<double> p;

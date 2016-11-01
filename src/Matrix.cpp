@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "Matrix.h"
 #include "Vector.h"
@@ -9,11 +10,11 @@
 // LAPACK
 extern "C" {
   extern int dsyev_(char *jobz, char *uplo, int *n, double *a,
-		    int *lda, double *w, double *work, int *lwork, 
+		    int *lda, double *w, double *work, int *lwork,
 		    int *info);
   extern int dgeev_(char *jobvl, char *jobvr, int *n, double *a,
-		    int *lda, double *wr, double *wi, double *vl, 
-		    int *ldvl, double *vr, int *ldvr, double *work, 
+		    int *lda, double *wr, double *wi, double *vl,
+		    int *ldvl, double *vr, int *ldvr, double *work,
 		    int *lwork, int *info);
 }
 
@@ -443,8 +444,8 @@ void Matrix::multiply(const Vector& u, Vector& v) const
   }
 #endif
 }
-  
-Vector Matrix::operator*(const Vector& u) const 
+
+Vector Matrix::operator*(const Vector& u) const
 {
   Vector v(m_rows);
   multiply(u, v);
@@ -470,20 +471,20 @@ bool Matrix::operator!=(const Matrix& B) const
 }
 
 // Euclidean distance
-//  
+//
 //  A = [ 1 2		(A = this)
 //        3 4 ]
 //  B = [ 5
 //        6 ]
 //  C = A.dist(B) = [6.4 7.8
 //                   3.6 5.0]
-//  
+//
 //          | 5    6
 //          | 7    8
 //  --------+----------
 //      1 2 | 6.4  7.8
 //      3 4 | 3.6  5.0
-// 
+//
 Matrix Matrix::dist(const Matrix& B) const
 {
   assert(m_cols == B.m_rows);
@@ -621,7 +622,7 @@ void Matrix::eig(Vector& eigenvalues,
 //////////////////////////////////////////////////////////////////////
 // Binary I/O
 //////////////////////////////////////////////////////////////////////
-  
+
 void Matrix::save(const char* filename) const
 {
   std::ofstream f(filename, std::ios::binary);
@@ -655,7 +656,7 @@ bool approx_eq(const Matrix& A, const Matrix& B, unsigned precision)
   if (A.rows() != B.rows() ||
       A.cols() != B.cols())
     return false;
-  
+
   size_t i, j;
   for (j=0; j<A.cols(); ++j) {
     for (i=0; i<A.rows(); i++) {

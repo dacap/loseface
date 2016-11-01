@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include <iostream>
 #include <fstream>
@@ -103,7 +104,7 @@ void Eigenfaces::load(const char* filename)
 }
 
 /// Calculate eivenvalues and sort them in descendant order.
-/// 
+///
 bool Eigenfaces::calculateEigenvalues()
 {
   // Obtener la matriz de covarianza de MxM para calcular sus
@@ -163,9 +164,9 @@ bool Eigenfaces::calculateEigenvalues()
 }
 
 /// Calculates the eigenfaces.
-/// 
+///
 /// @warning You have to call #calculateEigenvalues before.
-/// 
+///
 bool Eigenfaces::calculateEigenfaces(int components)
 {
   assert(components > 0 && components <= m_eigenvalues.size());
@@ -190,14 +191,14 @@ bool Eigenfaces::calculateEigenfaces(int components)
 
 /// Devuelve la cantidad de componentes de eigenfaces que deberían ser
 /// necesarios para la cantidad de información que se desea representar.
-/// 
+///
 /// @param levelOfInfo
 ///   1.0 significa toda la información, 0.8 un 80% de la información, etc.
 /// @return
 ///   La cantidad de componentes para las eigenfaces. Supuestamente
 ///   usted luego debería llamar a #calculateEigenfaces con el valor
 ///   retornado.
-/// 
+///
 int Eigenfaces::getNumComponentsFor(double levelOfInfo) const
 {
   double total = 0.0;
@@ -216,7 +217,7 @@ int Eigenfaces::getNumComponentsFor(double levelOfInfo) const
 
 /// Proyecta la imagen @a faceImage en el eigenspace, devolviendo su
 /// correspondiente "facespacePoint".
-/// 
+///
 Vector<double> Eigenfaces::projectInEigenspace(Vector<double>& faceImage) const
 {
   Vector<double> eigenspacePoint(m_eigenfaceComponents);

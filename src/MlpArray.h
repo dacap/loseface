@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_MLPARRAY_H
 #define LOSEFACE_MLPARRAY_H
@@ -40,7 +41,7 @@ public:
   //////////////////////////////////////////////////////////////////////
   // Binary I/O
   //////////////////////////////////////////////////////////////////////
-  
+
   void save(const char* filename) const;
   void load(const char* filename);
   void write(std::ostream& s) const;

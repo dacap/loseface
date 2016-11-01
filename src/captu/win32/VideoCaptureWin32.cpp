@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "captu/VideoCapture.h"
 #include <vector>
@@ -171,7 +172,7 @@ bool VideoCaptureWin32::createPreviewWindow(void* parentWindowHandle)
       break;
   }
 #endif
-  
+
   return m_hwndPreview ? true: false;
 }
 
@@ -203,7 +204,7 @@ bool VideoCaptureWin32::getImage(CImg<unsigned char>& img)
   ::SendMessage(m_hwndPreview, WM_CAP_GRAB_FRAME_NOSTOP, 0, 0L);
   ::SendMessage(m_hwndPreview, WM_CAP_EDIT_COPY, 0, 0L);
 
-  ::OpenClipboard(m_hwndPreview); 
+  ::OpenClipboard(m_hwndPreview);
   if (HBITMAP hbmp = reinterpret_cast<HBITMAP>(::GetClipboardData(CF_BITMAP))) {
     HDC hdc = ::GetDC(m_hwndPreview);
 
@@ -244,7 +245,7 @@ bool VideoCaptureWin32::getImage(CImg<unsigned char>& img)
 
     ::ReleaseDC(m_hwndPreview, hdc);
   }
-  ::CloseClipboard(); 
+  ::CloseClipboard();
 
   return ret;
 }
@@ -252,7 +253,7 @@ bool VideoCaptureWin32::getImage(CImg<unsigned char>& img)
 void VideoCaptureWin32::showFormatDialog()
 {
   ::SendMessage(m_hwndPreview, WM_CAP_DLG_VIDEOFORMAT, 0, 0L);
-  
+
   CAPSTATUS cs;
   if (::SendMessage(m_hwndPreview, WM_CAP_GET_STATUS,
 		    sizeof(CAPSTATUS), reinterpret_cast<LPARAM>(&cs))) {
@@ -263,7 +264,7 @@ void VideoCaptureWin32::showFormatDialog()
 void VideoCaptureWin32::showParamsDialog()
 {
   ::SendMessage(m_hwndPreview, WM_CAP_DLG_VIDEOSOURCE, 0, 0L);
-  
+
   CAPSTATUS cs;
   if (::SendMessage(m_hwndPreview, WM_CAP_GET_STATUS,
 		    sizeof(CAPSTATUS), reinterpret_cast<LPARAM>(&cs))) {

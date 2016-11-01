@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "lua/annlib.h"
 
@@ -81,7 +82,7 @@ void annlib::details::registerNormalizer(lua_State* L)
 ///
 /// Calculates minimum and maximum values of the set
 /// so then patterns are normalized between [-1,1] range.
-/// 
+///
 /// @code
 /// n = ann.Normalizer(set)
 /// @endcode

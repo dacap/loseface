@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_ACTIVATIONFUNCTIONS_H
 #define LOSEFACE_ACTIVATIONFUNCTIONS_H
@@ -19,7 +20,7 @@ public:
 };
 
 /// Linear activation function.
-/// 
+///
 class Purelin : public ActivationFunction
 {
 public:
@@ -30,7 +31,7 @@ public:
 };
 
 /// Logarithmic sigmoid activation function.
-/// 
+///
 class Logsig : public ActivationFunction
 {
 public:
@@ -41,7 +42,7 @@ public:
 };
 
 /// Hyperbolic tangent sigmoid activation function.
-/// 
+///
 class Tansig : public ActivationFunction
 {
 public:
@@ -52,7 +53,7 @@ public:
 };
 
 /// Radial basis function.
-/// 
+///
 class Radbas : public ActivationFunction
 {
 public:

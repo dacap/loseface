@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 // Based on code of Sebastián Long and Omar Müller
 
@@ -22,7 +23,7 @@ using namespace cimg_library;
 /// Indicates information of position and translation of an
 /// ellipse-template useful to check if it's the best ellipse that
 /// fit a face region.
-/// 
+///
 struct TranslationTemplate
 {
   // translation
@@ -123,7 +124,7 @@ void label_skin_regions(const CImg<T1>& src,
 //////////////////////////////////////////////////////////////////////
 
 /// Main routine to locate the face region in a photography.
-/// 
+///
 template<class T>
 void get_face(const CImg<T>& photo, CImg<T>& face,
 	      int face_width,
@@ -429,7 +430,7 @@ void segment_eye_regions(const CImg<T1>& src, CImg<T2>& dst,
 }
 
 /// Determines which of all centers are eyes.
-/// 
+///
 /// @param img
 ///   Must be a black-image with a pixel in each region's center
 ///   labeled with its corresponding color.
@@ -438,7 +439,7 @@ void segment_eye_regions(const CImg<T1>& src, CImg<T2>& dst,
 /// @param first_label
 ///   Color for the first label (regions must be
 ///   labeled in sequence).
-/// 
+///
 template<class T>
 double locate_best_eyes(const CImg<T> img,
 			const std::vector<imageproc::Point>& centers,
@@ -457,10 +458,10 @@ double locate_best_eyes(const CImg<T> img,
     const imageproc::Point& center(*it);
 
     // check if the eye (center) is in a reasonable area of the image:
-    // 
+    //
     // x=0 ---> 7 <------- EYE AREA --------> 0.65*width        width
     //   |XXXXXX|                            |XXXXXXXXXXXXXXXXXXXX|
-    // 
+    //
     if (center.x > 7 && center.x <= (0.65*mask.width)) {
       // we draw a white rectangle where the right-eye should be
       mask.fill(0);

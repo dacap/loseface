@@ -11,8 +11,7 @@ functional system to detect subjects.
 ## Status
 
 This project was discontinued. Anyway you are free to use its source
-code which is distributed under the terms of the
-[BSD license](LICENSE.txt).
+code which is distributed under the terms of the [MIT license](LICENSE.txt).
 
 ## Thanks to
 

@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "Mlp.h"
 #include "ActivationFunctions.h"
@@ -167,7 +168,7 @@ void Mlp::recall(const Vector& input,
 }
 
 /// Calculates the sum of squared errors.
-/// 
+///
 double Mlp::calcSSE(const PatternSet& set) const
 {
   assert(!set.empty());
@@ -195,7 +196,7 @@ double Mlp::calcSSE(const PatternSet& set) const
 }
 
 /// Calculates the mean squared error (MSE).
-/// 
+///
 double Mlp::calcMSE(const PatternSet& set) const
 {
   return calcSSE(set) / (set.size() * getOutputs());
@@ -204,7 +205,7 @@ double Mlp::calcMSE(const PatternSet& set) const
 //////////////////////////////////////////////////////////////////////
 // Binary I/O
 //////////////////////////////////////////////////////////////////////
-  
+
 void Mlp::save(const char* filename) const
 {
   std::ofstream f(filename, std::ios::binary);

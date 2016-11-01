@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_RECOG_SUBJECTSREADER_H
 #define LOSEFACE_RECOG_SUBJECTSREADER_H
@@ -28,7 +29,7 @@ namespace recog {
   typedef SharedPtr<SubjectsReader> SubjectsReaderPtr;
 
   /// Reads the Olivetti data base.
-  /// 
+  ///
   class OlivettiReader : public SubjectsReader
   {
     std::string m_facesDirectory;
@@ -37,13 +38,13 @@ namespace recog {
   public:
 
     /// Reads the Olivetti data base.
-    /// 
+    ///
     /// @param facesDirectory
     ///   Directory where are located s1, s2, ... folders.
-    /// 
+    ///
     /// @param count
     ///   Indicate how many subjects should be loaded (0 to load all subjects).
-    /// 
+    ///
     OlivettiReader(const std::string& facesDirectory, int count = 0)
       : m_facesDirectory(facesDirectory)
     {
@@ -63,7 +64,7 @@ namespace recog {
     virtual int getSubjectCount() {
       return m_subjectCount;
     }
-    
+
     virtual SubjectPtr readSubject(int n) {
       SubjectPtr subject(new Subject(n+1));
 
@@ -91,7 +92,7 @@ namespace recog {
   };
 
   /// Reads the SINC/CIDISI data base.
-  /// 
+  ///
   class SincidisiReader : public SubjectsReader
   {
     std::string m_facesDirectory;
@@ -723,10 +724,10 @@ namespace recog {
   public:
 
     /// Reads the SINC/CIDISI data base.
-    /// 
+    ///
     /// @param facesDirectory
     ///   Directory where are '001', '002', etc.
-    /// 
+    ///
     SincidisiReader(const std::string& facesDirectory)
       : m_facesDirectory(facesDirectory)
     {
@@ -746,7 +747,7 @@ namespace recog {
     virtual SubjectPtr readSubject(int n) {
       const char** files;
       SubjectPtr subject;
-      
+
     restart:
       files = get_file_list(n+1);
 

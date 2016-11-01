@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_MATRIX_H
 #define LOSEFACE_MATRIX_H
@@ -20,11 +21,11 @@
 // LAPACK
 extern "C" {
   extern int dsyev_(char *jobz, char *uplo, int *n, double *a,
-		    int *lda, double *w, double *work, int *lwork, 
+		    int *lda, double *w, double *work, int *lwork,
 		    int *info);
   extern int dgeev_(char *jobvl, char *jobvr, int *n, double *a,
-		    int *lda, double *wr, double *wi, double *vl, 
-		    int *ldvl, double *vr, int *ldvr, double *work, 
+		    int *lda, double *wr, double *wi, double *vl,
+		    int *ldvl, double *vr, int *ldvr, double *work,
 		    int *lwork, int *info);
 }
 

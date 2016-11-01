@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_RECOG_SUBJECTSLIST_H
 #define LOSEFACE_RECOG_SUBJECTSLIST_H
@@ -22,11 +23,11 @@ namespace recog {
   public:
 
     /// Construye una nueva lista de sujetos a reconocer.
-    /// 
+    ///
     /// @param reader
     ///   Lector de imágenes a utilizar para obtener la lista de sujetos
     ///   y rostros conocidos.
-    /// 
+    ///
     SubjectsList(SubjectsReader& reader)
       : m_imageWidth(reader.getImageWidth())
       , m_imageHeight(reader.getImageHeight())

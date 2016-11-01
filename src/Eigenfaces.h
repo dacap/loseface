@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_EIGENFACES_H
 #define LOSEFACE_EIGENFACES_H
@@ -19,11 +20,11 @@ class Eigenfaces
 {
   /// Number of pixels per picture. It is the number of dimensions in the
   /// orignal space (face width x height pixels).
-  /// 
+  ///
   size_t m_pixelsPerImage;		// N
 
   /// Number of eigenfaces components.
-  /// 
+  ///
   size_t m_eigenfaceComponents;	 	// M'
 
   Vector m_eigenvalues;
@@ -31,24 +32,24 @@ class Eigenfaces
   Matrix m_eigenvectors;
 
   /// Set of training images (each column is an image).
-  /// 
+  ///
   Matrix m_dataSet;
 
   /// Set of training images with zero mean.
   ///
   /// @see m_dataSet, m_meanFace
-  /// 
+  ///
   Matrix m_dataSetZeroMean;
 
   /// Average between all faces.
-  /// 
+  ///
   Vector m_meanFace;			// Psi
 
   /// Set of eigenfaces, each column is a eigenface.
-  /// 
+  ///
   /// This matrix has @ref eigenspaceComponents columns and
   /// @ref pixelsPerImage rows.
-  /// 
+  ///
   Matrix m_eigenfaces;
 
   /// Number of pre-allocated images (columns).

@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "Vector.h"
 #include "Matrix.h"
@@ -227,7 +228,7 @@ bool Vector::operator!=(const Vector& u) const
 //////////////////////////////////////////////////////////////////////
 // Binary I/O
 //////////////////////////////////////////////////////////////////////
-  
+
 void Vector::save(const char* filename) const
 {
   std::ofstream f(filename, std::ios::binary);

@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include <sstream>
 
@@ -139,7 +140,7 @@ static int patternset__set_output(lua_State* L)
       Pattern& pat(**it);
       pat.setOutput(newoutput);
     }
-    
+
     return 0;
   }
   return 0;
@@ -256,7 +257,7 @@ static int patternset__split_by_output(lua_State* L)
 }
 
 /// Adds to this set of patterns other patterns.
-/// 
+///
 /// @code
 /// set:merge(set1, set2, set3, ...)
 /// @endcode

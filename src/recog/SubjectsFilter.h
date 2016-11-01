@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_RECOG_SUBJECTSFILTER_H
 #define LOSEFACE_RECOG_SUBJECTSFILTER_H
@@ -15,7 +16,7 @@ namespace recog {
   /// Class to filter images from a list of subjects.
   ///
   /// @see SubjectsList
-  /// 
+  ///
   class SubjectsFilter
   {
     struct SubjectMask
@@ -54,7 +55,7 @@ namespace recog {
 
     /// Crea un nuevo filtro por medio de una cadena con un formato
     /// especial.
-    /// 
+    ///
     /// @param filterString
     ///   Imágenes a incluir. El formato es:
     ///   0-2       Incluir las fotos 0, 1 y 2 de cada sujeto.
@@ -62,7 +63,7 @@ namespace recog {
     ///   3,5-8     Incluir las fotos 3, 5, 6, 7 y 8 de cada sujeto.
     ///   0-2,[1]4  Incluir las fotos 0, 1, 2 de todos los sujetos más la 4 del
     ///             primer sujeto.
-    /// 
+    ///
     void parse(const char* filterString)
     {
       unsigned subjectId = 0;

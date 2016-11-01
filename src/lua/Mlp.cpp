@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "lua/annlib.h"
 
@@ -82,7 +83,7 @@ static int mlp__load(lua_State* L)
 }
 
 /// Saves the network to the specified file.
-/// 
+///
 /// @code
 /// net:save(FILENAME)
 /// @endcode
@@ -263,7 +264,7 @@ static int mlp__train(lua_State* L)
 }
 
 /// Calculates MSE given a set of patterns.
-/// 
+///
 /// @code
 /// net:mse(set)
 /// @endcode
@@ -371,7 +372,7 @@ void annlib::details::registerMlp(lua_State* L)
 ///
 /// At the moment this constructor creates only Multi-layer
 /// perceptrons of 3 layers.
-/// 
+///
 /// @code
 /// ann.Mlp({ inputs=NUMBER, hiddens=NUMBER, outputs=NUMBER,
 //            hiddenfunc=ANN.PURELIN|ANN.LOGSIG|ANN.TANSIG,

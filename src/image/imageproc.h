@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 // Based on code of Sebastián Long and Omar Müller
 
@@ -179,7 +180,7 @@ void calculate_region_center(const CImg<T>& img,
 
 /// @return Percentage of masked pixels (in @a mask image) touching
 ///         labeled pixels (in @a img) with the specified @a label.
-/// 
+///
 template<class T1, class T2>
 double calculate_mask_percentage(const CImg<T1>& img,
 				 const CImg<T2>& mask,

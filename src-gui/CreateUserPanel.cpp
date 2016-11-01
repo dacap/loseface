@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "CreateUserPanel.h"
 #include <QtGui>
@@ -71,4 +72,3 @@ void CreateUserPanel::onCancel()
 {
   emit cancel();
 }
-

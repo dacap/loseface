@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "lua/imglib.h"
 #include "image/faceloc.h"
@@ -105,7 +106,7 @@ static int image__get_face(lua_State* L)
 
     faceloc::get_face(**img, facergb, 92, 112);
     imageproc::rgb_to_gray(facergb, face);
-    
+
     **newimage(L) = face;
     return 1;
 

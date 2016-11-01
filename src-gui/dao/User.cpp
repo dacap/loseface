@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "dao/User.h"
 #include "dao/General.h"
@@ -61,7 +62,7 @@ int dao::User::insertUser(dto::User* user)
   query.addBindValue(user->getEmail());
   query.addBindValue(user->getSsn());
   query.exec();
-  
+
   QVariant id = query.lastInsertId();
   if (id.isValid())
     return id.toInt();
@@ -83,7 +84,7 @@ void dao::User::deleteUser(int id)
 class UserIteratorImpl : public dao::Iterator<dto::User>
 {
   QSqlQuery m_query;
-  
+
 public:
 
   UserIteratorImpl(const QSqlDatabase& db)

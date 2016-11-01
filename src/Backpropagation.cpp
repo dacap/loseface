@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "Backpropagation.h"
 #include "Mlp.h"
@@ -86,10 +87,10 @@ void BoldDriverMethod::afterPatterns(Backpropagation& bp, Mlp& net, const Patter
 
 /// Creates a new instance of the Back-Propagation algorithm to train
 /// the specified net.
-/// 
+///
 /// @param net The MLP to be trained (the initial weights of this net
 ///   will be used as start point).
-/// 
+///
 Backpropagation::Backpropagation(Mlp& net)
   : m_net(net)
 {
@@ -123,7 +124,7 @@ void Backpropagation::setAdaptativeLearningRate(const AdaptativeLearningRate& me
 }
 
 /// Trains just one epoch.
-/// 
+///
 void Backpropagation::train(const PatternSet& training_set)
 {
   PatternSet::const_iterator pattern;
@@ -140,7 +141,7 @@ void Backpropagation::train(const PatternSet& training_set)
   // Pre-processing policies
   m_updateWeightsHelper->beforePatterns(delta);
   m_adaptativeLearningRate->beforePatterns(m_net, training_set);
-  
+
   // for each pattern in the training set
   for (pattern=training_set.begin();
        pattern!=training_set.end(); ++pattern) {

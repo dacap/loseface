@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #include "MlpArray.h"
 
@@ -56,7 +57,7 @@ void MlpArray::recall(const Vector& input, Vector& output) const
 //////////////////////////////////////////////////////////////////////
 // Binary I/O
 //////////////////////////////////////////////////////////////////////
-  
+
 void MlpArray::save(const char* filename) const
 {
   std::ofstream f(filename, std::ios::binary);
@@ -73,7 +74,7 @@ void MlpArray::write(std::ostream& s) const
 {
   size_t n = m_nets.size();
   s.write((char*)&n, sizeof(size_t));
-  
+
   for (Nets::const_iterator
 	 it = m_nets.begin(); it != m_nets.end(); ++it) {
     it->write(s);

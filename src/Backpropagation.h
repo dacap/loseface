@@ -1,6 +1,7 @@
-// Copyright (C) 2008-2010 David Capello. All rights reserved.
-// Use of this source code is governed by a BSD-style license
-// that can be found in the LICENSE.txt file.
+// Copyright (C) 2008-2010 David Capello
+//
+// This file is released under the terms of the MIT license.
+// Read LICENSE.txt for more information.
 
 #ifndef LOSEFACE_BACKPROPAGATION_H
 #define LOSEFACE_BACKPROPAGATION_H
@@ -70,24 +71,24 @@ public:
 };
 
 /// Steepest descent backpropagation[1] algorithm to train MLP models.
-/// 
+///
 /// [1] D. E. Rumelhart., G. E. Hinton, R. J. Williams. 1986. "Learning internal representations by
 /// error propagation,", In <em>Parallel Distributed Processing: Explorations in the Microstructure
 /// of Cognition, Vol. 1: Foundations</em>, D. E. Rumelhart, J. L. McClelland, Eds. Mit Press
 /// Computational Models Of Cognition And Perception Series. MIT Press, Cambridge, MA, 318-362.
-/// 
+///
 class Backpropagation
 {
   /// Training epoch.
-  /// 
+  ///
   unsigned m_epoch;
 
   /// Learning rate.
-  /// 
+  ///
   double m_eta;
 
   /// Net in training.
-  /// 
+  ///
   Mlp& m_net;
 
   /// Type of adaptative learning rate.
